@@ -15,10 +15,10 @@ Celle-ci définit à tout instant la clef qui sera attribuée au prochain élément c
 */
 
 #include <utility>
-#include <PElement.h>
-#include <Erreur.h>
-#include <Sommet.h>
-#include <Arete.h>
+#include "PElement.h"
+#include "Erreur.h"
+#include "Sommet.h"
+#include "Arete.h"
 
 /*
 classe sachant dessiner un graphe

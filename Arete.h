@@ -3,8 +3,8 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <GElement.h>
-#include <Sommet.h>
+#include "GElement.h"
+#include "Sommet.h"
 
 using namespace std;
 

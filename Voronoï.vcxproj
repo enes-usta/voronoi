@@ -18,6 +18,18 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AElement.h" />
+    <ClInclude Include="Arete.h" />
+    <ClInclude Include="Erreur.h" />
+    <ClInclude Include="GElement.h" />
+    <ClInclude Include="Graphe.h" />
+    <ClInclude Include="PElement.h" />
+    <ClInclude Include="Sommet.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="TestGrapheGeneral.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -88,6 +100,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalHeaderUnitDependencies>%(AdditionalHeaderUnitDependencies)</AdditionalHeaderUnitDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -102,6 +115,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalHeaderUnitDependencies>%(AdditionalHeaderUnitDependencies)</AdditionalHeaderUnitDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -138,18 +152,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="AElement.h" />
-    <ClInclude Include="Arete.h" />
-    <ClInclude Include="Erreur.h" />
-    <ClInclude Include="GElement.h" />
-    <ClInclude Include="Graphe.h" />
-    <ClInclude Include="PElement.h" />
-    <ClInclude Include="Sommet.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="TestGrapheGeneral.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
