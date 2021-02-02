@@ -232,7 +232,7 @@ template <class S, class T>
 Sommet<T>* Graphe<S, T>::creeSommet1(const int clef, const T& info)
 {
 	Sommet<T>* sommetCree = new Sommet<T>(clef, info);
-	lSommets = new PElement< Sommet<T> >(sommetCree, lSommets);
+	lSommets = new PElement< Sommet<T> >(lSommets, sommetCree);
 
 	return sommetCree;
 }
@@ -255,7 +255,7 @@ Arete<S, T>* Graphe<S, T>::creeArete1(const int clef, const S& info, Sommet<T>* 
 
 	Arete<S, T>* nouvelleArete = new Arete<S, T>(clef, info, debut, fin);
 
-	lAretes = new PElement< Arete<S, T> >(nouvelleArete, lAretes);
+	lAretes = new PElement< Arete<S, T> >(lAretes, nouvelleArete);
 
 	return nouvelleArete;
 }
@@ -304,9 +304,9 @@ void Graphe<S, T>::copie(const Graphe<S, T>& graphe)
 
 	// -------------- d'abord on recopie les sommets --------------------
 
-	for (pS = graphe.lSommets; pS; pS = pS->s)
+	for (pS = graphe.lSommets; pS; pS = pS->suivant)
 	{									// parcourt les sommets du graphe "graphe" et les crée un par un dans *this en tant que sommets isolés
-		const Sommet<T>* sommet = pS->v;				// sommet courant à recopier
+		const Sommet<T>* sommet = pS->valeur;				// sommet courant à recopier
 		this->creeSommet(sommet->clef, sommet->v);		// on crée la copie du sommet courant avec la même clef
 	}
 
@@ -317,21 +317,21 @@ void Graphe<S, T>::copie(const Graphe<S, T>& graphe)
 	// Pour retrouver les "bons sommets" on utilise les clefs qui ont été conservées
 
 	const PElement<Arete<S, T>>* pA;
-	for (pA = graphe.lAretes; pA; pA = pA->s)	// parcourt les arêtes de l'ancien graphe et les recopie une par une
+	for (pA = graphe.lAretes; pA; pA = pA->suivant)	// parcourt les arêtes de l'ancien graphe et les recopie une par une
 	{
-		const Arete<S, T>* a = pA->v;			// arête courante à recopier
+		const Arete<S, T>* a = pA->valeur;			// arête courante à recopier
 		Sommet<T>* d, * f;						// le début et la fin de la nouvelle arête qui va être créée
 		PElement< Sommet<T> >* p;				// pour retrouver d et f dans la nouvelle liste de sommets grâce aux clefs qui ont été conservées
 
 		// on recherche d dans la nouvelle liste de sommets grâce à sa clef
 		SommetDejaPresentDansLaCopie<T> conditionDebut(a->debut);
 		p = PElement< Sommet<T> >::appartient(lSommets, conditionDebut);
-		d = p->v;
+		d = p->valeur;
 
 		// on recherche f dans la nouvelle liste de sommets grâce à sa clef
 		SommetDejaPresentDansLaCopie<T> conditionFin(a->fin);
 		p = PElement< Sommet<T> >::appartient(lSommets, conditionFin);
-		f = p->v;
+		f = p->valeur;
 
 		this->creeArete(a->clef, a->v, d, f);
 	}
@@ -401,13 +401,13 @@ PElement< pair< Sommet<T>*, Arete<S, T>* > >* Graphe<S, T>::adjacences(const Som
 
 	PElement< pair< Sommet<T>*, Arete<S, T>* > >* r;				// pair< Sommet<T> *, Arete<S,T>* >
 
-	for (l = lAretes, r = NULL; l; l = l->s)
+	for (l = lAretes, r = NULL; l; l = l->suivant)
 
-		if (sommet == l->v->debut)
-			r = new PElement< pair< Sommet<T>*, Arete<S, T>* > >(new pair< Sommet<T>*, Arete<S, T>* >(l->v->fin, l->v), r);
+		if (sommet == l->valeur->debut)
+			r = new PElement< pair< Sommet<T>*, Arete<S, T>* > >(r, new pair< Sommet<T>*, Arete<S, T>* >(l->valeur->fin, l->valeur));
 		else
-			if (sommet == l->v->fin)
-				r = new PElement< pair< Sommet<T>*, Arete<S, T>* > >(new pair< Sommet<T>*, Arete<S, T>* >(l->v->debut, l->v), r);
+			if (sommet == l->valeur->fin)
+				r = new PElement< pair< Sommet<T>*, Arete<S, T>* > >(r, new pair< Sommet<T>*, Arete<S, T>* >(l->valeur->debut, l->valeur));
 
 	return r;
 }
@@ -421,8 +421,8 @@ PElement< Arete<S, T> >* Graphe<S, T>::aretesAdjacentes(const Sommet<T>* sommet)
 
 	PElement< Arete<S, T> >* r;
 
-	for (l = ladj, r = NULL; l; l = l->s)
-		r = new PElement< Arete<S, T> >(l->v->second, r);
+	for (l = ladj, r = NULL; l; l = l->suivant)
+		r = new PElement< Arete<S, T> >(r, l->valeur->second);
 
 	PElement< pair< Sommet<T>*, Arete<S, T>* > >::efface2(ladj);
 
@@ -437,8 +437,8 @@ PElement< Sommet<T> >* Graphe<S, T>::voisins(const Sommet<T>* sommet) const
 
 	PElement< Sommet<T> >* r;
 
-	for (l = ladj, r = NULL; l; l = l->s)
-		r = new PElement< Sommet<T> >(l->v->first, r);
+	for (l = ladj, r = NULL; l; l = l->suivant)
+		r = new PElement< Sommet<T> >(r, l->valeur->first);
 
 	PElement< pair< Sommet<T>*, Arete<S, T>* > >::efface2(ladj);
 
@@ -457,9 +457,9 @@ Arete<S, T>* Graphe<S, T>::getAreteParSommets(const Sommet<T>* s1, const Sommet<
 {
 	PElement<Arete<S, T> >* l;
 
-	for (l = this->lAretes; l; l = l->s)
-		if (l->v->estEgal(s1, s2))
-			return l->v;
+	for (l = this->lAretes; l; l = l->suivant)
+		if (l->valeur->estEgal(s1, s2))
+			return l->valeur;
 
 	return NULL;
 }
@@ -498,7 +498,7 @@ bool Graphe<S, T>::dessineToutesAretes(FENETRE& fenetre) const
 	// ------------------------ on dessine les arêtes --------------------------
 
 	PElement< Arete<S, T>>* pA;
-	for (pA = this->lAretes; pA; pA = pA->s)
+	for (pA = this->lAretes; pA; pA = pA->suivant)
 		if (!fenetre.dessine(pA->v)) return false; // tente de dessiner puis retourne false en cas d'échec
 
 	return true;
@@ -520,7 +520,7 @@ bool Graphe<S, T>::dessineTousSommets(FENETRE& fenetre) const
 	// ------------------------ on dessine les sommets --------------------------
 
 	PElement< Sommet<T>>* pS;
-	for (pS = this->lSommets; pS; pS = pS->s)
+	for (pS = this->lSommets; pS; pS = pS->suivant)
 		if (!fenetre.dessine(pS->v)) return false;	// tente de dessiner puis retourne false en cas d'échec
 
 	return true;
@@ -561,7 +561,7 @@ renvoie true en cas de succès complet, false en cas d'échec partiel
 template <class T, class FENETRE>
 bool dessine(const PElement<Sommet<T>>* chemin, FENETRE& fenetre, const unsigned int couleur)
 {
-	if (!(chemin && chemin->s)) // le chemin est vide ou ne contient qu'un sommet : il n'y  a rien à dessiner
+	if (!(chemin && chemin->suivant)) // le chemin est vide ou ne contient qu'un sommet : il n'y  a rien à dessiner
 		return true;
 
 	else		// le chemin contient au moins une arête
@@ -591,13 +591,13 @@ bool Graphe<S,T>::dessine( FENETRE & fenetre) const
 // ------------------------ on dessine les arêtes --------------------------
 
 PElement< Arete<S,T>> * pA;
-for ( pA = this->lAretes; pA; pA = pA->s)
+for ( pA = this->lAretes; pA; pA = pA->suivant)
 	if (!fenetre.dessine(pA->v)) return false; // tente de dessiner puis retourne false en cas d'échec
 
 // ------------------------ on dessine les sommets --------------------------
 
 PElement< Sommet<T>> * pS;
-for ( pS = this->lSommets; pS; pS = pS->s)
+for ( pS = this->lSommets; pS; pS = pS->suivant)
 	if (!fenetre.dessine(pS->v)) return false;	// tente de dessiner puis retourne false en cas d'échec
 
 return true;
@@ -615,13 +615,13 @@ if (!fenetre.initDessin(*this, largeur, hauteur)) return false;	// tente de dess
 // ------------------------ on dessine les arêtes --------------------------
 
 PElement< Arete<S,T>> * pA;
-for ( pA = this->lAretes; pA; pA = pA->s)
+for ( pA = this->lAretes; pA; pA = pA->suivant)
 	if (!fenetre.dessine(pA->v)) return false; // tente de dessiner puis retourne false en cas d'échec
 
 // ------------------------ on dessine les sommets --------------------------
 
 PElement< Sommet<T>> * pS;
-for ( pS = this->lSommets; pS; pS = pS->s)
+for ( pS = this->lSommets; pS; pS = pS->suivant)
 	if (!fenetre.dessine(pS->v)) return false;	// tente de dessiner puis retourne false en cas d'échec
 
 // ---------------------------- on dessine la finition : un chemin, un circuit à surligner, etc. --------------------

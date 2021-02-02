@@ -22,7 +22,7 @@ public:
 
 	operator string() const { return this->message; }
 
-	virtual const char* what() const noexcept { return ((string)(*this)).c_str(); }
+	//virtual const char* what() const noexcept { return ((string)(*this)).c_str(); }
 };
 
 inline ostream& operator << (ostream& os, const Erreur& erreur) { return os << (string)erreur; }
