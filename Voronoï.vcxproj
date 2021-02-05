@@ -20,12 +20,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AElement.h" />
+    <ClInclude Include="Arc.h" />
     <ClInclude Include="Arete.h" />
     <ClInclude Include="Erreur.h" />
+    <ClInclude Include="Face.h" />
     <ClInclude Include="GElement.h" />
     <ClInclude Include="Graphe.h" />
     <ClInclude Include="PElement.h" />
     <ClInclude Include="Sommet.h" />
+    <ClInclude Include="Voronoi.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TestGrapheGeneral.cpp" />
