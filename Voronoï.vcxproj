@@ -28,6 +28,7 @@
     <ClInclude Include="Graphe.h" />
     <ClInclude Include="PElement.h" />
     <ClInclude Include="Sommet.h" />
+    <ClInclude Include="Triangle.h" />
     <ClInclude Include="Voronoi.h" />
   </ItemGroup>
   <ItemGroup>
