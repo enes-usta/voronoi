@@ -5,6 +5,7 @@
 #include <string>
 
 #include "GElement.h"
+#include "Vecteur2D.h"
 
 using namespace std;
 
@@ -19,6 +20,8 @@ class Sommet : public GElement<T>
 {
 public:
 	int degre;		// Rappel : degré = nombre d'arêtes adjacentes à ce sommet
+	Vecteur2D coordonnees;
+
 	/**
 
 	Un sommet est toujours créé isolé (c'est-à-dire qu'il n'y a pas d'arête adjacente à ce sommet)
