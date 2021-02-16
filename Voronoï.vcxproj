@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AElement.h" />
+    <ClInclude Include="AlgebreLineaire.h" />
     <ClInclude Include="Arc.h" />
     <ClInclude Include="Arete.h" />
     <ClInclude Include="Erreur.h" />
@@ -27,8 +28,10 @@
     <ClInclude Include="GElement.h" />
     <ClInclude Include="Graphe.h" />
     <ClInclude Include="PElement.h" />
+    <ClInclude Include="Reels.h" />
     <ClInclude Include="Sommet.h" />
     <ClInclude Include="Triangle.h" />
+    <ClInclude Include="Vecteur2D.h" />
     <ClInclude Include="Voronoi.h" />
   </ItemGroup>
   <ItemGroup>
