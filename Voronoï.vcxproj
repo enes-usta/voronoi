@@ -35,6 +35,7 @@
     <ClInclude Include="Voronoi.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Test.cpp" />
     <ClCompile Include="TestGrapheGeneral.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
