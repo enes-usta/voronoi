@@ -1,5 +1,2 @@
 ﻿  TestGrapheGeneral.cpp
-C:\dev\projects\Voronoï\TestGrapheGeneral.cpp(11,10): fatal error C1083: Impossible d'ouvrir le fichier include : 'Graphe.h' : No such file or directory
-  TestIncludes.cpp
-  The contents of <filesystem> are available only with C++17 or later.
-  Génération de code en cours...
+  Voronoï.vcxproj -> D:\MSV19\repos\voronoi\x64\Debug\Voronoï.exe
