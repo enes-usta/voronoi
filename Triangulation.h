@@ -133,17 +133,14 @@ public:
 	void determiner_NTL(Sommet<T> s) {
 		for each(Triangle<S, T> t in DTL) {
 			for (int i = 0; i < 2; i++) {
-				/* 
-				
-				if(Tij == VIDE){
-					Créer un nouveau triangle Tl de sommet p et d’arête kij (arête commune aux triangles Ti et Tij).
-					NTL.push_back(Tl)
-				}else if( Tij n'appartient pas à DTL){
-					Créer un triangle Tl de sommet p et d’arête kij
-					établir l’adjacence entre Tl et Tij
-					Rajouter Tl à la liste NT L
+				Triangle<S, T> triangleAdjacent = trouver_triangle_adjacent(t.arcs[i]);
+				if(triangleAdjacent == null){
+					//Cr´eer un nouveau triangle de sommet p et d’arˆete kij(arˆete commune aux triangles Ti et Tij).
+					NTL.push_back(Triangle<S, T>(/*A COMPLETER*/));
+				}else if(find(DTL.begin(), DTL.end(), triangleAdjacent) != DTL.end()){
+					//Cr´eer un triangle de sommet p et d’arˆete kij
+					NTL.push_back(Triangle<S, T>(/*A COMPLETER*/));
 				}
-				*/
 			}
 		}
 	}
