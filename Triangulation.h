@@ -36,11 +36,19 @@ public:
 	// Triangule la liste de sommets en entrée
 	void triangulate() {
 		determiner_triangulation_englobante();
-		for (Sommet s : sommets){
-			determiner_DTL(s, triangleEnglobant1);
+		for (Sommet<T> s : sommets){
+			Triangle<S, T> t = determinerTriangleContenantSommet();
+			determiner_DTL(s, t);
 			determiner_NTL(s);
 			supprimer_DTL();
 		}
+	}
+
+	Triangle<S, T> determinerTriangleContenantSommet(Sommet s) {
+		for each (Triangle<S, T> t in triangles)
+			if (t.contientPoint(s))
+				return t;
+		throw new Erreur("Aucun triangle ne contient ce sommet !");
 	}
 
 	// Détermine une triangulation qui englobe tous les sommets à trianguler
@@ -139,5 +147,4 @@ public:
 		DTL.erase(triangleEnglobant1);
 		DTL.erase(triangleEnglobant2);
 	}
-
 };

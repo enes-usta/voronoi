@@ -3,7 +3,11 @@
 #include "Sommet.h"
 #include "Arc.h"
 
-template <class S, class T, class U>
+/**
+* T est la nature de l'information portée par un sommet et
+* S est la nature de l'information portée par une arête
+*/
+template <class S, class T>
 class Face{
 public:
 	vector<Arc<S, T>> arcs;
@@ -25,8 +29,8 @@ public:
 	* Retourne vrai si le sommet s est à gauche de l'arête a
 	*/
 	bool estAGauche(Sommet s, Arc arc) {
-		Sommet a = arc.debut;
-		Sommet b = arc.fin;
+		Sommet<T> a = arc.debut;
+		Sommet<T> b = arc.fin;
 		if (arc.sens == 1) {
 			a = arc.fin;
 			b = arc.debut;

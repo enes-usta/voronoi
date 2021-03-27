@@ -4,7 +4,11 @@
 #include "Arc.h"
 #include "Face.h"
 
-template <class S, class T, class U>
+/**
+* T est la nature de l'information portée par un sommet et
+* S est la nature de l'information portée par une arête
+*/
+template <class S, class T>
 class Triangle : public Face {
 public:
     vector<Arc<S, T>> arcs;
