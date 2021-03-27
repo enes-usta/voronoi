@@ -8,6 +8,7 @@
 #include "Sommet.h"
 #include "Triangle.h"
 #include "Graphe.h"
+#include "Cercle.h"
 
 using namespace std;
 
@@ -37,14 +38,14 @@ public:
 	void triangulate() {
 		determiner_triangulation_englobante();
 		for (Sommet<T> s : sommets){
-			Triangle<S, T> t = determinerTriangleContenantSommet();
+			Triangle<S, T> t = determiner_triangle_contenant_sommet();
 			determiner_DTL(s, t);
 			determiner_NTL(s);
 			supprimer_DTL();
 		}
 	}
 
-	Triangle<S, T> determinerTriangleContenantSommet(Sommet s) {
+	Triangle<S, T> determiner_triangle_contenant_sommet(Sommet s) {
 		for each (Triangle<S, T> t in triangles)
 			if (t.contientPoint(s))
 				return t;
@@ -107,10 +108,10 @@ public:
 	void determiner_DTL(Sommet s, Triangle t) {
 		DTL.push_back(t);
 		for (int i = 0; i < 3; i++) {
-			/*if (find(DTL.begin(), DTL.end(), Tij) != DTL.end()) {
-				IF p a l’intérieur du cercle circonscrit à Tij THEN
-					determiner_DTL(s, Tij)
-			}*/
+			if (find(DTL.begin(), DTL.end(), Tij) != DTL.end()) {
+				Cercle<T> cercle = determiner_cercle_circonscrit(Tij);
+				if (cercle.contientPoint(s))
+					determiner_DTL(s, Tij);
 		}
 	}
 
@@ -146,5 +147,21 @@ public:
 		}
 		DTL.erase(triangleEnglobant1);
 		DTL.erase(triangleEnglobant2);
+	}
+
+	/**
+	* Détermine le cercle circonscrit au triangle t
+	*/
+	Cercle<T> determiner_cercle_circonscrit(Triangle t) {
+		Sommet<T> centre;
+		/**
+		*
+		* A COMPLETER
+		*
+		*/
+
+		//Le rayon est égal à la distance entre le centre du cercle circonscrit et un des sommets du triangle
+		double rayon = sqrt((t.arcs[0].x - s.x) * (t.arcs[0].x - s.x) + (t.arcs[0].y - s.y) * (t.arcs[0].y - s.y));
+		return Cercle<T>(centre, rayon);
 	}
 };
