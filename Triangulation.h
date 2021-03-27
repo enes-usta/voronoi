@@ -45,7 +45,7 @@ public:
 		}
 	}
 
-	Triangle<S, T> determiner_triangle_contenant_sommet(Sommet s) {
+	Triangle<S, T> determiner_triangle_contenant_sommet(Sommet<T> s) {
 		for each (Triangle<S, T> t in triangles)
 			if (t.contientPoint(s))
 				return t;
@@ -105,18 +105,19 @@ public:
 	}
 
 	// Détermine la liste des triangles à supprimer de la triangulation
-	void determiner_DTL(Sommet s, Triangle t) {
+	void determiner_DTL(Sommet<T> s, Triangle<S, T> t) {
 		DTL.push_back(t);
 		for (int i = 0; i < 3; i++) {
-			if (find(DTL.begin(), DTL.end(), Tij) != DTL.end()) {
-				Cercle<T> cercle = determiner_cercle_circonscrit(Tij);
+			Triangle<S, T> triangleAdjacent = trouver_triangle_adjacent(t.arcs[i]);
+			if (find(DTL.begin(), DTL.end(), triangleAdjacent) != DTL.end()) {
+				Cercle<T> cercle = determiner_cercle_circonscrit(triangleAdjacent);
 				if (cercle.contientPoint(s))
-					determiner_DTL(s, Tij);
+					determiner_DTL(s, triangleAdjacent);
 		}
 	}
 
 	// Détermine la liste des triangles à rajouter à la triangulation
-	void determiner_NTL(Sommet s) {
+	void determiner_NTL(Sommet<T> s) {
 		for (Triangle<S, T> t : DTL) {
 			for (int i = 0; i < 2; i++) {
 				/* 
@@ -152,7 +153,7 @@ public:
 	/**
 	* Détermine le cercle circonscrit au triangle t
 	*/
-	Cercle<T> determiner_cercle_circonscrit(Triangle t) {
+	Cercle<T> determiner_cercle_circonscrit(Triangle<S, T> t) {
 		Sommet<T> centre;
 		/**
 		*
@@ -164,4 +165,17 @@ public:
 		double rayon = sqrt((t.arcs[0].x - s.x) * (t.arcs[0].x - s.x) + (t.arcs[0].y - s.y) * (t.arcs[0].y - s.y));
 		return Cercle<T>(centre, rayon);
 	}
+
+	/**
+	* Retourne un triangle adjacent à l'arc a s'il en existe un, sinon retourne null
+	*/
+	Triangle<S, T> trouver_triangle_adjacent(Arc<S, T> a) {
+		for each (Triangle<S, T> triangle in triangles)
+			for each (Arc<S, T> arc  in triangle.arcs)
+				if (arc != a && a.debut = arc.debut && a.fin == arc.fin)
+					return triangle;
+
+		return null;
+	}
+	
 };
