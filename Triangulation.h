@@ -17,12 +17,15 @@ using namespace std;
 * Prends en entrée une liste de sommets
 * et crée une liste de face représentant
 * un une triangulation
+*
+* T est la nature de l'information portée par un sommet et
+* S est la nature de l'information portée par une arête
 */
 template <class S, class T>
 class Triangulation {
 public:
 	vector<Sommet<T>> sommets;//Sommets en entrée
-	Graphe<char, string> graphe;//Graphe en sortie
+	Graphe<S, T> graphe;//Graphe en sortie
 	vector<Triangle<S, T>> triangles;//Triangles en sortie
 	vector<Triangle<S, T>> DTL;//Triangles à supprimer de la triangulation
 	vector<Triangle<S, T>> NTL;//Triangles à rajouter à la triangulation
@@ -34,7 +37,9 @@ public:
 	Triangulation(vector<Sommet<T>> sommets):sommets(sommets){}
 	~Triangulation(){}
 
-	// Triangule la liste de sommets en entrée
+	/**
+	* Triangule la liste de sommets en entrée
+	*/
 	void triangulate() {
 		determiner_triangulation_englobante();
 		for (Sommet<T> s : sommets){
@@ -45,14 +50,20 @@ public:
 		}
 	}
 
+	/**
+	* Retourne le triangle contenant le sommet s, retourn null s'il n'en existe pas
+	*/
 	Triangle<S, T> determiner_triangle_contenant_sommet(Sommet<T> s) {
 		for each (Triangle<S, T> t in triangles)
 			if (t.contientPoint(s))
 				return t;
-		throw new Erreur("Aucun triangle ne contient ce sommet !");
+
+		return null;
 	}
 
-	// Détermine une triangulation qui englobe tous les sommets à trianguler
+	/**
+	* Détermine une triangulation qui englobe tous les sommets à trianguler
+	*/
 	void determiner_triangulation_englobante() {
 		/* On cherche les points extrêmes */
 		int xMin = sommets.front().coordonnees.x;
@@ -60,7 +71,7 @@ public:
 		int yMin = sommets.front().coordonnees.y;
 		int yMax = sommets.front().coordonnees.y;
 
-		for (Sommet s : sommets) {
+		for (Sommet<T> s : sommets) {
 			(s.coordonnees.x < xMin) ? xMin = s.coordonnees.x;
 			(s.coordonnees.y < yMin) ? yMin = s.coordonnees.y;
 			(s.coordonnees.x > xMax) ? xMax = s.coordonnees.x;
@@ -68,25 +79,25 @@ public:
 		}
 
 		/* On crée les sommets/arêtes d'un rectangle avec ces points */
-		Sommet<string>* s0, * s1, * s2, * s3;
-		s0 = graphe.creeSommet("S0");
+		Sommet<T>* s0, * s1, * s2, * s3;
+		s0 = graphe.creeSommet(T());
 		s0->coordonnees.x = xMin;
 		s0->coordonnees.y = yMin;
-		s1 = graphe.creeSommet("S1");
+		s1 = graphe.creeSommet(T());
 		s1->coordonnees.x = xMax;
 		s1->coordonnees.y = yMin;
-		s2 = graphe.creeSommet("S2");
+		s2 = graphe.creeSommet(T());
 		s2->coordonnees.x = xMax;
 		s2->coordonnees.y = yMax;
-		s3 = graphe.creeSommet("S3");
+		s3 = graphe.creeSommet(T());
 		s3->coordonnees.x = xMin;
 		s3->coordonnees.y = yMax;
 
-		Arete a0 = graphe.creeArete('a0', s0, s2);
-		Arete a1 = graphe.creeArete('a1', s2, s3);
-		Arete a2 = graphe.creeArete('a2', s3, s0);
-		Arete a3 = graphe.creeArete('a3', s2, s1);
-		Arete a4 = graphe.creeArete('a4', s1, s0);
+		Arete a0 = graphe.creeArete(S(), s0, s2);
+		Arete a1 = graphe.creeArete(S(), s2, s3);
+		Arete a2 = graphe.creeArete(S(), s3, s0);
+		Arete a3 = graphe.creeArete(S(), s2, s1);
+		Arete a4 = graphe.creeArete(S(), s1, s0);
 
 		/*
 		s3		 a1			s2
@@ -116,9 +127,11 @@ public:
 		}
 	}
 
-	// Détermine la liste des triangles à rajouter à la triangulation
+	/**
+	* Détermine la liste des triangles à rajouter à la triangulation
+	*/
 	void determiner_NTL(Sommet<T> s) {
-		for (Triangle<S, T> t : DTL) {
+		for each(Triangle<S, T> t in DTL) {
 			for (int i = 0; i < 2; i++) {
 				/* 
 				
@@ -135,7 +148,9 @@ public:
 		}
 	}
 	
-	// Supprime les triangles en commun dans DTL et Triangles
+	/**
+	* Supprime les triangles en commun dans DTL et Triangles
+	*/
 	void supprimer_DTL() {
 		for (i = DTL.begin(); i != DTL.end(); i++) {
 			for (j = Triangles.begin(); j != Triangles.end(); j++) {
