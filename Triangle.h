@@ -4,7 +4,7 @@
 #include "Arc.h"
 #include "Face.h"
 
-template <class S, class T>
+template <class S, class T, class U>
 class Triangle : public Face {
 public:
     vector<Arc<S, T>> arcs;
