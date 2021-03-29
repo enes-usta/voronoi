@@ -36,7 +36,6 @@
     <ClInclude Include="Triangulation.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Test.cpp" />
     <ClCompile Include="TestGrapheGeneral.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

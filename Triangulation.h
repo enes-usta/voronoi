@@ -124,6 +124,7 @@ public:
 				Cercle<T> cercle = triangleAdjacent.cercle_circonscrit();
 				if (cercle.contientPoint(s))
 					determiner_DTL(s, triangleAdjacent);
+			}
 		}
 	}
 
@@ -134,12 +135,21 @@ public:
 		for each(Triangle<S, T> t in DTL) {
 			for (int i = 0; i < 2; i++) {
 				Triangle<S, T> triangleAdjacent = trouver_triangle_adjacent(t.arcs[i]);
-				if(triangleAdjacent == null){
-					//Cr´eer un nouveau triangle de sommet p et d’arˆete kij(arˆete commune aux triangles Ti et Tij).
-					NTL.push_back(Triangle<S, T>(/*A COMPLETER*/));
-				}else if(find(DTL.begin(), DTL.end(), triangleAdjacent) != DTL.end()){
-					//Cr´eer un triangle de sommet p et d’arˆete kij
-					NTL.push_back(Triangle<S, T>(/*A COMPLETER*/));
+				if(triangleAdjacent == null || find(DTL.begin(), DTL.end(), triangleAdjacent) != DTL.end()){
+					//On crée le nouveau triangle
+					vector<Arc<S, T>> arcs = vector<Arc<S, T>>();
+					if (t.arcs[i].estAGauche(s)) {
+						arcs[0] = Arc<S, T>(t.arcs[i].arete, 0);
+						arcs[1] = Arc<S, T>(Arete<S, T>(t.arcs[i].arete.fin, s), 0);
+						arcs[2] = Arc<S, T>(Arete<S, T>(s, t.arcs[i].arete.debut), 0);
+					}
+					else {
+						arcs[0] = Arc<S, T>(t.arcs[i].arete, 1);
+						arcs[1] = Arc<S, T>(Arete<S, T>(t.arcs[i].arete.fin, s), 1);
+						arcs[2] = Arc<S, T>(Arete<S, T>(s, t.arcs[i].arete.debut), 1);
+					}
+					
+					this.NTL.push_back(Triangle<S, T>(arcs));
 				}
 			}
 		}
