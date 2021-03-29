@@ -22,4 +22,13 @@ public:
         arcs.push_back(a2);
         arcs.push_back(a3);
     }
+
+    /**
+    * Retourne le cercle circonscrit de ce triangle
+    */
+    public Cercle<T> cercle_circonscrit() {
+
+        //Le rayon est égal à la distance entre le centre du cercle circonscrit et un des sommets du triangle
+        double rayon = sqrt((this.arcs[0].x - s.x) * (this.arcs[0].x - s.x) + (this.arcs[0].y - s.y) * (this.arcs[0].y - s.y));
+    }
 };

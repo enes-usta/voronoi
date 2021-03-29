@@ -121,7 +121,7 @@ public:
 		for (int i = 0; i < 3; i++) {
 			Triangle<S, T> triangleAdjacent = trouver_triangle_adjacent(t.arcs[i]);
 			if (find(DTL.begin(), DTL.end(), triangleAdjacent) != DTL.end()) {
-				Cercle<T> cercle = determiner_cercle_circonscrit(triangleAdjacent);
+				Cercle<T> cercle = triangleAdjacent.cercle_circonscrit();
 				if (cercle.contientPoint(s))
 					determiner_DTL(s, triangleAdjacent);
 		}
@@ -160,22 +160,6 @@ public:
 		}
 		DTL.erase(triangleEnglobant1);
 		DTL.erase(triangleEnglobant2);
-	}
-
-	/**
-	* Détermine le cercle circonscrit au triangle t
-	*/
-	Cercle<T> determiner_cercle_circonscrit(Triangle<S, T> t) {
-		Sommet<T> centre;
-		/**
-		*
-		* A COMPLETER
-		*
-		*/
-
-		//Le rayon est égal à la distance entre le centre du cercle circonscrit et un des sommets du triangle
-		double rayon = sqrt((t.arcs[0].x - s.x) * (t.arcs[0].x - s.x) + (t.arcs[0].y - s.y) * (t.arcs[0].y - s.y));
-		return Cercle<T>(centre, rayon);
 	}
 
 	/**
