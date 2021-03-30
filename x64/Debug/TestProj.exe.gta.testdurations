@@ -5,5 +5,15 @@
     <TestDuration Test="MatriceTest.initialisation" Duration="1" />
     <TestDuration Test="TestCaseName.TestName" Duration="1" />
     <TestDuration Test="MatriceTest.Initialisation" Duration="1" />
+    <TestDuration Test="MatriceTest.Egalité" Duration="1" />
+    <TestDuration Test="MatriceTest.NonEgalité" Duration="1" />
+    <TestDuration Test="MatriceTest.OpérateursDouble" Duration="1" />
+    <TestDuration Test="MatriceTest.Multiplication" Duration="1" />
+    <TestDuration Test="MatriceTest.Addition" Duration="1" />
+    <TestDuration Test="MatriceTest.Soustraction" Duration="1" />
+    <TestDuration Test="MatriceTest.Division" Duration="1" />
+    <TestDuration Test="MatriceTest.Multiplication_Matrice" Duration="1" />
+    <TestDuration Test="MatriceTest.Addition_Matrice" Duration="1" />
+    <TestDuration Test="MatriceTest.Soustraction_Matrice" Duration="1" />
   </TestDurations>
 </GtaTestDurations>
