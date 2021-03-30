@@ -169,6 +169,18 @@ private:
 
 public:
 
+	/**
+	 * Retourne la matrice 1/m
+	 */
+	Matrice pow_m1() const {
+		Matrice newm = Matrice(this->l, this->c);
+		for (int i = 0; i < newm.l; i++)
+			for (int j = 0; j < newm.c; j++)
+				newm.values[i][j] = 1 / this->values[i][j];
+
+		return newm;
+	}
+
 	Matrice operator*(double v) {
 		return this->mult(v);
 	}
@@ -203,8 +215,6 @@ public:
 					return false;
 		return true;
 	}
-
-
 };
 
 
