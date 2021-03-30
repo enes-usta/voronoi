@@ -28,6 +28,7 @@
     <ClInclude Include="Face.h" />
     <ClInclude Include="GElement.h" />
     <ClInclude Include="Graphe.h" />
+    <ClInclude Include="Matrice.h" />
     <ClInclude Include="PElement.h" />
     <ClInclude Include="Reels.h" />
     <ClInclude Include="Sommet.h" />
@@ -37,6 +38,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TestGrapheGeneral.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

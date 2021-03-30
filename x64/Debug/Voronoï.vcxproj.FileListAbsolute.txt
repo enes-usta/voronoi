@@ -2,3 +2,4 @@ D:\MSV19\repos\voronoi\x64\Debug\Voronoï.exe
 D:\MSV19\repos\voronoi\x64\Debug\Voronoï.pdb
 C:\dev\projects\Voronoï\x64\Debug\Voronoï.exe
 C:\dev\projects\Voronoï\x64\Debug\Voronoï.pdb
+C:\Users\Enes\source\repos\voronoi\x64\Debug\Voronoï.exe
