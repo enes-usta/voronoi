@@ -5,7 +5,7 @@ Test des méthodes de base sur un graphe sauf les opérations de dessin
 L'info associée aux sommets est un string  (par exemple)
 L'info associée aux arêtes est un char     (par exemple)
 
-*/
+*//*
 #include <iostream>
 #include <string>
 #include "Graphe.h"
@@ -74,3 +74,4 @@ int main()
 
 	return 0;
 }
+*/

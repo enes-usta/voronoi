@@ -8,19 +8,19 @@
 template <class S, class T>
 class Arc {
 public:
-	int sens;
-	Arete<S, T> arete;
-	public Arc(Arete<S, T> arete, int sens) :super(arete), sens(sens){}
+	Arete<S, T> *arete;
+	bool bonSens; // vrai si dans le bon sens
+	Arc(Arete<S, T>* arete, int bonSens): arete(arete), bonSens(bonSens){}
 
 	/**
 	* Retourne vrai si le sommet s est à gauche de cet arc
 	*/
 	bool estAGauche(Sommet<T> s) {
-		Sommet<T> a = this.arete.debut;
-		Sommet<T> b = this.arete.fin;
-		if (this.arete.sens == 1) {
-			a = this.arete.fin;
-			b = this.arete.debut;
+		Sommet<T> a = arete->debut.v;
+		Sommet<T> b = arete->fin.v;
+		if (!bonSens) {
+			a = arete->fin.v;
+			b = arete->debut.v;
 		}
 
 		return (b.x - a.x) * (s.y - a.y) - (s.x - a.x) * (b.y - a.y);

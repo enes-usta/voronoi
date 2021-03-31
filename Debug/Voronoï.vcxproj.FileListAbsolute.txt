@@ -1,2 +1,0 @@
-C:\dev\projects\Voronoï\Debug\Voronoï.exe
-C:\dev\projects\Voronoï\Debug\Voronoï.pdb
