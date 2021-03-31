@@ -1,22 +1,19 @@
 #pragma once
 #include "Sommet.h"
+#include "Vecteur2D.h"
 
-/**
- * T est la nature de l'information portée par un sommet et
- */
-template<class T>
+
 class Cercle {
 public:
-	Sommet<T> _centre;
-	double _rayon;
+	double rayon;
+	Sommet<Vecteur2D> centre;
 
-	Cercle(Sommet<T> centre, double rayon) : _centre(centre), _rayon(rayon) {}
-
+	public Cercle(Sommet<Vecteur2D> centre, double rayon) : centre(centre), rayon(rayon) {}
 
 	/**
-	 * Retourne vrai si ce cercle contient le sommet s
-	 */
-	bool contientPoint(Sommet<T> s) {
+	* Retourne vrai si ce cercle contient le sommet s
+	*/
+	bool contientPoint(Sommet<Vecteur2D> s) {
 		return (s.x - centre.v.x) * (s.x - centre.v.x) + (s.y - centre.v.y) * (s.y - centre.v.y) < rayon * rayon;
 	}
 };
