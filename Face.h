@@ -16,15 +16,19 @@ public:
 		this->arcs = arcs;
 	}
 
+	bool contientPoint(Sommet<S> s) {
+		return false;
+	}
+
 	/**
 	* Retourne vrai si cette face contient le sommet s
-	*/
+	*//*
 	bool contientPoint(Sommet<S> s) {
 		for each (Arc<S, T> arc in this->arcs)
 			if (!arc.estAGauche(s))
 				return false;
 
 		return true;
-	}
+	}*/
 
 };
