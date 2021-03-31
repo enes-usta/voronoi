@@ -29,12 +29,12 @@ int main()
 		a2 = g1.creeArete('c', s3, s2);
 		a3 = g1.creeArete('d', s3, s1);
 
-		vector<Arc<char, Vecteur2D>> arcs = vector<Arc<char, Vecteur2D>>();
-		arcs.push_back(Arc<char, Vecteur2D>(a0, 0));
-		arcs.push_back(Arc<char, Vecteur2D>(a1, 0));
-		arcs.push_back(Arc<char, Vecteur2D>(a2, 0));
+		vector<Arc<char>> arcs = vector<Arc<char>>();
+		arcs.push_back(Arc<char>(a0, 0));
+		arcs.push_back(Arc<char>(a1, 0));
+		arcs.push_back(Arc<char>(a2, 0));
 
-		Triangle<char, Vecteur2D> triangle = Triangle<char, Vecteur2D>(arcs);
+		Triangle<char> triangle = Triangle<char>(arcs);
 
 		triangle.cercle_circonscrit();
 

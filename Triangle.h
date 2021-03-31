@@ -8,18 +8,15 @@
 #include "Cercle.h"
 
 /**
-* T est la nature de l'information portée par un sommet et
 * S est la nature de l'information portée par une arête
 */
-template <class S, class T>
-class Triangle : public Face<S,T> {
+template <class S>
+class Triangle : public Face<S> {
 public:
-    Triangle(vector<Arc<S, T>> arcs){
-        super(arcs);
-    }
+    Triangle(vector<Arc<S>> arcs): Face<S>(arcs){}
 
-    Triangle(Arc<S, T> a1, Arc<S, T> a2, Arc<S, T> a3) {
-        vector<Arc<S, T>> a = vector<Arc<S, T>>();
+    Triangle(Arc<S> a1, Arc<S> a2, Arc<S> a3) {
+        vector<Arc<S>> a = vector<Arc<S>>();
         a.push_back(a1);
         a.push_back(a2);
         a.push_back(a3);
@@ -29,11 +26,11 @@ public:
     /**
     * Retourne le cercle circonscrit de ce triangle
     */
-    Cercle<T> cercle_circonscrit() {
+    Cercle cercle_circonscrit() {
 
-        Vecteur2D a = this->arcs[0].arete->debut.v;
-        Vecteur2D b = this->arcs[1].arete->debut.v;
-        Vecteur2D c = this->arcs[2].arete->debut.v;
+        Vecteur2D a = this->arcs[0].arete->debut->v;
+        Vecteur2D b = this->arcs[1].arete->debut->v;
+        Vecteur2D c = this->arcs[2].arete->debut->v;
 
 
         double** d = new double* [3];
@@ -59,12 +56,13 @@ public:
 
 
         //Calcul du centre
-        Sommet<T> centre = new Sommet<T>();
+        Vecteur2D centre = Vecteur2D();
 
+        //Un sommet du triangle
+        Vecteur2D s = this->arcs[0].arete->debut->v;
 
         //Le rayon est égal à la distance entre le centre du cercle circonscrit et un des sommets du triangle
-        //double rayon = sqrt((this->arcs[0].x - s.x) * (this->arcs[0].x - s.x) + (this->arcs[0].y - s.y) * (this->arcs[0].y - s.y));
-        double rayon = 5;
-        return Cercle<T>(centre, rayon);
+        double rayon = sqrt((s.x - centre.x) * (s.x - centre.x) + (s.y - centre.y) * (s.y - centre.y));
+        return Cercle(centre, rayon);
     }
 };
