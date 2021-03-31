@@ -87,21 +87,21 @@ public:
 		Arete a0 = graphe.creeArete("a0", s0, s2);
 		Arete a1 = graphe.creeArete("a1", s2, s3);
 		Arete a2 = graphe.creeArete("a2", s3, s0);
-		Arete a3 = graphe.creeArete("a3", s2, s1);
-		Arete a4 = graphe.creeArete("a4", s1, s0);
+		Arete a3 = graphe.creeArete("a3", s0, s1);
+		Arete a4 = graphe.creeArete("a4", s1, s2);
 
 		/*
 		s3		 a1			s2
 			-------------
-		a2	|	a0	-	|	a3
+		a2	|	a0	-	|	a4
 			|	-		|
 		s0	-------------	s1
-				 a4
+				 a3
 		*/
 
 		/* On crée une triangulation de ce rectangle */
 		triangleEnglobant1 = Triangle(Arc(a0, true), Arc(a1, true), Arc(a2, true));
-		triangleEnglobant2 = Triangle(Arc(a0, false), Arc(a3, false), Arc(a4, false));
+		triangleEnglobant2 = Triangle(Arc(a0, false), Arc(a3, true), Arc(a4, true));
 		triangles.push_back(triangleEnglobant1);
 		triangles.push_back(triangleEnglobant2);
 	}
@@ -130,14 +130,14 @@ public:
 					//On crée le nouveau triangle
 					vector<Arc<S, T>> arcs = vector<Arc<S, T>>();
 					if (t.arcs[i].estAGauche(s)) {
-						arcs[0] = Arc<S, T>(t.arcs[i].arete, 0);
-						arcs[1] = Arc<S, T>(Arete<S, T>(t.arcs[i].arete.fin, s), 0);
-						arcs[2] = Arc<S, T>(Arete<S, T>(s, t.arcs[i].arete.debut), 0);
+						arcs[0] = Arc<S, T>(t.arcs[i].arete, true);
+						arcs[1] = Arc<S, T>(Arete<S, T>(t.arcs[i].arete.fin, s), true);
+						arcs[2] = Arc<S, T>(Arete<S, T>(s, t.arcs[i].arete.debut), true);
 					}
 					else {
-						arcs[0] = Arc<S, T>(t.arcs[i].arete, 1);
-						arcs[1] = Arc<S, T>(Arete<S, T>(t.arcs[i].arete.fin, s), 1);
-						arcs[2] = Arc<S, T>(Arete<S, T>(s, t.arcs[i].arete.debut), 1);
+						arcs[0] = Arc<S, T>(t.arcs[i].arete, false);
+						arcs[1] = Arc<S, T>(Arete<S, T>(t.arcs[i].arete.fin, s), false);
+						arcs[2] = Arc<S, T>(Arete<S, T>(s, t.arcs[i].arete.debut), false);
 					}
 					
 					this.NTL.push_back(Triangle<S, T>(arcs));

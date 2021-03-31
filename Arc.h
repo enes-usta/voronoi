@@ -9,18 +9,18 @@ template <class S, class T>
 class Arc {
 public:
 	Arete<S, T> *arete;
-	int sens;
-	Arc(Arete<S, T>* arete, int sens): arete(arete), sens(sens){}
+	bool bonSens; // vrai si dans le bon sens
+	Arc(Arete<S, T>* arete, int bonSens): arete(arete), bonSens(bonSens){}
 
 	/**
 	* Retourne vrai si le sommet s est à gauche de cet arc
 	*/
 	bool estAGauche(Sommet<T> s) {
-		Sommet<T> a = this.arete->debut.v;
-		Sommet<T> b = this.arete->fin.v;
-		if (this.sens == 1) {
-			a = this.arete->fin.v;
-			b = this.arete->debut.v;
+		Sommet<T> a = arete->debut.v;
+		Sommet<T> b = arete->fin.v;
+		if (!bonSens) {
+			a = arete->fin.v;
+			b = arete->debut.v;
 		}
 
 		return (b.x - a.x) * (s.y - a.y) - (s.x - a.x) * (b.y - a.y);

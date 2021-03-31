@@ -14,22 +14,22 @@ template <class S, class T>
 class Triangle : public Face {
 public:
     public Triangle(vector<Arc<S, T>> arcs){
-        if (arcs.size != 3)
-            throw "Un cercle est compos� de 3 arcs";
         super(arcs);
     }
 
     public Triangle(Arc<S, T> a1, Arc<S, T> a2, Arc<S, T> a3) : {
-        arcs.push_back(a1);
-        arcs.push_back(a2);
-        arcs.push_back(a3);
+        vector<Arc<S, T>> a = vector<Arc<S, T>>();
+        a.push_back(a1);
+        a.push_back(a2);
+        a.push_back(a3);
+        super(a);
     }
 
     /**
     * Retourne le cercle circonscrit de ce triangle
     */
     public Cercle<T> cercle_circonscrit() {
-
+        //Calcul du centre
         Sommet<T> centre = new Sommet<T>();
 
         Vecteur2D a = arcs[0].arete->debut.v;
@@ -60,7 +60,7 @@ public:
 
 
         //Le rayon est égal à la distance entre le centre du cercle circonscrit et un des sommets du triangle
-        double rayon = sqrt((this.arcs[0].x - s.x) * (this.arcs[0].x - s.x) + (this.arcs[0].y - s.y) * (this.arcs[0].y - s.y));
+        double rayon = sqrt((arcs[0].x - s.x) * (arcs[0].x - s.x) + (arcs[0].y - s.y) * (arcs[0].y - s.y));
         return Cercle<T>(centre, rayon)
     }
 };
