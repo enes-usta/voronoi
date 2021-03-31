@@ -16,7 +16,7 @@ public:
 	/**
 	* Retourne vrai si cette face contient le sommet s
 	*/
-	bool contientPoint(Sommet s) {
+	bool contientPoint(Sommet<S> s) {
 		for each (Arc<S, T> arc in arcs)
 			if (!arc.estAGauche(s))
 				return false;

@@ -38,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TestGrapheGeneral.cpp" />
+    <ClCompile Include="TestTriangulation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

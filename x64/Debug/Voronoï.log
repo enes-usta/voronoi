@@ -1,2 +1,5 @@
-﻿  TestGrapheGeneral.cpp
-  Voronoï.vcxproj -> C:\Users\Enes\source\repos\voronoi\x64\Debug\Voronoï.exe
+﻿  TestTriangulation.cpp
+C:\dev\projects\Voronoï\Arc.h(13,9): error C2146: erreur de syntaxe : absence de ':' avant l'identificateur 'Arc'
+C:\dev\projects\Voronoï\Arc.h(29): message : voir la référence à l'instanciation classe modèle 'Arc<S,T>' en cours de compilation
+C:\dev\projects\Voronoï\Arc.h(13,1): error C2334: jetons inattendus avant ':' ; corps apparent de la fonction ignoré
+C:\dev\projects\Voronoï\Arc.h(29,1): fatal error C1903: impossible de récupérer à partir des erreurs précédentes ; arrêt de la compilation

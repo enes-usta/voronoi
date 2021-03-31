@@ -20,7 +20,6 @@ class Sommet : public GElement<T>
 {
 public:
 	int degre;		// Rappel : degré = nombre d'arêtes adjacentes à ce sommet
-	Vecteur2D coordonnees;
 
 	/**
 
