@@ -1,4 +1,4 @@
-#include <iostream>
+/*#include <iostream>
 #include <string>
 #include "Graphe.h"
 #include "Triangle.h"
@@ -42,3 +42,4 @@ int main()
 		return 0;
 
 }
+*/
