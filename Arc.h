@@ -10,7 +10,7 @@ class Arc {
 public:
 	Arete<S, T> *arete;
 	int sens;
-	public Arc(Arete<S, T>* arete, int sens): arete(arete), sens(sens){}
+	Arc(Arete<S, T>* arete, int sens): arete(arete), sens(sens){}
 
 	/**
 	* Retourne vrai si le sommet s est à gauche de cet arc

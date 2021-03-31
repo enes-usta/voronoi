@@ -1,5 +1,7 @@
 ﻿  TestTriangulation.cpp
-C:\dev\projects\Voronoï\Arc.h(13,9): error C2146: erreur de syntaxe : absence de ':' avant l'identificateur 'Arc'
-C:\dev\projects\Voronoï\Arc.h(29): message : voir la référence à l'instanciation classe modèle 'Arc<S,T>' en cours de compilation
-C:\dev\projects\Voronoï\Arc.h(13,1): error C2334: jetons inattendus avant ':' ; corps apparent de la fonction ignoré
-C:\dev\projects\Voronoï\Arc.h(29,1): fatal error C1903: impossible de récupérer à partir des erreurs précédentes ; arrêt de la compilation
+C:\dev\projects\Voronoï\Face.h(26,1): fatal error C1001: Erreur interne du compilateur.
+  (fichier du compilateur 'D:\agent\_work\1\s\src\vctools\Compiler\CxxFE\sl\p1\c\ParseTreeActions.cpp', ligne 6925)
+   Pour contourner ce problème, essayez de simplifier ou de changer le programme à proximité des emplacements listés ci-dessus.
+  Si possible, indiquez ici la procédure permettant de reproduire le problème : https://developercommunity.visualstudio.com
+  Choisissez la commande Support technique du menu ? (Aide) de Visual C++,
+   ou ouvrez le fichier d'aide du Support technique pour plus d'informations
