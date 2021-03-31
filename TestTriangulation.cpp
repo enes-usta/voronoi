@@ -2,6 +2,7 @@
 #include <string>
 #include "Graphe.h"
 #include "Triangle.h"
+#include "Cercle.h"
 #include "Arc.h"
 #include "Arete.h"
 #include "Vecteur2D.h"
@@ -36,7 +37,8 @@ int main()
 
 		Triangle<char> triangle = Triangle<char>(arcs);
 
-		triangle.cercle_circonscrit();
+		Cercle cercle = triangle.cercle_circonscrit();
 
+		return 0;
 
 }

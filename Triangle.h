@@ -32,7 +32,7 @@ public:
         Vecteur2D b = this->arcs[1].arete->debut->v;
         Vecteur2D c = this->arcs[2].arete->debut->v;
 
-
+        /*
         double** d = new double* [3];
         d[0] = new double[3]{ a.x, a.y, 1 };
         d[1] = new double[3]{ b.x, b.y, 1 };
@@ -54,9 +54,13 @@ public:
 
         Matrice yO = delta.pow_m1() * (Matrice(3, 3, x) * -1);
 
-
+        */
         //Calcul du centre
         Vecteur2D centre = Vecteur2D();
+        // Les formules : https://en.wikipedia.org/wiki/Circumscribed_circle#Circumcenter_coordinates
+        double d = 2 * (a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y));
+        centre.x = ((a.x * a.x + a.y * a.y) * (b.y - c.y) + (b.x * b.x + b.y * b.y) * (c.y - a.y) + (c.x * c.x + c.y * c.y) * (a.y - b.y)) / d;
+        centre.y = ((a.x * a.x + a.y * a.y) * (c.x - b.x) + (b.x * b.x + b.y * b.y) * (a.x - c.x) + (c.x * c.x + c.y * c.y) * (b.x - a.x)) / d;
 
         //Un sommet du triangle
         Vecteur2D s = this->arcs[0].arete->debut->v;
