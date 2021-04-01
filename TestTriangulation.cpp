@@ -6,6 +6,9 @@
 #include "Arc.h"
 #include "Arete.h"
 #include "Vecteur2D.h"
+#include <vector>
+#include <stdio.h>
+#include "GUI.h"
 
 using namespace std;
 
@@ -38,6 +41,9 @@ int main()
 		Triangle<char> triangle = Triangle<char>(arcs);
 
 		Cercle cercle = triangle.cercle_circonscrit();
+		
+		vector<Face<char>> faces;
+		faces.push_back(triangle);
 
 		return 0;
 
