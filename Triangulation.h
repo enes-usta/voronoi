@@ -23,8 +23,29 @@ using namespace std;
 template <class S>
 class Triangulation {
 public:
+	Triangulation(){}
+	~Triangulation(){}
+
+	/**
+	* Retourne la liste traingulée de la liste de sommets en entrée 
+	*/
+	vector<Triangle<S, Vecteur2D>> triangulate(vector<Sommet<Vecteur2D>> sommets) {
+		init(sommets);
+		determiner_triangulation_englobante();
+		for (Sommet<Vecteur2D> s : sommets){
+			Triangle<S, Vecteur2D> t = determiner_triangle_contenant_sommet();
+			determiner_DTL(s, t);
+			determiner_NTL(s);
+			supprimer_DTL();
+		}
+
+		return triangles;
+	}
+
+
+private:
 	vector<Sommet<Vecteur2D>> sommets;//Sommets en entrée
-	Graphe<S, Vecteur2D> graphe;//Graphe en sortie
+	Graphe<S, Vecteur2D> graphe;//Graphe utilisé pour créer des sommets
 	vector<Triangle<S, Vecteur2D>> triangles;//Triangles en sortie
 	vector<Triangle<S, Vecteur2D>> DTL;//Triangles à supprimer de la triangulation
 	vector<Triangle<S, Vecteur2D>> NTL;//Triangles à rajouter à la triangulation
@@ -33,31 +54,15 @@ public:
 	Triangle<S, Vecteur2D> triangleEnglobant1;
 	Triangle<S, Vecteur2D> triangleEnglobant2;
 
-	Triangulation(vector<Sommet<Vecteur2D>> sommets):sommets(sommets){}
-	~Triangulation(){}
-
 	/**
-	* Triangule la liste de sommets en entrée
+	* Initialise les membres
 	*/
-	void triangulate() {
-		determiner_triangulation_englobante();
-		for (Sommet<Vecteur2D> s : sommets){
-			Triangle<S, Vecteur2D> t = determiner_triangle_contenant_sommet();
-			determiner_DTL(s, t);
-			determiner_NTL(s);
-			supprimer_DTL();
-		}
-	}
-
-	/**
-	* Retourne le triangle contenant le sommet s, retourn null s'il n'en existe pas
-	*/
-	Triangle<S, T> determiner_triangle_contenant_sommet(Sommet<Vecteur2D> s) {
-		for each (Triangle<S, Vecteur2D> t in triangles)
-			if (t.contientPoint(s))
-				return t;
-
-		return null;
+	void init(vector<Sommet<Vecteur2D>> sommets) {
+		this->sommets = sommets;
+		triangles = vector<Triangle<S, Vecteur2D>>();
+		DTL = vector<Triangle<S, Vecteur2D>>();
+		NTL = vector<Triangle<S, Vecteur2D>>();
+		graphe = Graphe<S, Vecteur2D>();
 	}
 
 	/**
@@ -96,7 +101,7 @@ public:
 		a2	|	a0	-	|	a4
 			|	-		|
 		s0	-------------	s1
-				 a3
+					a3
 		*/
 
 		/* On crée une triangulation de ce rectangle */
@@ -104,6 +109,17 @@ public:
 		triangleEnglobant2 = Triangle(Arc(a0, false), Arc(a3, true), Arc(a4, true));
 		triangles.push_back(triangleEnglobant1);
 		triangles.push_back(triangleEnglobant2);
+	}
+
+	/**
+	* Retourne le triangle contenant le sommet s, retourn null s'il n'en existe pas
+	*/
+	Triangle<S, T> determiner_triangle_contenant_sommet(Sommet<Vecteur2D> s) {
+		for each (Triangle<S, Vecteur2D> t in triangles)
+			if (t.contientPoint(s))
+				return t;
+
+		return null;
 	}
 
 	// Détermine la liste des triangles à supprimer de la triangulation
@@ -123,10 +139,10 @@ public:
 	* Détermine la liste des triangles à rajouter à la triangulation
 	*/
 	void determiner_NTL(Sommet<T> s) {
-		for each(Triangle<S, T> t in DTL) {
+		for each (Triangle<S, T> t in DTL) {
 			for (int i = 0; i < 2; i++) {
 				Triangle<S, T> triangleAdjacent = trouver_triangle_adjacent(t.arcs[i]);
-				if(triangleAdjacent == null || find(DTL.begin(), DTL.end(), triangleAdjacent) != DTL.end()){
+				if (triangleAdjacent == null || find(DTL.begin(), DTL.end(), triangleAdjacent) != DTL.end()) {
 					//On crée le nouveau triangle
 					vector<Arc<S, T>> arcs = vector<Arc<S, T>>();
 					if (t.arcs[i].estAGauche(s)) {
@@ -139,13 +155,13 @@ public:
 						arcs[1] = Arc<S, T>(Arete<S, T>(t.arcs[i].arete.fin, s), false);
 						arcs[2] = Arc<S, T>(Arete<S, T>(s, t.arcs[i].arete.debut), false);
 					}
-					
+
 					this.NTL.push_back(Triangle<S, T>(arcs));
 				}
 			}
 		}
 	}
-	
+
 	/**
 	* Supprime les triangles en commun dans DTL et Triangles
 	*/
@@ -174,5 +190,4 @@ public:
 
 		return null;
 	}
-	
 };

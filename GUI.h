@@ -8,16 +8,15 @@
 #include<stdio.h>    
 #include<math.h>    
 #include<string.h>
-#include <vector>
 #include "Face.h"
+#include "Arc.h"
 
 /**
 * S est la nature de l'information portée par une arête
 */
-template <class S>
 class GUI {
 private:
-    vector<Face<S>> faces;
+    vector<Face<char>> faces;
     /* Initialize OpenGL Graphics */
     void initGL() {
         // Set "clearing" or background color
@@ -35,15 +34,15 @@ private:
         glVertex3f(50.0f, 100.0f, 0.0f);
         glEnd();*/
         glBegin(GL_LINE_LOOP);
-        for each (Face<S> face in faces)
-            for each (Arc<S> arc in faces->arcs)
+        for each (Face<char> face in faces)
+            for each (Arc<char> arc in faces->arcs)
                 glVertex3f((float)arc->arete->debut->v.x, (float)arc->arete->debut->v.y, 0.0f);
         glEnd();
         glFlush();  // Render now
     }
 
 public:
-    void dessiner(vector<Face<S>> faces) {
+    void dessiner(vector<Face<char>> faces) {
         this->faces = faces;
     }
 
