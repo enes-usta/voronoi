@@ -23,8 +23,7 @@ public:
 	* Retourne vrai si cette face contient le sommet s
 	*/
 	bool contientPoint(Sommet<Vecteur2D> s) {
-		//for each (ArcTU<S, Vecteur2D> arc in this->arcs)
-		for(ArcTU<S, Vecteur2D> arc : this->arcs)
+		for(ArcTU<S> arc : this->arcs)
 			if (!arc.estAGauche(s))
 				return false;
 				
