@@ -71,7 +71,6 @@ inline double norme2(const T& u)
 	return (u * u);
 }
 
-
 template <class T>
 inline bool operator != (const T& u, const T& v)
 {
