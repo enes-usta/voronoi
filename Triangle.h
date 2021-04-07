@@ -3,7 +3,6 @@
 #include "Sommet.h"
 #include "ArcTU.h"
 #include "Face.h"
-#include "Matrice.h"
 #include "Vecteur2D.h"
 #include "Cercle.h"
 
@@ -13,6 +12,9 @@
 template <class S>
 class Triangle : public Face<S> {
 public:
+
+    Triangle(){}
+
     Triangle(vector<ArcTU<S>> arcs) : Face<S>(arcs) {}
 
     Triangle(ArcTU<S> a1, ArcTU<S> a2, ArcTU<S> a3) {
@@ -45,4 +47,12 @@ public:
         double rayon = sqrt((s.x - centre.x) * (s.x - centre.x) + (s.y - centre.y) * (s.y - centre.y));
         return Cercle(centre, rayon);
     }
+
+    friend bool operator==(const Triangle<S>& lhs, const Triangle<S>& rhs) {
+        if (lhs.arcs[0].arete == rhs.arcs[0].arete &&
+            lhs.arcs[1].arete == rhs.arcs[1].arete &&
+            lhs.arcs[2].arete == rhs.arcs[2].arete)
+            return true;
+    }
+
 };

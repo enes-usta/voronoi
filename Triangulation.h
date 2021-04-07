@@ -29,11 +29,11 @@ public:
 	/**
 	* Retourne la liste traingulée de la liste de sommets en entrée 
 	*/
-	vector<Triangle<S, Vecteur2D>> triangulate(vector<Sommet<Vecteur2D>> sommets) {
+	vector<Face<S>> triangulate(vector<Sommet<Vecteur2D>> sommets) {
 		init(sommets);
 		determiner_triangulation_englobante();
 		for (Sommet<Vecteur2D> s : sommets){
-			Triangle<S, Vecteur2D> t = determiner_triangle_contenant_sommet();
+			Triangle<S> t = determiner_triangle_contenant_sommet(s);
 			determiner_DTL(s, t);
 			determiner_NTL(s);
 			supprimer_DTL();
@@ -46,22 +46,22 @@ public:
 private:
 	vector<Sommet<Vecteur2D>> sommets;//Sommets en entrée
 	Graphe<S, Vecteur2D> graphe;//Graphe utilisé pour créer des sommets
-	vector<Triangle<S, Vecteur2D>> triangles;//Triangles en sortie
-	vector<Triangle<S, Vecteur2D>> DTL;//Triangles à supprimer de la triangulation
-	vector<Triangle<S, Vecteur2D>> NTL;//Triangles à rajouter à la triangulation
+	vector<Face<S>> triangles;//Triangles en sortie
+	vector<Triangle<S>> DTL;//Triangles à supprimer de la triangulation
+	vector<Triangle<S>> NTL;//Triangles à rajouter à la triangulation
 
 	//Les deux triangles qui forment le rectangle qui englobe tous les points
-	Triangle<S, Vecteur2D> triangleEnglobant1;
-	Triangle<S, Vecteur2D> triangleEnglobant2;
+	Triangle<S> triangleEnglobant1;
+	Triangle<S> triangleEnglobant2;
 
 	/**
 	* Initialise les membres
 	*/
 	void init(vector<Sommet<Vecteur2D>> sommets) {
 		this->sommets = sommets;
-		triangles = vector<Triangle<S, Vecteur2D>>();
-		DTL = vector<Triangle<S, Vecteur2D>>();
-		NTL = vector<Triangle<S, Vecteur2D>>();
+		triangles = vector<Triangle<S>>();
+		DTL = vector<Triangle<S>>();
+		NTL = vector<Triangle<S>>();
 		graphe = Graphe<S, Vecteur2D>();
 	}
 
@@ -76,10 +76,10 @@ private:
 		int yMax = sommets.front().v.y;
 
 		for (Sommet<Vecteur2D> s : sommets) {
-			(s.v.x < xMin) ? xMin = s.v.x;
-			(s.v.y < yMin) ? yMin = s.v.y;
-			(s.v.x > xMax) ? xMax = s.v.x;
-			(s.v.y > yMax) ? yMax = s.v.y;
+			if (s.v.x < xMin) xMin = s.v.x;
+			if (s.v.y < yMin) yMin = s.v.y;
+			if (s.v.x > xMax) xMax = s.v.x;
+			if (s.v.y > yMax) yMax = s.v.y;
 		}
 
 		/* On crée les sommets/arêtes d'un rectangle avec ces points */
@@ -105,8 +105,8 @@ private:
 		*/
 
 		/* On crée une triangulation de ce rectangle */
-		triangleEnglobant1 = Triangle(ArcTU(a0, true), ArcTU(a1, true), ArcTU(a2, true));
-		triangleEnglobant2 = Triangle(ArcTU(a0, false), ArcTU(a3, true), ArcTU(a4, true));
+		triangleEnglobant1 = Triangle<S>(ArcTU<S>(a0, true), ArcTU<S>(a1, true), ArcTU<S>(a2, true));
+		triangleEnglobant2 = Triangle<S>(ArcTU<S>(a0, false), ArcTU<S>(a3, true), ArcTU<S>(a4, true));
 		triangles.push_back(triangleEnglobant1);
 		triangles.push_back(triangleEnglobant2);
 	}
@@ -114,21 +114,21 @@ private:
 	/**
 	* Retourne le triangle contenant le sommet s, retourn null s'il n'en existe pas
 	*/
-	Triangle<S, T> determiner_triangle_contenant_sommet(Sommet<Vecteur2D> s) {
-		for(Triangle<S, Vecteur2D> t : triangles)
+	Triangle<S> determiner_triangle_contenant_sommet(Sommet<Vecteur2D> s) {
+		for(Triangle<S> t : triangles)
 			if (t.contientPoint(s))
 				return t;
 
-		return null;
+		return NULL;
 	}
 
 	// Détermine la liste des triangles à supprimer de la triangulation
-	void determiner_DTL(Sommet<T> s, Triangle<S, T> t) {
+	void determiner_DTL(Sommet<Vecteur2D> s, Triangle<S> t) {
 		DTL.push_back(t);
 		for (int i = 0; i < 3; i++) {
-			Triangle<S, T> triangleAdjacent = trouver_triangle_adjacent(t.arcs[i]);
+			Triangle<S> triangleAdjacent = trouver_triangle_adjacent(t.arcs[i]);
 			if (find(DTL.begin(), DTL.end(), triangleAdjacent) != DTL.end()) {
-				Cercle<T> cercle = triangleAdjacent.cercle_circonscrit();
+				Cercle cercle = triangleAdjacent.cercle_circonscrit();
 				if (cercle.contientPoint(s))
 					determiner_DTL(s, triangleAdjacent);
 			}
@@ -138,25 +138,25 @@ private:
 	/**
 	* Détermine la liste des triangles à rajouter à la triangulation
 	*/
-	void determiner_NTL(Sommet<T> s) {
-		for(Triangle<S, T> t : DTL) {
+	void determiner_NTL(Sommet<Vecteur2D> s) {
+		for(Triangle<S> t : DTL) {
 			for (int i = 0; i < 2; i++) {
-				Triangle<S, T> triangleAdjacent = trouver_triangle_adjacent(t.arcs[i]);
-				if (triangleAdjacent == null || find(DTL.begin(), DTL.end(), triangleAdjacent) != DTL.end()) {
+				Triangle<S> triangleAdjacent = trouver_triangle_adjacent(t.arcs[i]);
+				if (/*triangleAdjacent == NULL ||*/ find(DTL.begin(), DTL.end(), triangleAdjacent) != DTL.end()) {
 					//On crée le nouveau triangle
-					vector<ArcTU<S, T>> arcs = vector<ArcTU<S, T>>();
+					vector<ArcTU<S>> arcs = vector<ArcTU<S>>();
 					if (t.arcs[i].estAGauche(s)) {
-						arcs[0] = ArcTU<S, T>(t.arcs[i].arete, true);
-						arcs[1] = ArcTU<S, T>(Arete<S, T>(t.arcs[i].arete.fin, s), true);
-						arcs[2] = ArcTU<S, T>(Arete<S, T>(s, t.arcs[i].arete.debut), true);
+						arcs[0] = ArcTU<S>(t.arcs[i].arete, true);
+						arcs[1] = ArcTU<S>(Arete<S, Vecteur2D>(t.arcs[i].arete.fin, s), true);
+						arcs[2] = ArcTU<S>(Arete<S, Vecteur2D>(s, t.arcs[i].arete.debut), true);
 					}
 					else {
-						arcs[0] = ArcTU<S, T>(t.arcs[i].arete, false);
-						arcs[1] = ArcTU<S, T>(Arete<S, T>(t.arcs[i].arete.fin, s), false);
-						arcs[2] = ArcTU<S, T>(Arete<S, T>(s, t.arcs[i].arete.debut), false);
+						arcs[0] = ArcTU<S>(t.arcs[i].arete, false);
+						arcs[1] = ArcTU<S>(Arete<S, Vecteur2D>(t.arcs[i].arete.fin, s), false);
+						arcs[2] = ArcTU<S>(Arete<S, Vecteur2D>(s, t.arcs[i].arete.debut), false);
 					}
 
-					this.NTL.push_back(Triangle<S, T>(arcs));
+					this.NTL.push_back(Triangle<S>(arcs));
 				}
 			}
 		}
@@ -166,28 +166,29 @@ private:
 	* Supprime les triangles en commun dans DTL et Triangles
 	*/
 	void supprimer_DTL() {
-		for (i = DTL.begin(); i != DTL.end(); i++) {
-			for (j = Triangles.begin(); j != Triangles.end(); j++) {
-				if (*i == *j) {
-					DTL.erase(i);
-					Triangles.erase(j);
+		for(Triangle<S> i : DTL)
+			for (Face<S> j : triangles) {
+				if (i == Triangle<S>(j.arcs)) {
+					//remove_if(vector.begin(), vector.end(), func)
+					remove(DTL.begin(), DTL.end(), i);
+					remove(triangles.begin(), triangles.end(), j);
 					break;
 				}
 			}
-		}
-		DTL.erase(triangleEnglobant1);
-		DTL.erase(triangleEnglobant2);
+
+		remove(DTL.begin(), DTL.end(), triangleEnglobant1);
+		remove(DTL.begin(), DTL.end(), triangleEnglobant2);
 	}
 
 	/**
 	* Retourne un triangle adjacent à l'arc a s'il en existe un, sinon retourne null
 	*/
-	Triangle<S, T> trouver_triangle_adjacent(ArcTU<S, T> a) {
-		for(Triangle<S, T> triangle : triangles)
-			for(ArcTU<S, T> arc : triangle.arcs)
+	Triangle<S> trouver_triangle_adjacent(ArcTU<S> a) {
+		for(Triangle<S> triangle : triangles)
+			for(ArcTU<S> arc : triangle.arcs)
 				if (arc != a && a.debut = arc.debut && a.fin == arc.fin)
 					return triangle;
 
-		return null;
+		return NULL;
 	}
 };

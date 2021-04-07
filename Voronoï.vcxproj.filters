@@ -60,9 +60,6 @@
     <ClInclude Include="Cercle.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="Matrice.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="GUI.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>

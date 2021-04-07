@@ -8,6 +8,7 @@
 #include "Vecteur2D.h"
 #include <vector>
 #include <stdio.h>
+#include "Triangulation.h"
 #include "GUI.h"
 
 using namespace std;
@@ -34,6 +35,8 @@ int main(int argc, char** argv)
 		a3 = g1.creeArete('d', s3, s0);
 		a4 = g1.creeArete('e', s2, s0);
 
+		//-------------- on dessine un triangle -----------------------
+
 		vector<ArcTU<char>> arcs = vector<ArcTU<char>>();
 		arcs.push_back(ArcTU<char>(a0, 0));
 		arcs.push_back(ArcTU<char>(a1, 0));
@@ -49,6 +52,16 @@ int main(int argc, char** argv)
 		GUI gui(argc, argv);
 		gui.dessiner(faces);
 
+		//-------------- on dessine un triangle -----------------------
+		Triangulation<char> triangulation;
+
+		vector<Sommet<Vecteur2D>> sommets;
+		sommets.push_back(*s0);
+		sommets.push_back(*s1);
+		sommets.push_back(*s2);
+		sommets.push_back(*s3);
+
+		gui.dessiner(triangulation.triangulate(sommets));
 		return 0;
 
 }
