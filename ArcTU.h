@@ -18,8 +18,8 @@ public:
 		Sommet<Vecteur2D> a = arete->debut->v;
 		Sommet<Vecteur2D> b = arete->fin->v;
 		if (!bonSens) {
-			a = arete->fin.v;
-			b = arete->debut.v;
+			a = arete->fin->v;
+			b = arete->debut->v;
 		}
 
 		return (b.x - a.x) * (s.v.y - a.y) - (s.v.x - a.x) * (b.y - a.y);

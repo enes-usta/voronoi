@@ -39,14 +39,18 @@ public:
 			supprimer_DTL();
 		}
 
-		return triangles;
+		vector<Face<S>> faces;
+		for (Triangle<S> t : triangles)
+			faces.push_back(Face<S>(t.arcs));
+
+		return faces;
 	}
 
 
 private:
 	vector<Sommet<Vecteur2D>> sommets;//Sommets en entrée
 	Graphe<S, Vecteur2D> graphe;//Graphe utilisé pour créer des sommets
-	vector<Face<S>> triangles;//Triangles en sortie
+	vector<Triangle<S>> triangles;//Triangles en sortie
 	vector<Triangle<S>> DTL;//Triangles à supprimer de la triangulation
 	vector<Triangle<S>> NTL;//Triangles à rajouter à la triangulation
 
@@ -89,11 +93,12 @@ private:
 		s2 = graphe.creeSommet(Vecteur2D(xMax, yMax));
 		s3 = graphe.creeSommet(Vecteur2D(xMin, yMax));
 
-		Arete a0 = graphe.creeArete("a0", s0, s2);
-		Arete a1 = graphe.creeArete("a1", s2, s3);
-		Arete a2 = graphe.creeArete("a2", s3, s0);
-		Arete a3 = graphe.creeArete("a3", s0, s1);
-		Arete a4 = graphe.creeArete("a4", s1, s2);
+		Arete<S, Vecteur2D> * a0, * a1, * a2, * a3, * a4;
+		a0 = graphe.creeArete(S(), s0, s2);
+		a1 = graphe.creeArete(S(), s2, s3);
+		a2 = graphe.creeArete(S(), s3, s0);
+		a3 = graphe.creeArete(S(), s0, s1);
+		a4 = graphe.creeArete(S(), s1, s2);
 
 		/*
 		s3		 a1			s2
@@ -119,7 +124,7 @@ private:
 			if (t.contientPoint(s))
 				return t;
 
-		return NULL;
+		return triangles[0];
 	}
 
 	// Détermine la liste des triangles à supprimer de la triangulation
@@ -129,7 +134,7 @@ private:
 			Triangle<S> triangleAdjacent = trouver_triangle_adjacent(t.arcs[i]);
 			if (find(DTL.begin(), DTL.end(), triangleAdjacent) != DTL.end()) {
 				Cercle cercle = triangleAdjacent.cercle_circonscrit();
-				if (cercle.contientPoint(s))
+				if (cercle.contientPoint(s.v))
 					determiner_DTL(s, triangleAdjacent);
 			}
 		}
@@ -147,16 +152,16 @@ private:
 					vector<ArcTU<S>> arcs = vector<ArcTU<S>>();
 					if (t.arcs[i].estAGauche(s)) {
 						arcs[0] = ArcTU<S>(t.arcs[i].arete, true);
-						arcs[1] = ArcTU<S>(Arete<S, Vecteur2D>(t.arcs[i].arete.fin, s), true);
-						arcs[2] = ArcTU<S>(Arete<S, Vecteur2D>(s, t.arcs[i].arete.debut), true);
+						arcs[1] = ArcTU<S>(graphe.creeArete(S(), t.arcs[i].arete->fin, &s), true);
+						arcs[2] = ArcTU<S>(graphe.creeArete(S(), &s, t.arcs[i].arete->debut), true);
 					}
 					else {
 						arcs[0] = ArcTU<S>(t.arcs[i].arete, false);
-						arcs[1] = ArcTU<S>(Arete<S, Vecteur2D>(t.arcs[i].arete.fin, s), false);
-						arcs[2] = ArcTU<S>(Arete<S, Vecteur2D>(s, t.arcs[i].arete.debut), false);
+						arcs[1] = ArcTU<S>(graphe.creeArete(S(), t.arcs[i].arete->fin, &s), false);
+						arcs[2] = ArcTU<S>(graphe.creeArete(S(), &s, t.arcs[i].arete->debut), false);
 					}
 
-					this.NTL.push_back(Triangle<S>(arcs));
+					this->NTL.push_back(Triangle<S>(arcs));
 				}
 			}
 		}
@@ -167,8 +172,8 @@ private:
 	*/
 	void supprimer_DTL() {
 		for(Triangle<S> i : DTL)
-			for (Face<S> j : triangles) {
-				if (i == Triangle<S>(j.arcs)) {
+			for (Triangle<S> j : triangles) {
+				if (i == j) {
 					//remove_if(vector.begin(), vector.end(), func)
 					remove(DTL.begin(), DTL.end(), i);
 					remove(triangles.begin(), triangles.end(), j);
@@ -186,9 +191,9 @@ private:
 	Triangle<S> trouver_triangle_adjacent(ArcTU<S> a) {
 		for(Triangle<S> triangle : triangles)
 			for(ArcTU<S> arc : triangle.arcs)
-				if (arc != a && a.debut = arc.debut && a.fin == arc.fin)
+				if (arc != a && a.arete->debut == arc.arete->debut && a.arete->fin == arc.arete->fin)
 					return triangle;
 
-		return NULL;
+		return triangles[0];
 	}
 };

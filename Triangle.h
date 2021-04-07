@@ -17,12 +17,10 @@ public:
 
     Triangle(vector<ArcTU<S>> arcs) : Face<S>(arcs) {}
 
-    Triangle(ArcTU<S> a1, ArcTU<S> a2, ArcTU<S> a3) {
-        vector<ArcTU<S>> a = vector<ArcTU<S>>();
-        a.push_back(a1);
-        a.push_back(a2);
-        a.push_back(a3);
-        super(a);
+    Triangle(ArcTU<S> a1, ArcTU<S> a2, ArcTU<S> a3) : Face<S>(vector<ArcTU<S>>()) {
+        this->arcs.push_back(a1);
+        this->arcs.push_back(a2);
+        this->arcs.push_back(a3);
     }
 
     /**
