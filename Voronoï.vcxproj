@@ -21,7 +21,7 @@
   <ItemGroup>
     <ClInclude Include="AElement.h" />
     <ClInclude Include="AlgebreLineaire.h" />
-    <ClInclude Include="Arc.h" />
+    <ClInclude Include="ArcTU.h" />
     <ClInclude Include="Arete.h" />
     <ClInclude Include="Cercle.h" />
     <ClInclude Include="Erreur.h" />

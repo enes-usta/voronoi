@@ -105,8 +105,8 @@ private:
 		*/
 
 		/* On crée une triangulation de ce rectangle */
-		triangleEnglobant1 = Triangle(Arc(a0, true), Arc(a1, true), Arc(a2, true));
-		triangleEnglobant2 = Triangle(Arc(a0, false), Arc(a3, true), Arc(a4, true));
+		triangleEnglobant1 = Triangle(ArcTU(a0, true), ArcTU(a1, true), ArcTU(a2, true));
+		triangleEnglobant2 = Triangle(ArcTU(a0, false), ArcTU(a3, true), ArcTU(a4, true));
 		triangles.push_back(triangleEnglobant1);
 		triangles.push_back(triangleEnglobant2);
 	}
@@ -115,7 +115,7 @@ private:
 	* Retourne le triangle contenant le sommet s, retourn null s'il n'en existe pas
 	*/
 	Triangle<S, T> determiner_triangle_contenant_sommet(Sommet<Vecteur2D> s) {
-		for each (Triangle<S, Vecteur2D> t in triangles)
+		for(Triangle<S, Vecteur2D> t : triangles)
 			if (t.contientPoint(s))
 				return t;
 
@@ -139,21 +139,21 @@ private:
 	* Détermine la liste des triangles à rajouter à la triangulation
 	*/
 	void determiner_NTL(Sommet<T> s) {
-		for each (Triangle<S, T> t in DTL) {
+		for(Triangle<S, T> t : DTL) {
 			for (int i = 0; i < 2; i++) {
 				Triangle<S, T> triangleAdjacent = trouver_triangle_adjacent(t.arcs[i]);
 				if (triangleAdjacent == null || find(DTL.begin(), DTL.end(), triangleAdjacent) != DTL.end()) {
 					//On crée le nouveau triangle
-					vector<Arc<S, T>> arcs = vector<Arc<S, T>>();
+					vector<ArcTU<S, T>> arcs = vector<ArcTU<S, T>>();
 					if (t.arcs[i].estAGauche(s)) {
-						arcs[0] = Arc<S, T>(t.arcs[i].arete, true);
-						arcs[1] = Arc<S, T>(Arete<S, T>(t.arcs[i].arete.fin, s), true);
-						arcs[2] = Arc<S, T>(Arete<S, T>(s, t.arcs[i].arete.debut), true);
+						arcs[0] = ArcTU<S, T>(t.arcs[i].arete, true);
+						arcs[1] = ArcTU<S, T>(Arete<S, T>(t.arcs[i].arete.fin, s), true);
+						arcs[2] = ArcTU<S, T>(Arete<S, T>(s, t.arcs[i].arete.debut), true);
 					}
 					else {
-						arcs[0] = Arc<S, T>(t.arcs[i].arete, false);
-						arcs[1] = Arc<S, T>(Arete<S, T>(t.arcs[i].arete.fin, s), false);
-						arcs[2] = Arc<S, T>(Arete<S, T>(s, t.arcs[i].arete.debut), false);
+						arcs[0] = ArcTU<S, T>(t.arcs[i].arete, false);
+						arcs[1] = ArcTU<S, T>(Arete<S, T>(t.arcs[i].arete.fin, s), false);
+						arcs[2] = ArcTU<S, T>(Arete<S, T>(s, t.arcs[i].arete.debut), false);
 					}
 
 					this.NTL.push_back(Triangle<S, T>(arcs));
@@ -182,9 +182,9 @@ private:
 	/**
 	* Retourne un triangle adjacent à l'arc a s'il en existe un, sinon retourne null
 	*/
-	Triangle<S, T> trouver_triangle_adjacent(Arc<S, T> a) {
-		for each (Triangle<S, T> triangle in triangles)
-			for each (Arc<S, T> arc  in triangle.arcs)
+	Triangle<S, T> trouver_triangle_adjacent(ArcTU<S, T> a) {
+		for(Triangle<S, T> triangle : triangles)
+			for(ArcTU<S, T> arc : triangle.arcs)
 				if (arc != a && a.debut = arc.debut && a.fin == arc.fin)
 					return triangle;
 

@@ -118,7 +118,7 @@ private:
 	{
 		majProchaineClef(clef);
 		Arete<S, T>* a = creeArete(clef, info, debut, fin);
-		return Arc(a, ccw);
+		return ArcTU(a, ccw);
 	}
 
 public:

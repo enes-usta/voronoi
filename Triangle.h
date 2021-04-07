@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include "Sommet.h"
-#include "Arc.h"
+#include "ArcTU.h"
 #include "Face.h"
 #include "Matrice.h"
 #include "Vecteur2D.h"
@@ -13,10 +13,10 @@
 template <class S>
 class Triangle : public Face<S> {
 public:
-    Triangle(vector<Arc<S>> arcs) : Face<S>(arcs) {}
+    Triangle(vector<ArcTU<S>> arcs) : Face<S>(arcs) {}
 
-    Triangle(Arc<S> a1, Arc<S> a2, Arc<S> a3) {
-        vector<Arc<S>> a = vector<Arc<S>>();
+    Triangle(ArcTU<S> a1, ArcTU<S> a2, ArcTU<S> a3) {
+        vector<ArcTU<S>> a = vector<ArcTU<S>>();
         a.push_back(a1);
         a.push_back(a2);
         a.push_back(a3);
