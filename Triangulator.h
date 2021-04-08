@@ -21,10 +21,10 @@ using namespace std;
 * S est la nature de l'information portée par une arête
 */
 template <class S>
-class Triangulation {
+class Triangulator {
 public:
-	Triangulation(){}
-	~Triangulation(){}
+	Triangulator(){}
+	~Triangulator(){}
 
 	/**
 	* Retourne la liste traingulée de la liste de sommets en entrée 

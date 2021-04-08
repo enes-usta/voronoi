@@ -8,7 +8,7 @@
 #include "Vecteur2D.h"
 #include <vector>
 #include <stdio.h>
-#include "Triangulation.h"
+#include "Triangulator.h"
 #include "GUI.h"
 
 using namespace std;
@@ -53,7 +53,7 @@ int main(int argc, char** argv)
 		gui.dessiner(faces);
 
 		//-------------- on dessine un triangle -----------------------
-		Triangulation<char> triangulation;
+		Triangulator<char> triangulator;
 
 		vector<Sommet<Vecteur2D>> sommets;
 		sommets.push_back(*s0);
@@ -61,7 +61,8 @@ int main(int argc, char** argv)
 		sommets.push_back(*s2);
 		sommets.push_back(*s3);
 
-		gui.dessiner(triangulation.triangulate(sommets));
+		vector<Face<char>> triangulation = triangulator.triangulate(sommets);
+		gui.dessiner(triangulation);
 		return 0;
 
 }
