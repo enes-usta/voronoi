@@ -17,7 +17,7 @@ public:
 
     Triangle(vector<ArcTU<S>> arcs) : Face<S>(arcs) {}
 
-    Triangle(ArcTU<S> a1, ArcTU<S> a2, ArcTU<S> a3) : Face<S>(vector<ArcTU<S>>()) {
+    Triangle(ArcTU<S> a1, ArcTU<S> a2, ArcTU<S> a3) : Face<S>() {
         this->arcs.push_back(a1);
         this->arcs.push_back(a2);
         this->arcs.push_back(a3);

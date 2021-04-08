@@ -34,7 +34,7 @@
     <ClInclude Include="Sommet.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Vecteur2D.h" />
-    <ClInclude Include="Triangulation.h" />
+    <ClInclude Include="Triangulator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TestGrapheGeneral.cpp" />

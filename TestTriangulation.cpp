@@ -50,7 +50,7 @@ int main(int argc, char** argv)
 		faces.push_back(triangle);
 
 		GUI gui(argc, argv);
-		gui.dessiner(faces);
+		//gui.dessiner(faces);
 
 		//-------------- on dessine un triangle -----------------------
 		Triangulator<char> triangulator;

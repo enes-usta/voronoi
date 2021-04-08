@@ -54,7 +54,7 @@
     <ClInclude Include="Reels.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="Triangulation.h">
+    <ClInclude Include="Triangulator.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="Cercle.h">
