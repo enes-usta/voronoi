@@ -25,4 +25,8 @@ public:
 		return (b.x - a.x) * (s.v.y - a.y) - (s.v.x - a.x) * (b.y - a.y);
 	}
 
+	friend bool operator==(const ArcTU<S>& lhs, const ArcTU<S>& rhs) {
+		return (lhs.arete == rhs.arete && lhs.bonSens == rhs.bonSens);
+	}
+
 };

@@ -47,10 +47,9 @@ public:
     }
 
     friend bool operator==(const Triangle<S>& lhs, const Triangle<S>& rhs) {
-        if (lhs.arcs[0].arete == rhs.arcs[0].arete &&
+        return (lhs.arcs[0].arete == rhs.arcs[0].arete &&
             lhs.arcs[1].arete == rhs.arcs[1].arete &&
-            lhs.arcs[2].arete == rhs.arcs[2].arete)
-            return true;
+            lhs.arcs[2].arete == rhs.arcs[2].arete);
     }
 
 };
