@@ -126,8 +126,10 @@ private:
 	*/
 	Triangle<S> * determiner_triangle_contenant_sommet(Sommet<Vecteur2D> s) {
 		for(Triangle<S> t : triangles)
-			if (t.contientPoint(s))
-				return &t;
+			if (t.contientPoint(s)) {
+				static Triangle<S> res = t;
+				return &res;
+			}
 
 		return NULL;
 	}
@@ -138,7 +140,7 @@ private:
 			DTL.push_back(*t);
 			for (int i = 0; i < 3; i++) {
 				Triangle<S> * triangleAdjacent = trouver_triangle_adjacent(t->arcs[i]);
-				if (find(DTL.begin(), DTL.end(), *triangleAdjacent) != DTL.end()) {
+				if (triangleAdjacent != NULL && find(DTL.begin(), DTL.end(), *triangleAdjacent) != DTL.end()) {
 					Cercle cercle = triangleAdjacent->cercle_circonscrit();
 					if (cercle.contientPoint(s.v))
 						determiner_DTL(s, triangleAdjacent);
@@ -154,7 +156,7 @@ private:
 		for(Triangle<S> t : DTL) {
 			for (int i = 0; i < 2; i++) {
 				Triangle<S> * triangleAdjacent = trouver_triangle_adjacent(t.arcs[i]);
-				if (/*triangleAdjacent == NULL ||*/ find(DTL.begin(), DTL.end(), *triangleAdjacent) != DTL.end()) {
+				if (triangleAdjacent != NULL && find(DTL.begin(), DTL.end(), *triangleAdjacent) != DTL.end()) {
 					//On crée le nouveau triangle
 					vector<ArcTU<S>> arcs = vector<ArcTU<S>>();
 					if (t.arcs[i].estAGauche(s)) {
@@ -198,8 +200,10 @@ private:
 	Triangle<S> * trouver_triangle_adjacent(ArcTU<S> arcA) {
 		for(Triangle<S> triangle : triangles)
 			for(ArcTU<S> arcB : triangle.arcs)
-				if (arcB != arcA && arcA.arete == arcB.arete)
-					return &triangle;
+				if (arcB != arcA && arcA.arete == arcB.arete) {
+					static Triangle<S> res = triangle;
+					return &res;
+				}
 
 		return NULL;
 	}
