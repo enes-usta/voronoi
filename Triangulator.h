@@ -43,6 +43,9 @@ public:
 				throw Erreur("Aucun triangle contenant le sommet n'a été trouvé !");			
 		}
 
+		remove(DTL.begin(), DTL.end(), triangleEnglobant1);
+		remove(DTL.begin(), DTL.end(), triangleEnglobant2);
+
 		vector<Face<S>> faces;
 		for (Triangle<S> t : triangles)
 			faces.push_back(Face<S>(t.arcs));
@@ -180,18 +183,22 @@ private:
 	* Supprime les triangles en commun dans DTL et Triangles
 	*/
 	void supprimer_DTL() {
-		for(Triangle<S> i : DTL)
-			for (Triangle<S> j : triangles) {
-				if (i == j) {
-					//remove_if(vector.begin(), vector.end(), func)
-					remove(DTL.begin(), DTL.end(), i);
-					remove(triangles.begin(), triangles.end(), j);
+		int i, j;
+		i = 0;
+		j = 0;
+		for (Triangle<S> dt : DTL) {
+			for (Triangle<S> t : triangles) {
+				if (dt == t) {
+					DTL.erase(DTL.begin() + i);
+					triangles.erase(triangles.begin() + j);
+					//remove(DTL.begin(), DTL.end(), dt);
+					//remove(triangles.begin(), triangles.end(), t);
 					break;
 				}
+				j++;
 			}
-
-		remove(DTL.begin(), DTL.end(), triangleEnglobant1);
-		remove(DTL.begin(), DTL.end(), triangleEnglobant2);
+			i++;
+		}
 	}
 
 	/**
