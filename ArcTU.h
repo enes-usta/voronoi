@@ -1,6 +1,6 @@
 #pragma once
 #include "Arete.h"
-
+#include "Sommet.h"
 /**
 * S est la nature de l'information portée par une arête
 */
@@ -23,6 +23,26 @@ public:
 		}
 
 		return (b.x - a.x) * (s.v.y - a.y) - (s.v.x - a.x) * (b.y - a.y) >= 0;
+	}
+
+	/**
+	* Retourne le début de l'arc
+	*/
+	Sommet<Vecteur2D>* debut() {
+		if (this->bonSens)
+			return arete->debut;
+		else
+			return arete->fin;
+	}
+
+	/**
+	* Retourne la fin de l'arc
+	*/
+	Sommet<Vecteur2D>* fin() {
+		if (this->bonSens)
+			return arete->fin;
+		else
+			return arete->debut;
 	}
 
 	friend bool operator==(const ArcTU<S>& lhs, const ArcTU<S>& rhs) {

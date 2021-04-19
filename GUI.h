@@ -9,6 +9,7 @@
 #include<math.h>    
 #include<string.h>
 #include "Face.h"
+#include "Sommet.h"
 
 vector<Face<char>> faces_GLOBAL;
 
@@ -42,8 +43,12 @@ private:
         glColor3f(1.0f, 1.0f, 1.0f); // Blanc
         glBegin(GL_LINE_LOOP);
         for (Face<char> face : faces_GLOBAL)
-            for (ArcTU<char> arc : face.arcs)
-                glVertex2f((float)arc.arete->debut->v.x, (float)arc.arete->debut->v.y);
+            for (ArcTU<char> arc : face.arcs) {
+                if(arc.bonSens)
+                    glVertex2f((float)arc.arete->debut->v.x, (float)arc.arete->debut->v.y);
+                else
+                    glVertex2f((float)arc.arete->fin->v.x, (float)arc.arete->fin->v.y);
+            }
         glEnd();
         glFlush();  // Render now
     }
@@ -106,22 +111,24 @@ public:
     vector<Face<char>> scale(vector<Face<char>> faces) {
         double maxX = 0;
         double maxY = 0;
+        int absXArc, absYArc;
         for (Face<char> face : faces)
             for (ArcTU<char> arc : face.arcs) {
                 // On calcule la coordonnée la plus éloignée en x et en y
-                int maxXArc = abs(arc.arete->debut->v.x);
-                int maxYArc = abs(arc.arete->debut->v.y);
-                if (maxX < maxXArc)
-                    maxX = maxXArc;
-                if(maxY < maxYArc)
-                    maxY = maxYArc;
+                absXArc = abs(arc.debut()->v.x);
+                absYArc = abs(arc.debut()->v.y);
+                
+                if (maxX < absXArc)
+                    maxX = absXArc;
+                if(maxY < absYArc)
+                    maxY = absYArc;
             }
 
         for (Face<char> face : faces)
             for (ArcTU<char> arc : face.arcs) {
                 // On met à l'éhelle chaque coordonnée
-                arc.arete->debut->v.x /= (maxX / scale_factor);
-                arc.arete->debut->v.y /= (maxY / scale_factor);
+                arc.debut()->v.x /= (maxX / scale_factor);
+                arc.debut()->v.y /= (maxY / scale_factor);
             }
 
         return faces;
