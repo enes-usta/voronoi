@@ -28,7 +28,6 @@ public:
 	Sommet(const int clef, const T& v) :GElement<T>(clef, v), degre(0) {}
 
 	operator string () const;
-
 };
 
 template <class T>
@@ -48,3 +47,5 @@ ostream& operator << (ostream& os, const Sommet<T>& sommet)
 {
 	return os << (string)sommet;
 }
+
+

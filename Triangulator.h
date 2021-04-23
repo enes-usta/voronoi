@@ -29,8 +29,8 @@ public:
 	/**
 	* Retourne la liste traingulée de la liste de sommets en entrée 
 	*/
-	vector<Face<S>> triangulate(vector<Sommet<Vecteur2D>> sommets) {
-		init(sommets);
+	vector<Face<S>> triangulate(vector<Sommet<Vecteur2D>> sommets, Graphe<S, Vecteur2D> graphe) {
+		init(sommets, graphe);
 		determiner_triangulation_englobante();
 		for (Sommet<Vecteur2D> s : sommets){
 			Triangle<S> *t = determiner_triangle_contenant_sommet(s);
@@ -64,11 +64,11 @@ private:
 	/**
 	* Initialise les membres
 	*/
-	void init(vector<Sommet<Vecteur2D>> sommets) {
+	void init(vector<Sommet<Vecteur2D>> sommets, Graphe<S, Vecteur2D> graphe) {
 		this->sommets = sommets;
+		this->graphe = graphe;
 		triangles = vector<Triangle<S>>();
 		DTL = vector<Triangle<S>>();
-		graphe = Graphe<S, Vecteur2D>();
 	}
 
 	/**
@@ -90,7 +90,7 @@ private:
 
 		/* On crée les sommets/arêtes d'un rectangle avec ces points */
 		Sommet<Vecteur2D>* s0, * s1, * s2, * s3;
-		double marge = 1;
+		double marge = 10;//pour éviter les sommets superposés
 		s0 = graphe.creeSommet(Vecteur2D(xMin - marge, yMin - marge));
 		s1 = graphe.creeSommet(Vecteur2D(xMax + marge, yMin - marge));
 		s2 = graphe.creeSommet(Vecteur2D(xMax + marge, yMax + marge));
@@ -154,7 +154,7 @@ private:
 		for(Triangle<S> t : DTL) {
 			for (int i = 0; i < 2; i++) {
 				Triangle<S> * triangleAdjacent = trouver_triangle_adjacent(t.arcs[i]);
-				if (triangleAdjacent != NULL && find(DTL.begin(), DTL.end(), *triangleAdjacent) != DTL.end()) {
+				if (triangleAdjacent != NULL || find(DTL.begin(), DTL.end(), *triangleAdjacent) != DTL.end()) {
 					//On crée le nouveau triangle
 					vector<ArcTU<S>> arcs = vector<ArcTU<S>>();
 					if (t.arcs[i].estAGauche(s)) {
@@ -198,9 +198,10 @@ private:
 	* Retourne un triangle adjacent à l'arc a s'il en existe un, sinon retourne null
 	*/
 	Triangle<S> * trouver_triangle_adjacent(ArcTU<S> arcA) {
+
 		for(Triangle<S> triangle : triangles)
 			for(ArcTU<S> arcB : triangle.arcs)
-				if (arcB != arcA && arcA.arete == arcB.arete) {
+				if (arcB != arcA && arcA.arete->estEgal(arcB.arete->debut, arcB.arete->fin)) {
 					static Triangle<S> res = triangle;
 					return &res;
 				}

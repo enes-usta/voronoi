@@ -46,7 +46,7 @@ public:
 	}
 
 	friend bool operator==(const ArcTU<S>& lhs, const ArcTU<S>& rhs) {
-		return (lhs.arete == rhs.arete && lhs.bonSens == rhs.bonSens);
+		return (lhs.arete->estEgal(rhs.arete->debut, rhs.arete->fin) && lhs.bonSens == rhs.bonSens);
 	}
 
 };

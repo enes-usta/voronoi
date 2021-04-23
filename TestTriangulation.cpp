@@ -15,25 +15,25 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-		Graphe<char, Vecteur2D> g1;	// création à vide
+		Graphe<char, Vecteur2D> graphe;	// création à vide
 		Sommet<Vecteur2D>* s0, * s1, * s2, * s3;
 
 		//------------------ on insère des nouveaux sommets isolés --------------------
 
-		s0 = g1.creeSommet(Vecteur2D(1, 1));
-		s1 = g1.creeSommet(Vecteur2D(2, 1));
-		s2 = g1.creeSommet(Vecteur2D(2, 2));
-		s3 = g1.creeSommet(Vecteur2D(1, 2));
+		s0 = graphe.creeSommet(Vecteur2D(1, 1));
+		s1 = graphe.creeSommet(Vecteur2D(2, 1));
+		s2 = graphe.creeSommet(Vecteur2D(2, 2));
+		s3 = graphe.creeSommet(Vecteur2D(1, 2));
 
 		//----------------- on connecte certains sommets -------------------
 
 		Arete<char, Vecteur2D>* a0, * a1, * a2, * a3, * a4;
 
-		a0 = g1.creeArete('a', s0, s1);
-		a1 = g1.creeArete('b', s1, s2);
-		a2 = g1.creeArete('c', s2, s3);
-		a3 = g1.creeArete('d', s3, s0);
-		a4 = g1.creeArete('e', s2, s0);
+		a0 = graphe.creeArete('a', s0, s1);
+		a1 = graphe.creeArete('b', s1, s2);
+		a2 = graphe.creeArete('c', s2, s3);
+		a3 = graphe.creeArete('d', s3, s0);
+		a4 = graphe.creeArete('e', s2, s0);
 
 		//-------------- on dessine un triangle -----------------------
 
@@ -61,7 +61,7 @@ int main(int argc, char** argv)
 		sommets.push_back(*s2);
 		sommets.push_back(*s3);
 
-		vector<Face<char>> triangulation = triangulator.triangulate(sommets);
+		vector<Face<char>> triangulation = triangulator.triangulate(sommets, graphe);
 		gui.dessiner(triangulation);
 		return 0;
 
