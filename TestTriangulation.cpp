@@ -61,7 +61,7 @@ int main(int argc, char** argv)
 		sommets->push_back(s2);
 		sommets->push_back(s3);
 
-		vector<Face<char>> triangulation = triangulator.triangulate(sommets, graphe);
+		vector<Face<char>> triangulation = triangulator.triangulate(sommets, &graphe);
 		gui.dessiner(triangulation);
 		return 0;
 
