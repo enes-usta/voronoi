@@ -29,10 +29,10 @@ public:
 	/**
 	* Retourne la liste traingulée de la liste de sommets en entrée 
 	*/
-	vector<Face<S>> triangulate(vector<Sommet<Vecteur2D>> sommets, Graphe<S, Vecteur2D> graphe) {
+	vector<Face<S>> triangulate(vector<Sommet<Vecteur2D>*> *sommets, Graphe<S, Vecteur2D> graphe) {
 		init(sommets, graphe);
 		determiner_triangulation_englobante();
-		for (Sommet<Vecteur2D> s : sommets){
+		for (Sommet<Vecteur2D> *s : (*sommets)){
 			Triangle<S> *t = determiner_triangle_contenant_sommet(s);
 			if (t) {
 				determiner_DTL(s, t);
@@ -52,7 +52,7 @@ public:
 
 
 private:
-	vector<Sommet<Vecteur2D>> sommets;//Sommets en entrée
+	vector<Sommet<Vecteur2D>*> *sommets;//Sommets en entrée
 	Graphe<S, Vecteur2D> graphe;//Graphe utilisé pour créer des sommets
 	vector<Triangle<S>> triangles;//Triangles en sortie
 	vector<Triangle<S>> DTL;//Triangles à supprimer de la triangulation
@@ -64,7 +64,7 @@ private:
 	/**
 	* Initialise les membres
 	*/
-	void init(vector<Sommet<Vecteur2D>> sommets, Graphe<S, Vecteur2D> graphe) {
+	void init(vector<Sommet<Vecteur2D>*> * sommets, Graphe<S, Vecteur2D> graphe) {
 		this->sommets = sommets;
 		this->graphe = graphe;
 		triangles = vector<Triangle<S>>();
@@ -76,16 +76,16 @@ private:
 	*/
 	void determiner_triangulation_englobante() {
 		/* On cherche les points extrêmes */
-		int xMin = sommets.front().v.x;
-		int xMax = sommets.front().v.x;
-		int yMin = sommets.front().v.y;
-		int yMax = sommets.front().v.y;
+		int xMin = sommets->front()->v.x;
+		int xMax = sommets->front()->v.x;
+		int yMin = sommets->front()->v.y;
+		int yMax = sommets->front()->v.y;
 
-		for (Sommet<Vecteur2D> s : sommets) {
-			if (s.v.x < xMin) xMin = s.v.x;
-			if (s.v.y < yMin) yMin = s.v.y;
-			if (s.v.x > xMax) xMax = s.v.x;
-			if (s.v.y > yMax) yMax = s.v.y;
+		for (Sommet<Vecteur2D> *s : (*sommets)) {
+			if (s->v.x < xMin) xMin = s->v.x;
+			if (s->v.y < yMin) yMin = s->v.y;
+			if (s->v.x > xMax) xMax = s->v.x;
+			if (s->v.y > yMax) yMax = s->v.y;
 		}
 
 		/* On crée les sommets/arêtes d'un rectangle avec ces points */
@@ -122,7 +122,7 @@ private:
 	/**
 	* Retourne le triangle contenant le sommet s, retourn null s'il n'en existe pas
 	*/
-	Triangle<S> * determiner_triangle_contenant_sommet(Sommet<Vecteur2D> s) {
+	Triangle<S> * determiner_triangle_contenant_sommet(Sommet<Vecteur2D> *s) {
 		for(Triangle<S> t : triangles)
 			if (t.contientPoint(s)) {
 				static Triangle<S> res = t;
@@ -133,14 +133,14 @@ private:
 	}
 
 	// Détermine la liste des triangles à supprimer de la triangulation
-	void determiner_DTL(Sommet<Vecteur2D> s, Triangle<S> *t) {
+	void determiner_DTL(Sommet<Vecteur2D> * s, Triangle<S> *t) {
 		if (t != NULL) {
 			DTL.push_back(*t);
 			for (int i = 0; i < 3; i++) {
 				Triangle<S> * triangleAdjacent = trouver_triangle_adjacent(t->arcs[i]);
 				if (triangleAdjacent != NULL && find(DTL.begin(), DTL.end(), *triangleAdjacent) != DTL.end()) {
 					Cercle cercle = triangleAdjacent->cercle_circonscrit();
-					if (cercle.contientPoint(s.v))
+					if (cercle.contientPoint(s->v))
 						determiner_DTL(s, triangleAdjacent);
 				}
 			}
@@ -150,7 +150,7 @@ private:
 	/**
 	* Détermine la liste des triangles à rajouter à la triangulation
 	*/
-	void determiner_NTL(Sommet<Vecteur2D> s) {
+	void determiner_NTL(Sommet<Vecteur2D> *s) {
 		for(Triangle<S> t : DTL) {
 			for (int i = 0; i < 2; i++) {
 				Triangle<S> * triangleAdjacent = trouver_triangle_adjacent(t.arcs[i]);
@@ -159,13 +159,13 @@ private:
 					vector<ArcTU<S>> arcs;
 					if (t.arcs[i].estAGauche(s)) {
 						arcs.push_back(ArcTU<S>(t.arcs[i].arete, true));
-						arcs.push_back(ArcTU<S>(graphe.creeArete(S(), t.arcs[i].arete->fin, &s), true));
-						arcs.push_back(ArcTU<S>(graphe.creeArete(S(), &s, t.arcs[i].arete->debut), true));
+						arcs.push_back(ArcTU<S>(graphe.creeArete(S(), t.arcs[i].arete->fin, s), true));
+						arcs.push_back(ArcTU<S>(graphe.creeArete(S(), s, t.arcs[i].arete->debut), true));
 					}
 					else {
 						arcs.push_back(ArcTU<S>(t.arcs[i].arete, false));
-						arcs.push_back(ArcTU<S>(graphe.creeArete(S(), t.arcs[i].arete->fin, &s), false));
-						arcs.push_back(ArcTU<S>(graphe.creeArete(S(), &s, t.arcs[i].arete->debut), false));
+						arcs.push_back(ArcTU<S>(graphe.creeArete(S(), t.arcs[i].arete->fin, s), false));
+						arcs.push_back(ArcTU<S>(graphe.creeArete(S(), s, t.arcs[i].arete->debut), false));
 					}
 
 					this->triangles.push_back(Triangle<S>(arcs));

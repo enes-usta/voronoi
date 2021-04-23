@@ -55,11 +55,11 @@ int main(int argc, char** argv)
 		//-------------- on dessine un triangle -----------------------
 		Triangulator<char> triangulator;
 
-		vector<Sommet<Vecteur2D>> sommets;
-		sommets.push_back(*s0);
-		sommets.push_back(*s1);
-		sommets.push_back(*s2);
-		sommets.push_back(*s3);
+		vector<Sommet<Vecteur2D>*> *sommets = new vector<Sommet<Vecteur2D>*>;
+		sommets->push_back(s0);
+		sommets->push_back(s1);
+		sommets->push_back(s2);
+		sommets->push_back(s3);
 
 		vector<Face<char>> triangulation = triangulator.triangulate(sommets, graphe);
 		gui.dessiner(triangulation);

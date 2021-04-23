@@ -14,7 +14,7 @@ public:
 	/**
 	* Retourne vrai si le sommet s est à gauche de cet arc
 	*/
-	bool estAGauche(Sommet<Vecteur2D> s) {
+	bool estAGauche(Sommet<Vecteur2D> *s) {
 		Vecteur2D a = arete->debut->v;
 		Vecteur2D b = arete->fin->v;
 		if (!bonSens) {
@@ -22,7 +22,7 @@ public:
 			b = arete->debut->v;
 		}
 
-		return (b.x - a.x) * (s.v.y - a.y) - (s.v.x - a.x) * (b.y - a.y) >= 0;
+		return (b.x - a.x) * (s->v.y - a.y) - (s->v.x - a.x) * (b.y - a.y) >= 0;
 	}
 
 	/**
