@@ -56,7 +56,6 @@ private:
 	Graphe<S, Vecteur2D> graphe;//Graphe utilisé pour créer des sommets
 	vector<Triangle<S>> triangles;//Triangles en sortie
 	vector<Triangle<S>> DTL;//Triangles à supprimer de la triangulation
-	vector<Triangle<S>> NTL;//Triangles à rajouter à la triangulation
 
 	//Les deux triangles qui forment le rectangle qui englobe tous les points
 	Triangle<S> triangleEnglobant1;
@@ -69,7 +68,6 @@ private:
 		this->sommets = sommets;
 		triangles = vector<Triangle<S>>();
 		DTL = vector<Triangle<S>>();
-		NTL = vector<Triangle<S>>();
 		graphe = Graphe<S, Vecteur2D>();
 	}
 
@@ -92,7 +90,7 @@ private:
 
 		/* On crée les sommets/arêtes d'un rectangle avec ces points */
 		Sommet<Vecteur2D>* s0, * s1, * s2, * s3;
-		double marge = 0;
+		double marge = 1;
 		s0 = graphe.creeSommet(Vecteur2D(xMin - marge, yMin - marge));
 		s1 = graphe.creeSommet(Vecteur2D(xMax + marge, yMin - marge));
 		s2 = graphe.creeSommet(Vecteur2D(xMax + marge, yMax + marge));
@@ -170,7 +168,7 @@ private:
 						arcs[2] = ArcTU<S>(graphe.creeArete(S(), &s, t.arcs[i].arete->debut), false);
 					}
 
-					this->NTL.push_back(Triangle<S>(arcs));
+					this->triangles.push_back(Triangle<S>(arcs));
 				}
 			}
 		}
@@ -188,8 +186,6 @@ private:
 				if (dt == t) {
 					DTL.erase(DTL.begin() + i);
 					triangles.erase(triangles.begin() + j);
-					//remove(DTL.begin(), DTL.end(), dt);
-					//remove(triangles.begin(), triangles.end(), t);
 					break;
 				}
 				j++;
