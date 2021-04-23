@@ -156,16 +156,16 @@ private:
 				Triangle<S> * triangleAdjacent = trouver_triangle_adjacent(t.arcs[i]);
 				if (triangleAdjacent != NULL || find(DTL.begin(), DTL.end(), *triangleAdjacent) != DTL.end()) {
 					//On crée le nouveau triangle
-					vector<ArcTU<S>> arcs = vector<ArcTU<S>>();
+					vector<ArcTU<S>> arcs;
 					if (t.arcs[i].estAGauche(s)) {
-						arcs[0] = ArcTU<S>(t.arcs[i].arete, true);
-						arcs[1] = ArcTU<S>(graphe.creeArete(S(), t.arcs[i].arete->fin, &s), true);
-						arcs[2] = ArcTU<S>(graphe.creeArete(S(), &s, t.arcs[i].arete->debut), true);
+						arcs.push_back(ArcTU<S>(t.arcs[i].arete, true));
+						arcs.push_back(ArcTU<S>(graphe.creeArete(S(), t.arcs[i].arete->fin, &s), true));
+						arcs.push_back(ArcTU<S>(graphe.creeArete(S(), &s, t.arcs[i].arete->debut), true));
 					}
 					else {
-						arcs[0] = ArcTU<S>(t.arcs[i].arete, false);
-						arcs[1] = ArcTU<S>(graphe.creeArete(S(), t.arcs[i].arete->fin, &s), false);
-						arcs[2] = ArcTU<S>(graphe.creeArete(S(), &s, t.arcs[i].arete->debut), false);
+						arcs.push_back(ArcTU<S>(t.arcs[i].arete, false));
+						arcs.push_back(ArcTU<S>(graphe.creeArete(S(), t.arcs[i].arete->fin, &s), false));
+						arcs.push_back(ArcTU<S>(graphe.creeArete(S(), &s, t.arcs[i].arete->debut), false));
 					}
 
 					this->triangles.push_back(Triangle<S>(arcs));
