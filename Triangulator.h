@@ -39,12 +39,9 @@ public:
 				determiner_NTL(s);
 				supprimer_DTL();
 			}
-			//else
-			//	throw Erreur("Aucun triangle contenant le sommet n'a été trouvé !");			
+			else
+				throw Erreur("Aucun triangle contenant le sommet n'a été trouvé !");			
 		}
-
-		//remove(DTL.begin(), DTL.end(), triangleEnglobant1);
-		//remove(DTL.begin(), DTL.end(), triangleEnglobant2);
 
 		vector<Face<S>> faces;
 		for (Triangle<S> t : triangles)
@@ -95,10 +92,11 @@ private:
 
 		/* On crée les sommets/arêtes d'un rectangle avec ces points */
 		Sommet<Vecteur2D>* s0, * s1, * s2, * s3;
-		s0 = graphe.creeSommet(Vecteur2D(xMin, yMin));
-		s1 = graphe.creeSommet(Vecteur2D(xMax, yMin));
-		s2 = graphe.creeSommet(Vecteur2D(xMax, yMax));
-		s3 = graphe.creeSommet(Vecteur2D(xMin, yMax));
+		double marge = 0;
+		s0 = graphe.creeSommet(Vecteur2D(xMin - marge, yMin - marge));
+		s1 = graphe.creeSommet(Vecteur2D(xMax + marge, yMin - marge));
+		s2 = graphe.creeSommet(Vecteur2D(xMax + marge, yMax + marge));
+		s3 = graphe.creeSommet(Vecteur2D(xMin - marge, yMax + marge));
 
 		Arete<S, Vecteur2D> * a0, * a1, * a2, * a3, * a4;
 		a0 = graphe.creeArete(S(), s0, s2);

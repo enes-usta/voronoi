@@ -10,6 +10,9 @@
 #include<string.h>
 #include "Face.h"
 #include "Sommet.h"
+#include <unordered_map>
+
+#define MAX_ARRAY 1000
 
 vector<Face<char>> faces_GLOBAL;
 
@@ -41,15 +44,16 @@ private:
 
         //On dessine les faces
         glColor3f(1.0f, 1.0f, 1.0f); // Blanc
-        glBegin(GL_LINE_LOOP);
-        for (Face<char> face : faces_GLOBAL)
+        for (Face<char> face : faces_GLOBAL){
+            glBegin(GL_LINE_LOOP);
             for (ArcTU<char> arc : face.arcs) {
                 if(arc.bonSens)
                     glVertex2f((float)arc.arete->debut->v.x, (float)arc.arete->debut->v.y);
                 else
                     glVertex2f((float)arc.arete->fin->v.x, (float)arc.arete->fin->v.y);
             }
-        glEnd();
+            glEnd();
+        }
         glFlush();  // Render now
     }
 
@@ -81,6 +85,7 @@ public:
     int windowHeight = 800;
     float scale_factor = 0.75;
 
+
     /* Main function: GLUT runs as a console application starting at main()  */
     GUI(int argc, char** argv) {
         glutInit(&argc, argv);          // Initialize GLUT        
@@ -100,7 +105,7 @@ public:
     */
     void dessiner(vector<Face<char>> faces) {
         // On met à l'échelle les faces
-        faces_GLOBAL = scale(faces);;
+        faces_GLOBAL = scale(faces);
         glutMainLoop();// Enter the event-processing loop
     }
 
@@ -112,6 +117,7 @@ public:
         double maxX = 0;
         double maxY = 0;
         int absXArc, absYArc;
+        bool scaled[MAX_ARRAY] = { false };
         for (Face<char> face : faces)
             for (ArcTU<char> arc : face.arcs) {
                 // On calcule la coordonnée la plus éloignée en x et en y
@@ -127,8 +133,12 @@ public:
         for (Face<char> face : faces)
             for (ArcTU<char> arc : face.arcs) {
                 // On met à l'éhelle chaque coordonnée
-                arc.debut()->v.x /= (maxX / scale_factor);
-                arc.debut()->v.y /= (maxY / scale_factor);
+                if (!scaled[arc.debut()->clef]) {
+                    arc.debut()->v.x /= (maxX / scale_factor);
+                    arc.debut()->v.y /= (maxY / scale_factor);
+                    scaled[arc.debut()->clef] = true;
+                }
+                
             }
 
         return faces;
