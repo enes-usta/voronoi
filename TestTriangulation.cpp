@@ -20,10 +20,15 @@ int main(int argc, char** argv)
 
 		//------------------ on insère des nouveaux sommets isolés --------------------
 
-		s0 = graphe.creeSommet(Vecteur2D(1, 1));
+		/*s0 = graphe.creeSommet(Vecteur2D(1, 1));
 		s1 = graphe.creeSommet(Vecteur2D(2, 1));
 		s2 = graphe.creeSommet(Vecteur2D(2, 2));
-		s3 = graphe.creeSommet(Vecteur2D(1, 2));
+		s3 = graphe.creeSommet(Vecteur2D(1, 2));*/
+
+		s0 = graphe.creeSommet(Vecteur2D(1.1, 1.8));
+		s1 = graphe.creeSommet(Vecteur2D(2.2, 1.7));
+		s2 = graphe.creeSommet(Vecteur2D(2.3, 2.6));
+		s3 = graphe.creeSommet(Vecteur2D(1.4, 2.5));
 
 		//----------------- on connecte certains sommets -------------------
 
