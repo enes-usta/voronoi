@@ -57,9 +57,9 @@ int main(int argc, char** argv)
 
 		vector<Sommet<Vecteur2D>*> *sommets = new vector<Sommet<Vecteur2D>*>;
 		sommets->push_back(s0);
-		sommets->push_back(s1);
-		sommets->push_back(s2);
-		sommets->push_back(s3);
+		//sommets->push_back(s1);
+		//sommets->push_back(s2);
+		//sommets->push_back(s3);
 
 		vector<Face<char>> triangulation = triangulator.triangulate(sommets, &graphe);
 		gui.dessiner(triangulation);
