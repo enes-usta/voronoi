@@ -36,14 +36,23 @@ public:
         // Les formules : https://en.wikipedia.org/wiki/Circumscribed_circle#Circumcenter_coordinates
         double d = 2 * (a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y));
         if (d == 0) {
-            centre.x = a.x;
-            centre.y = a.y;
+            //Le triangle forme une ligne
+            double maxX = max(a.x, b.x);
+            maxX = max(maxX, c.x);
+            double maxY = max(a.y, b.y);
+            maxY = max(maxY, c.y);
+            double minX = min(a.x, b.x);
+            minX = min(minX, c.x);
+            double minY = min(a.y, b.y);
+            minY = min(minY, c.y);
+
+            centre.x = (maxX + minX) / 2;
+            centre.y = (maxY + minY) / 2;
         }
         else {
             centre.x = ((a.x * a.x + a.y * a.y) * (b.y - c.y) + (b.x * b.x + b.y * b.y) * (c.y - a.y) + (c.x * c.x + c.y * c.y) * (a.y - b.y)) / d;
             centre.y = ((a.x * a.x + a.y * a.y) * (c.x - b.x) + (b.x * b.x + b.y * b.y) * (a.x - c.x) + (c.x * c.x + c.y * c.y) * (b.x - a.x)) / d;
         }
-        
 
         //Un sommet du triangle
         Vecteur2D s = this->arcs[0].arete->debut->v;

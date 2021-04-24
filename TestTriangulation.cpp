@@ -10,64 +10,72 @@
 #include <stdio.h>
 #include "Triangulator.h"
 #include "GUI.h"
+#include <time.h> 
+
 
 using namespace std;
 
 int main(int argc, char** argv)
 {
-		Graphe<char, Vecteur2D> graphe;	// création à vide
-		Sommet<Vecteur2D>* s0, * s1, * s2, * s3;
+	srand(time(NULL));
 
-		//------------------ on insère des nouveaux sommets isolés --------------------
+	Graphe<char, Vecteur2D> graphe;	// création à vide
+	Sommet<Vecteur2D>* s0, * s1, * s2, * s3;
 
-		s0 = graphe.creeSommet(Vecteur2D(1, 1));
-		s1 = graphe.creeSommet(Vecteur2D(2, 1));
-		s2 = graphe.creeSommet(Vecteur2D(2, 2));
-		s3 = graphe.creeSommet(Vecteur2D(1, 2));
+	//------------------ on insère des nouveaux sommets isolés --------------------
 
-		/*s0 = graphe.creeSommet(Vecteur2D(1.1, 1.8));
-		s1 = graphe.creeSommet(Vecteur2D(2.2, 1.7));
-		s2 = graphe.creeSommet(Vecteur2D(2.3, 2.6));
-		s3 = graphe.creeSommet(Vecteur2D(1.4, 2.5));*/
+	s0 = graphe.creeSommet(Vecteur2D(1, 1));
+	s1 = graphe.creeSommet(Vecteur2D(2, 1));
+	s2 = graphe.creeSommet(Vecteur2D(2, 2));
+	s3 = graphe.creeSommet(Vecteur2D(1, 2));
 
-		//----------------- on connecte certains sommets -------------------
+	/*s0 = graphe.creeSommet(Vecteur2D(1.1, 1.8));
+	s1 = graphe.creeSommet(Vecteur2D(2.2, 1.7));
+	s2 = graphe.creeSommet(Vecteur2D(2.3, 2.6));
+	s3 = graphe.creeSommet(Vecteur2D(1.4, 2.5));*/
 
-		Arete<char, Vecteur2D>* a0, * a1, * a2, * a3, * a4;
+	//----------------- on connecte certains sommets -------------------
 
-		a0 = graphe.creeArete('a', s0, s1);
-		a1 = graphe.creeArete('b', s1, s2);
-		a2 = graphe.creeArete('c', s2, s3);
-		a3 = graphe.creeArete('d', s3, s0);
-		a4 = graphe.creeArete('e', s2, s0);
+	Arete<char, Vecteur2D>* a0, * a1, * a2, * a3, * a4;
 
-		//-------------- on dessine un triangle -----------------------
+	a0 = graphe.creeArete('a', s0, s1);
+	a1 = graphe.creeArete('b', s1, s2);
+	a2 = graphe.creeArete('c', s2, s3);
+	a3 = graphe.creeArete('d', s3, s0);
+	a4 = graphe.creeArete('e', s2, s0);
 
-		vector<ArcTU<char>> arcs = vector<ArcTU<char>>();
-		arcs.push_back(ArcTU<char>(a0, 0));
-		arcs.push_back(ArcTU<char>(a1, 0));
-		arcs.push_back(ArcTU<char>(a4, 0));
+	//-------------- on dessine un triangle -----------------------
 
-		Triangle<char> triangle = Triangle<char>(arcs);
+	vector<ArcTU<char>> arcs = vector<ArcTU<char>>();
+	arcs.push_back(ArcTU<char>(a0, 0));
+	arcs.push_back(ArcTU<char>(a1, 0));
+	arcs.push_back(ArcTU<char>(a4, 0));
+
+	Triangle<char> triangle = Triangle<char>(arcs);
 		
-		Cercle cercle = triangle.cercle_circonscrit();
+	Cercle cercle = triangle.cercle_circonscrit();
 		
-		vector<Face<char>> faces;
-		faces.push_back(triangle);
+	vector<Face<char>> faces;
+	faces.push_back(triangle);
 
-		GUI gui(argc, argv);
-		//gui.dessiner(faces);
+	GUI gui(argc, argv);
+	//gui.dessiner(faces);
 
-		//-------------- on dessine un triangle -----------------------
-		Triangulator<char> triangulator;
+	//-------------- on dessine un triangle -----------------------
+	Triangulator<char> triangulator;
 
-		vector<Sommet<Vecteur2D>*> *sommets = new vector<Sommet<Vecteur2D>*>;
-		sommets->push_back(s0);
-		sommets->push_back(s1);
-		//sommets->push_back(s2);
-		//sommets->push_back(s3);
+	vector<Sommet<Vecteur2D>*> *sommets = new vector<Sommet<Vecteur2D>*>;
+	//sommets->push_back(s0);
+	//sommets->push_back(s1);
+	//sommets->push_back(s2);
+	//sommets->push_back(s3);
 
-		vector<Face<char>> triangulation = triangulator.triangulate(sommets, &graphe);
-		gui.dessiner(triangulation);
-		return 0;
+	for (int i = 0; i < 50; i++) {
+		sommets->push_back(graphe.creeSommet(Vecteur2D(rand() % 100 + 1, rand() % 100 + 1)));
+	}
+
+	vector<Face<char>> triangulation = triangulator.triangulate(sommets, &graphe);
+	gui.dessiner(triangulation);
+	return 0;
 
 }

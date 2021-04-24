@@ -40,7 +40,7 @@ public:
 				supprimer_DTL();
 			}
 			else
-				throw Erreur("Aucun triangle contenant le sommet n'a été trouvé !");
+				throw Erreur("Aucun triangle contenant le sommet trouvé");
 		}
 
 		vector<Face<S>> faces;
@@ -92,7 +92,7 @@ private:
 
 		/* On cre les sommets/artes d'un rectangle avec ces points */
 		Sommet<Vecteur2D>* s0, * s1, * s2, * s3;
-		double marge = 10;//pour viter les sommets superposs
+		double marge = 1;//pour viter les sommets superposs
 		s0 = graphe->creeSommet(Vecteur2D(xMin - marge, yMin - marge));
 		s1 = graphe->creeSommet(Vecteur2D(xMax + marge, yMin - marge));
 		s2 = graphe->creeSommet(Vecteur2D(xMax + marge, yMax + marge));
