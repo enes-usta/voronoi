@@ -40,7 +40,7 @@ public:
 				supprimer_DTL();
 			}
 			else
-				throw Erreur("Aucun triangle contenant le sommet n'a t trouv !");
+				throw Erreur("Aucun triangle contenant le sommet n'a été trouvé !");
 		}
 
 		vector<Face<S>> faces;
@@ -52,10 +52,10 @@ public:
 
 
 private:
-	vector<Sommet<Vecteur2D>*>* sommets;//Sommets en entre
-	Graphe<S, Vecteur2D>* graphe;//Graphe utilis pour crer des sommets
+	vector<Sommet<Vecteur2D>*>* sommets;//Sommets en entrée
+	Graphe<S, Vecteur2D>* graphe;//Graphe utilisé pour créer des sommets
 	vector<Triangle<S>*>* triangles;//Triangles en sortie
-	vector<Triangle<S>*>* DTL;//Triangles  supprimer de la triangulation
+	vector<Triangle<S>*>* DTL;//Triangles à supprimer de la triangulation
 
 	//Les deux triangles qui forment le rectangle qui englobe tous les points
 	Triangle<S> *triangleEnglobant1;
@@ -158,7 +158,7 @@ private:
 			for (int i = 0; i < 2; i++) {
 				Triangle<S>* triangleAdjacent = trouver_triangle_adjacent(t->arcs[i]);
 				if (triangleAdjacent == NULL || count(DTL->begin(), DTL->end(), triangleAdjacent)) {
-					//On cre le nouveau triangle
+					//On crée le nouveau triangle
 					vector<ArcTU<S>> arcs;
 					if (t->arcs[i].estAGauche(s)) {
 						arcs.push_back(ArcTU<S>(t->arcs[i].arete, true));
@@ -181,16 +181,22 @@ private:
 	* Supprime les triangles en commun dans DTL et Triangles
 	*/
 	void supprimer_DTL() {
-
-		for (Triangle<S> *dt : (*DTL))
+		int i;
+		for (Triangle<S>* dt : (*DTL)) {
+			i = 0;
 			if (dt != nullptr) {
-				for (Triangle<S>* t : (*triangles))
+				for (Triangle<S>* t : (*triangles)) {
 					if (dt == t) {
 						//DTL->remove(DTL->begin(), DTL->end(), dt);
-						remove(triangles->begin(), triangles->end(), t);
+						triangles->erase((triangles->begin() + i));
 						break;
 					}
+					i++;
+				}
+					
 			}
+		}
+			
 
 		DTL->clear();
 	}
