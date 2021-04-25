@@ -41,6 +41,7 @@ public:
 			}
 			else
 				throw Erreur("Aucun triangle contenant le sommet trouvé");
+
 		}
 
 		vector<Face<S>> faces;
@@ -213,4 +214,5 @@ private:
 
 		return NULL;
 	}
+
 };

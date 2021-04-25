@@ -65,14 +65,14 @@ int main(int argc, char** argv)
 	Triangulator<char> triangulator;
 
 	vector<Sommet<Vecteur2D>*> *sommets = new vector<Sommet<Vecteur2D>*>;
-	//sommets->push_back(s0);
+	sommets->push_back(s0);
 	//sommets->push_back(s1);
 	//sommets->push_back(s2);
 	//sommets->push_back(s3);
 
-	for (int i = 0; i < 50; i++) {
+	/*for (int i = 0; i < 50; i++) {
 		sommets->push_back(graphe.creeSommet(Vecteur2D(rand() % 100 + 1, rand() % 100 + 1)));
-	}
+	}*/
 
 	vector<Face<char>> triangulation = triangulator.triangulate(sommets, &graphe);
 	gui.dessiner(triangulation);
