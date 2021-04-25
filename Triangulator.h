@@ -156,9 +156,10 @@ private:
 	*/
 	void determiner_NTL(Sommet<Vecteur2D>* s) {
 		for (Triangle<S> *t : (*DTL)) {
-			for (int i = 0; i < 2; i++) {
+			for (int i = 0; i < 3; i++) {
 				Triangle<S>* triangleAdjacent = trouver_triangle_adjacent(t->arcs[i]);
-				if (triangleAdjacent == NULL || count(DTL->begin(), DTL->end(), triangleAdjacent)) {
+				if ((triangleAdjacent == NULL || count(DTL->begin(), DTL->end(), triangleAdjacent))
+					&& !t->arcs[i].estCollineaire(s)) {
 					//On crée le nouveau triangle
 					vector<ArcTU<S>> arcs;
 					if (t->arcs[i].estAGauche(s)) {
@@ -214,5 +215,5 @@ private:
 
 		return NULL;
 	}
-
+	
 };

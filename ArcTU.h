@@ -12,7 +12,7 @@ public:
 	ArcTU(Arete<S, Vecteur2D>* arete, int bonSens): arete(arete), bonSens(bonSens){}
 
 	/**
-	* Retourne vrai si le sommet s est à gauche de cet arc
+	* Retourne vrai si le sommet s est à gauche de cet arc (ou s'il est collinéaire)
 	*/
 	bool estAGauche(Sommet<Vecteur2D> *s) {
 		Vecteur2D a = arete->debut->v;
@@ -23,6 +23,20 @@ public:
 		}
 
 		return (b.x - a.x) * (s->v.y - a.y) - (s->v.x - a.x) * (b.y - a.y) >= 0;
+	}
+
+	/**
+	* Retourne vrai si le sommet s est à gauche de cet arc
+	*/
+	bool estCollineaire(Sommet<Vecteur2D>* s) {
+		Vecteur2D a = arete->debut->v;
+		Vecteur2D b = arete->fin->v;
+		if (!bonSens) {
+			a = arete->fin->v;
+			b = arete->debut->v;
+		}
+
+		return (b.x - a.x) * (s->v.y - a.y) - (s->v.x - a.x) * (b.y - a.y) == 0;
 	}
 
 	/**
