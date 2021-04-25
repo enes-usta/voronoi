@@ -4,6 +4,8 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <memory>
+
 
 #include "Sommet.h"
 #include "Triangle.h"
@@ -172,8 +174,10 @@ private:
 						arcs.push_back(ArcTU<S>(graphe->creeArete(S(), t->arcs[i].fin(), s), false));
 						arcs.push_back(ArcTU<S>(graphe->creeArete(S(), s, t->arcs[i].debut()), false));
 					}
-					static Triangle<S> new_triangle = Triangle<S>(arcs);
-					this->triangles->push_back(&new_triangle);
+					Triangle<S>* new_triangle = new Triangle<S>(arcs);
+					//shared_ptr<Triangle<S>> new_triangle = make_shared<Triangle<S>>(arcs);
+
+					this->triangles->push_back(new_triangle);
 				}
 			}
 		}
