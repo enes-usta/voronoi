@@ -164,13 +164,13 @@ private:
 					vector<ArcTU<S>> arcs;
 					if (t->arcs[i].estAGauche(s)) {
 						arcs.push_back(ArcTU<S>(t->arcs[i].arete, true));
-						arcs.push_back(ArcTU<S>(graphe->creeArete(S(), t->arcs[i].arete->fin, s), true));
-						arcs.push_back(ArcTU<S>(graphe->creeArete(S(), s, t->arcs[i].arete->debut), true));
+						arcs.push_back(ArcTU<S>(graphe->creeArete(S(), t->arcs[i].fin(), s), true));
+						arcs.push_back(ArcTU<S>(graphe->creeArete(S(), s, t->arcs[i].debut()), true));
 					}
 					else {
 						arcs.push_back(ArcTU<S>(t->arcs[i].arete, false));
-						arcs.push_back(ArcTU<S>(graphe->creeArete(S(), t->arcs[i].arete->fin, s), false));
-						arcs.push_back(ArcTU<S>(graphe->creeArete(S(), s, t->arcs[i].arete->debut), false));
+						arcs.push_back(ArcTU<S>(graphe->creeArete(S(), t->arcs[i].fin(), s), false));
+						arcs.push_back(ArcTU<S>(graphe->creeArete(S(), s, t->arcs[i].debut()), false));
 					}
 					static Triangle<S> new_triangle = Triangle<S>(arcs);
 					this->triangles->push_back(&new_triangle);
