@@ -20,19 +20,16 @@ int main(int argc, char** argv)
 	srand(time(NULL));
 
 	Graphe<char, Vecteur2D> graphe;	// création à vide
-	Sommet<Vecteur2D>* s0, * s1, * s2, * s3;
+	Sommet<Vecteur2D>* s0, * s1, * s2, * s3, * s4;
 
 	//------------------ on insère des nouveaux sommets isolés --------------------
 
 	s0 = graphe.creeSommet(Vecteur2D(1, 1));
-	s1 = graphe.creeSommet(Vecteur2D(2, 1));
-	s2 = graphe.creeSommet(Vecteur2D(2, 2));
-	s3 = graphe.creeSommet(Vecteur2D(1, 2));
+	s1 = graphe.creeSommet(Vecteur2D(3, 2));
+	s2 = graphe.creeSommet(Vecteur2D(5, 2));
+	s3 = graphe.creeSommet(Vecteur2D(2, 4));
+	s4 = graphe.creeSommet(Vecteur2D(4, 5));
 
-	/*s0 = graphe.creeSommet(Vecteur2D(1.1, 1.8));
-	s1 = graphe.creeSommet(Vecteur2D(2.2, 1.7));
-	s2 = graphe.creeSommet(Vecteur2D(2.3, 2.6));
-	s3 = graphe.creeSommet(Vecteur2D(1.4, 2.5));*/
 
 	//----------------- on connecte certains sommets -------------------
 
@@ -65,14 +62,16 @@ int main(int argc, char** argv)
 	Triangulator<char> triangulator;
 
 	vector<Sommet<Vecteur2D>*> *sommets = new vector<Sommet<Vecteur2D>*>;
-	sommets->push_back(s0);
+	/*sommets->push_back(s0);
 	sommets->push_back(s1);
-	//sommets->push_back(s2);
-	//sommets->push_back(s3);
+	sommets->push_back(s2);
+	sommets->push_back(s3);
+	sommets->push_back(s4);*/
 
-	/*for (int i = 0; i < 50; i++) {
+
+	for (int i = 0; i < 50; i++) {
 		sommets->push_back(graphe.creeSommet(Vecteur2D(rand() % 100 + 1, rand() % 100 + 1)));
-	}*/
+	}
 
 	vector<Face<char>> triangulation = triangulator.triangulate(sommets, &graphe);
 	gui.dessiner(triangulation);

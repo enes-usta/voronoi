@@ -4,8 +4,6 @@
 #include <string>
 #include <sstream>
 #include <vector>
-#include <memory>
-
 
 #include "Sommet.h"
 #include "Triangle.h"
@@ -160,23 +158,17 @@ private:
 		for (Triangle<S> *t : (*DTL)) {
 			for (int i = 0; i < 3; i++) {
 				Triangle<S>* triangleAdjacent = trouver_triangle_adjacent(t->arcs[i]);
-				if ((triangleAdjacent == NULL || count(DTL->begin(), DTL->end(), triangleAdjacent))
+				if ((triangleAdjacent == NULL /*|| count(DTL->begin(), DTL->end(), triangleAdjacent)*/)
 					&& !t->arcs[i].estCollineaire(s)) {
 					//On crée le nouveau triangle
 					vector<ArcTU<S>> arcs;
-					if (t->arcs[i].estAGauche(s)) {
-						arcs.push_back(ArcTU<S>(t->arcs[i].arete, true));
-						arcs.push_back(ArcTU<S>(graphe->creeArete(S(), t->arcs[i].fin(), s), true));
-						arcs.push_back(ArcTU<S>(graphe->creeArete(S(), s, t->arcs[i].debut()), true));
-					}
-					else {
-						arcs.push_back(ArcTU<S>(t->arcs[i].arete, false));
-						arcs.push_back(ArcTU<S>(graphe->creeArete(S(), t->arcs[i].fin(), s), false));
-						arcs.push_back(ArcTU<S>(graphe->creeArete(S(), s, t->arcs[i].debut()), false));
-					}
-					Triangle<S>* new_triangle = new Triangle<S>(arcs);
-					//shared_ptr<Triangle<S>> new_triangle = make_shared<Triangle<S>>(arcs);
+					bool bonSens = t->arcs[i].estAGauche(s);
 
+					arcs.push_back(ArcTU<S>(t->arcs[i].arete, bonSens));
+					arcs.push_back(ArcTU<S>(graphe->creeArete(S(), t->arcs[i].fin(), s), bonSens));
+					arcs.push_back(ArcTU<S>(graphe->creeArete(S(), s, t->arcs[i].debut()), bonSens));
+
+					Triangle<S>* new_triangle = new Triangle<S>(arcs);
 					this->triangles->push_back(new_triangle);
 				}
 			}
@@ -203,7 +195,6 @@ private:
 			}
 		}
 			
-
 		DTL->clear();
 	}
 
