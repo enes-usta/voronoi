@@ -15,6 +15,8 @@
 #define MAX_ARRAY 1000
 
 vector<Face<char>> faces_GLOBAL;
+vector<Sommet<Vecteur2D>> sommets_GLOBAL;
+
 
 /**
 * S est la nature de l'information portée par une arête
@@ -27,33 +29,61 @@ private:
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Black and opaque
     }
 
-    /* Handler for window-repaint event. Call back when the window first appears and
-               whenever the window needs to be re-painted. */
-    static void render() {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   // Clear the color buffer with current clearing color
-        //On dessine les axes
-        glColor3f(1.0f, 0.0f, 0.0f); // Rouge
+    static void dessinerAxes() {
         glBegin(GL_LINES);
-         glVertex2f(-1.0f, 0);
-         glVertex2f(1.0f, 0);
+        glVertex2f(-1.0f, 0);
+        glVertex2f(1.0f, 0);
         glEnd();
         glBegin(GL_LINES);
-         glVertex2f(0, -1.0f);
-         glVertex2f(0, 1.0f);
+        glVertex2f(0, -1.0f);
+        glVertex2f(0, 1.0f);
         glEnd();
+    }
 
-        //On dessine les faces
-        glColor3f(1.0f, 1.0f, 1.0f); // Blanc
-        for (Face<char> face : faces_GLOBAL){
+    static void dessinerFaces() {
+        for (Face<char> face : faces_GLOBAL) {
             glBegin(GL_LINE_LOOP);
             for (ArcTU<char> arc : face.arcs) {
-                if(arc.bonSens)
+                if (arc.bonSens)
                     glVertex2f((float)arc.arete->debut->v.x, (float)arc.arete->debut->v.y);
                 else
                     glVertex2f((float)arc.arete->fin->v.x, (float)arc.arete->fin->v.y);
             }
             glEnd();
         }
+    }
+
+    static void dessinerSommets() {
+        glPointSize(5);
+
+        for (Face<char> face : faces_GLOBAL) {
+            glBegin(GL_POINTS);
+            for (ArcTU<char> arc : face.arcs) {
+                if (arc.bonSens)
+                    glVertex2f((float)arc.arete->debut->v.x, (float)arc.arete->debut->v.y);
+                else
+                    glVertex2f((float)arc.arete->fin->v.x, (float)arc.arete->fin->v.y);
+            }
+            glEnd();
+        }
+    }
+
+    /* Handler for window-repaint event. Call back when the window first appears and
+               whenever the window needs to be re-painted. */
+    static void render() {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   // Clear the color buffer with current clearing color
+        //On dessine les axes
+        glColor3f(1.0f, 0.0f, 0.0f); // Rouge
+        dessinerAxes();
+
+        //On dessine les faces
+        glColor3f(1.0f, 1.0f, 1.0f); // Blanc
+        dessinerFaces();
+
+        //On dessine les sommets
+        glColor3f(0.0f, 1.0f, 0.0f); // Vert
+        dessinerSommets();
+
         glFlush();  // Render now
     }
 
