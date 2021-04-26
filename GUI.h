@@ -17,11 +17,46 @@
 vector<Face<char>> faces_GLOBAL;
 vector<Sommet<Vecteur2D>> sommets_GLOBAL;
 
+GLfloat ctrlpoints[4][3] = {
+        { -4.0, -4.0, 0.0}, { -2.0, 4.0, 0.0},
+        {2.0, -4.0, 0.0}, {4.0, 4.0, 0.0} };
+
 
 /**
 * S est la nature de l'information portée par une arête
 */
 class GUI {
+public:
+    int windowWidth = 800;
+    int windowHeight = 800;
+    float scale_factor = 0.75;
+
+
+    /* Main function: GLUT runs as a console application starting at main()  */
+    GUI(int argc, char** argv) {
+        glutInit(&argc, argv);          // Initialize GLUT        
+        glutInitWindowSize(windowWidth, windowHeight);   // Set the window's initial width & height
+        int x = glutGet(GLUT_SCREEN_WIDTH) / 2 - windowWidth / 2;
+        int y = glutGet(GLUT_SCREEN_HEIGHT) / 2 - windowHeight / 2;
+        glutInitWindowPosition(x, y); // Position the window's initial top-left corner
+        glutCreateWindow("Voronoï. TEKELI USTA");  // Create window with the given title
+        glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+        glutDisplayFunc(render);       // Register callback handler for window re-paint event
+        glutReshapeFunc(reshape);       // Register callback handler for window re-size event
+        initGL();                       // Our own OpenGL initialization
+    }
+
+    /**
+    * Dessine la liste des faces passée en paramètre
+    */
+    void dessiner(vector<Face<char>> faces, vector<Sommet<Vecteur2D>> sommets) {
+        // On met à l'échelle les faces
+        faces_GLOBAL = scale(faces);
+        sommets_GLOBAL = scale(sommets);
+        glutMainLoop();// Enter the event-processing loop
+    }
+
+
 private:
     /* Initialize OpenGL Graphics */
     void initGL() {
@@ -125,67 +160,52 @@ private:
         }
     }
 
-public:
-    int windowWidth = 800;
-    int windowHeight = 800;
-    float scale_factor = 0.75;
-
-
-    /* Main function: GLUT runs as a console application starting at main()  */
-    GUI(int argc, char** argv) {
-        glutInit(&argc, argv);          // Initialize GLUT        
-        glutInitWindowSize(windowWidth, windowHeight);   // Set the window's initial width & height
-        int x = glutGet(GLUT_SCREEN_WIDTH) / 2 - windowWidth / 2;
-        int y = glutGet(GLUT_SCREEN_HEIGHT) / 2 - windowHeight / 2;
-        glutInitWindowPosition(x, y); // Position the window's initial top-left corner
-        glutCreateWindow("Voronoï. TEKELI USTA");  // Create window with the given title
-        glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-        glutDisplayFunc(render);       // Register callback handler for window re-paint event
-        glutReshapeFunc(reshape);       // Register callback handler for window re-size event
-        initGL();                       // Our own OpenGL initialization
-    }
-
     /**
-    * Dessine la liste des faces passée en paramètre
-    */
-    void dessiner(vector<Face<char>> faces, vector<Sommet<Vecteur2D>> sommets) {
-        // On met à l'échelle les faces
-        faces_GLOBAL = scale(faces);
-        sommets_GLOBAL = scaleSommets(sommets);
-        glutMainLoop();// Enter the event-processing loop
-    }
-
-    /**
-    * Met à l'échelle les faces
-    * Les faces sont à l'échelle quand tout -1 <= x <= 1 et -1 <= y <=1
-    */
+   * Met à l'échelle les faces
+   * Les faces sont à l'échelle quand tout -1 <= x <= 1 et -1 <= y <=1
+   */
     vector<Face<char>> scale(vector<Face<char>> faces) {
         double maxX = 0;
         double maxY = 0;
         int absXArc, absYArc;
         bool scaled[MAX_ARRAY] = { false };
-        for (Face<char> face : faces)
-            for (ArcTU<char> arc : face.arcs) {
-                // On calcule la coordonnée la plus éloignée en x et en y
-                absXArc = abs(arc.debut()->v.x);
-                absYArc = abs(arc.debut()->v.y);
-                
-                if (maxX < absXArc)
-                    maxX = absXArc;
-                if(maxY < absYArc)
-                    maxY = absYArc;
-            }
 
-        for (Face<char> face : faces)
-            for (ArcTU<char> arc : face.arcs) {
-                // On met à l'éhelle chaque coordonnée
-                if (!scaled[arc.debut()->clef]) {
-                    arc.debut()->v.x /= (maxX / scale_factor);
-                    arc.debut()->v.y /= (maxY / scale_factor);
-                    scaled[arc.debut()->clef] = true;
+        if (needToResize(faces)) {
+            for (Face<char> face : faces)
+                for (ArcTU<char> arc : face.arcs) {
+                    // On calcule la coordonnée la plus éloignée en x et en y
+                    absXArc = abs(arc.debut()->v.x);
+                    absYArc = abs(arc.debut()->v.y);
+
+                    if (maxX < absXArc)
+                        maxX = absXArc;
+                    if (maxY < absYArc)
+                        maxY = absYArc;
                 }
-                
-            }
+
+            for (Face<char> face : faces)
+                for (ArcTU<char> arc : face.arcs) {
+                    // On met à l'éhelle chaque coordonnée
+                    if (!scaled[arc.debut()->clef]) {
+                        arc.debut()->v.x /= (maxX / scale_factor);
+                        arc.debut()->v.y /= (maxY / scale_factor);
+                        scaled[arc.debut()->clef] = true;
+                    }
+
+                }
+        }
+        else {
+            for (Face<char> face : faces)
+                for (ArcTU<char> arc : face.arcs) {
+                    // On met à l'éhelle chaque coordonnée
+                    if (!scaled[arc.debut()->clef]) {
+                        arc.debut()->v.x *= scale_factor;
+                        arc.debut()->v.y *= scale_factor;
+                        scaled[arc.debut()->clef] = true;
+                    }
+
+                }
+        }
 
         return faces;
     }
@@ -194,11 +214,12 @@ public:
     * Met à l'échelle les sommets
     * Les sommets sont à l'échelle quand tout -1 <= x <= 1 et -1 <= y <=1
     */
-    vector<Sommet<Vecteur2D>> scaleSommets(vector<Sommet<Vecteur2D>> sommets) {
+    vector<Sommet<Vecteur2D>> scale(vector<Sommet<Vecteur2D>> sommets) {
         double maxX = 0;
         double maxY = 0;
         int absXArc, absYArc;
-        for (Sommet<Vecteur2D> s : sommets){
+        if (needToResize(sommets)) {
+            for (Sommet<Vecteur2D> s : sommets) {
                 absXArc = abs(s.v.x);
                 absYArc = abs(s.v.y);
 
@@ -206,13 +227,47 @@ public:
                     maxX = absXArc;
                 if (maxY < absYArc)
                     maxY = absYArc;
+            }
+
+            for (Sommet<Vecteur2D> s : sommets) {
+                s.v.x /= (maxX / scale_factor);
+                s.v.y /= (maxY / scale_factor);
+            }
+        }
+        else {
+            for (Sommet<Vecteur2D> s : sommets) {
+                s.v.x *= scale_factor;
+                s.v.y *= scale_factor;
+            }
         }
 
-        for (Sommet<Vecteur2D> s : sommets) {
-            s.v.x /= (maxX / scale_factor);
-            s.v.y /= (maxY / scale_factor);
-        }
 
         return sommets;
     }
+
+    /** Retourne vrai si on doit (et on peut) scale les sommets
+    *   On ne peut pas scale si il y a une valeur entre 0 et 1 (car la division de mise à l'échelle multiplierait)
+    */
+    bool needToResize(vector<Face<char>> faces) {
+        for (Face<char> face : faces)
+            for (ArcTU<char> arc : face.arcs)
+                if ((abs(arc.debut()->v.x) < 1 && abs(arc.debut()->v.x) > 0)
+                    || (abs(arc.debut()->v.y) < 1 && abs(arc.debut()->v.y) > 0))
+                    return false;
+
+        return true;
+    }
+
+    /** Retourne vrai si on doit (et on peut) scale les sommets
+    *   On ne peut pas scale si il y a une valeur entre 0 et 1 (car la division de mise à l'échelle multiplierait)
+    */
+    bool needToResize(vector<Sommet<Vecteur2D>> sommets) {
+        for (Sommet<Vecteur2D> s : sommets)
+            if ((abs(s.v.x) < 1 && abs(s.v.x) > 0)
+                || (abs(s.v.y) < 1 && abs(s.v.y) > 0))
+                return false;
+
+        return true;
+    }
+    
 };

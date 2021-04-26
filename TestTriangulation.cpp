@@ -10,14 +10,19 @@
 #include <stdio.h>
 #include "Triangulator.h"
 #include "GUI.h"
-#include <time.h> 
+#include <random>
 
 
 using namespace std;
 
 int main(int argc, char** argv)
 {
-	srand(time(NULL));
+
+	// distribution uniforme 
+	default_random_engine generator;
+	uniform_int_distribution<int> distribution(-100, 100);
+	//uniform_real_distribution<double> distribution(-1, 1);
+
 
 	Graphe<char, Vecteur2D> graphe;	// création à vide
 	Sommet<Vecteur2D>* s0, * s1, * s2, * s3, * s4;
@@ -31,34 +36,7 @@ int main(int argc, char** argv)
 	s4 = graphe.creeSommet(Vecteur2D(4, 5));
 
 
-	//----------------- on connecte certains sommets -------------------
-
-	Arete<char, Vecteur2D>* a0, * a1, * a2, * a3, * a4;
-
-	a0 = graphe.creeArete('a', s0, s1);
-	a1 = graphe.creeArete('b', s1, s2);
-	a2 = graphe.creeArete('c', s2, s3);
-	a3 = graphe.creeArete('d', s3, s0);
-	a4 = graphe.creeArete('e', s2, s0);
-
-	//-------------- on dessine un triangle -----------------------
-
-	vector<ArcTU<char>> arcs = vector<ArcTU<char>>();
-	arcs.push_back(ArcTU<char>(a0, 0));
-	arcs.push_back(ArcTU<char>(a1, 0));
-	arcs.push_back(ArcTU<char>(a4, 0));
-
-	Triangle<char> triangle = Triangle<char>(arcs);
-		
-	Cercle cercle = triangle.cercle_circonscrit();
-		
-	vector<Face<char>> faces;
-	faces.push_back(triangle);
-
-	GUI gui(argc, argv);
-	//gui.dessiner(faces);
-
-	//-------------- on dessine un triangle -----------------------
+	//-------------- on dessine la triangulation -----------------------
 	Triangulator<char> triangulator;
 
 	vector<Sommet<Vecteur2D>*> *sommets = new vector<Sommet<Vecteur2D>*>;
@@ -70,7 +48,7 @@ int main(int argc, char** argv)
 
 
 	for (int i = 0; i < 50; i++) {
-		sommets->push_back(graphe.creeSommet(Vecteur2D(rand() % 5 - 2.5, rand() % 5 - 2.5)));
+		sommets->push_back(graphe.creeSommet(Vecteur2D(distribution(generator), distribution(generator))));
 	}
 
 	vector<Face<char>> triangulation = triangulator.triangulate(sommets, &graphe);
@@ -78,6 +56,8 @@ int main(int argc, char** argv)
 	vector<Sommet<Vecteur2D>> sommetsVector;
 	for (Sommet<Vecteur2D>* s : (*sommets))
 		sommetsVector.push_back(*s);
+
+	GUI gui(argc, argv);
 
 	gui.dessiner(triangulation, sommetsVector);
 	return 0;

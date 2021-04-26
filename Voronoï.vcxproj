@@ -32,6 +32,8 @@
     <ClInclude Include="PElement.h" />
     <ClInclude Include="Reels.h" />
     <ClInclude Include="Sommet.h" />
+    <ClInclude Include="TestTortue.cpp" />
+    <ClInclude Include="Tortue.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Vecteur2D.h" />
     <ClInclude Include="Triangulator.h" />
