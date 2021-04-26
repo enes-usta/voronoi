@@ -53,6 +53,17 @@ private:
         }
     }
 
+    static void dessinerSommetsATrianguler() {
+        glPointSize(5);
+        if (sommets_GLOBAL.size()) {
+            glBegin(GL_POINTS);
+            for (Sommet<Vecteur2D> s : sommets_GLOBAL)
+                glVertex2f((float)s.v.x, (float)s.v.y);
+
+            glEnd();
+        }
+    }
+
     static void dessinerSommets() {
         glPointSize(5);
 
@@ -79,6 +90,10 @@ private:
         //On dessine les faces
         glColor3f(1.0f, 1.0f, 1.0f); // Blanc
         dessinerFaces();
+
+        //On dessine les sommets
+        glColor3f(0.0f, 0.0f, 1.0f); // Bleu
+        dessinerSommetsATrianguler();
 
         //On dessine les sommets
         glColor3f(0.0f, 1.0f, 0.0f); // Vert
@@ -133,9 +148,10 @@ public:
     /**
     * Dessine la liste des faces passée en paramètre
     */
-    void dessiner(vector<Face<char>> faces) {
+    void dessiner(vector<Face<char>> faces, vector<Sommet<Vecteur2D>> sommets) {
         // On met à l'échelle les faces
         faces_GLOBAL = scale(faces);
+        sommets_GLOBAL = scaleSommets(sommets);
         glutMainLoop();// Enter the event-processing loop
     }
 
@@ -172,5 +188,31 @@ public:
             }
 
         return faces;
+    }
+
+    /**
+    * Met à l'échelle les sommets
+    * Les sommets sont à l'échelle quand tout -1 <= x <= 1 et -1 <= y <=1
+    */
+    vector<Sommet<Vecteur2D>> scaleSommets(vector<Sommet<Vecteur2D>> sommets) {
+        double maxX = 0;
+        double maxY = 0;
+        int absXArc, absYArc;
+        for (Sommet<Vecteur2D> s : sommets){
+                absXArc = abs(s.v.x);
+                absYArc = abs(s.v.y);
+
+                if (maxX < absXArc)
+                    maxX = absXArc;
+                if (maxY < absYArc)
+                    maxY = absYArc;
+        }
+
+        for (Sommet<Vecteur2D> s : sommets) {
+            s.v.x /= (maxX / scale_factor);
+            s.v.y /= (maxY / scale_factor);
+        }
+
+        return sommets;
     }
 };

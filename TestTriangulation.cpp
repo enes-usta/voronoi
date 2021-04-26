@@ -70,11 +70,16 @@ int main(int argc, char** argv)
 
 
 	for (int i = 0; i < 50; i++) {
-		sommets->push_back(graphe.creeSommet(Vecteur2D(rand() % 50 - 25, rand() % 50 - 25)));
+		sommets->push_back(graphe.creeSommet(Vecteur2D(rand() % 5 - 2.5, rand() % 5 - 2.5)));
 	}
 
 	vector<Face<char>> triangulation = triangulator.triangulate(sommets, &graphe);
-	gui.dessiner(triangulation);
+
+	vector<Sommet<Vecteur2D>> sommetsVector;
+	for (Sommet<Vecteur2D>* s : (*sommets))
+		sommetsVector.push_back(*s);
+
+	gui.dessiner(triangulation, sommetsVector);
 	return 0;
 
 }
