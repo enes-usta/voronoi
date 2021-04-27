@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 
 	// distribution uniforme 
 	default_random_engine generator;
-	uniform_int_distribution<int> distribution(-50, 50);
+	uniform_int_distribution<int> distribution(-10, 10);
 	//uniform_real_distribution<double> distribution(-1, 1);
 
 
@@ -30,26 +30,32 @@ int main(int argc, char** argv)
 
 	//------------------ on insre des nouveaux sommets isols --------------------
 
-	s0 = graphe->creeSommet(Vecteur2D(1, 1));
+	/*s0 = graphe->creeSommet(Vecteur2D(1, 1));
 	s1 = graphe->creeSommet(Vecteur2D(3, 2));
 	s2 = graphe->creeSommet(Vecteur2D(5, 2));
 	s3 = graphe->creeSommet(Vecteur2D(2, 4));
-	s4 = graphe->creeSommet(Vecteur2D(4, 5));
+	s4 = graphe->creeSommet(Vecteur2D(4, 5));*/
+
+	s0 = graphe->creeSommet(Vecteur2D(1, 1));
+	s1 = graphe->creeSommet(Vecteur2D(1, 2));
+	s2 = graphe->creeSommet(Vecteur2D(2, 2));
+	s3 = graphe->creeSommet(Vecteur2D(2, 1));
+
 
 
 	//-------------- on dessine la triangulation -----------------------
 	Triangulator<char> triangulator;
 
 	vector<Sommet<Vecteur2D>*>* sommets = new vector<Sommet<Vecteur2D>*>;
-	sommets->push_back(s0);
+	//sommets->push_back(s0);
 	//sommets->push_back(s1);
 	//sommets->push_back(s2);
 	//sommets->push_back(s3);
 	//sommets->push_back(s4);
 
 
-	//for (int i = 0; i < 50; i++)
-	//	sommets->push_back(graphe->creeSommet(Vecteur2D(distribution(generator), distribution(generator))));
+	for (int i = 0; i < 20; i++)
+		sommets->push_back(graphe->creeSommet(Vecteur2D(distribution(generator), distribution(generator))));
 
 	vector<Face<char>*>* triangulation = triangulator.triangulate(sommets, graphe);
 

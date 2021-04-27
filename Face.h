@@ -40,4 +40,14 @@ public:
 
 		return true;
 	}
+
+	void print() {
+			for (ArcTU<char> a : arcs) {
+				cout << "deb(" << a.debut()->v.x << ", " << a.debut()->v.y << ") ";
+				cout << "fin(" << a.fin()->v.x << ", " << a.fin()->v.y << ")" << endl;;
+			}
+			cout << endl;
+			cout << endl;
+
+	}
 };
