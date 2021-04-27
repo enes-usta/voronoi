@@ -14,12 +14,9 @@
 
 #define MAX_ARRAY 1000
 
-vector<Face<char>> faces_GLOBAL;
-vector<Sommet<Vecteur2D>> sommets_GLOBAL;
-
-GLfloat ctrlpoints[4][3] = {
-        { -4.0, -4.0, 0.0}, { -2.0, 4.0, 0.0},
-        {2.0, -4.0, 0.0}, {4.0, 4.0, 0.0} };
+vector<Face<char>*>* faces_GLOBAL;
+vector<Sommet<Vecteur2D>*>* sommets_GLOBAL;
+bool scaled[MAX_ARRAY] = { false };
 
 
 /**
@@ -52,9 +49,7 @@ public:
     void dessiner(vector<Face<char>*>* faces, vector<Sommet<Vecteur2D>*>* sommets) {
         // On met  l'chelle les faces
         faces_GLOBAL = scale(faces);
-        //sommets_GLOBAL = scale(sommets);
-        //for (Face<char> f : faces_GLOBAL)
-        //    f.print();
+        sommets_GLOBAL = scale(sommets);
         glutMainLoop();// Enter the event-processing loop
     }
 
@@ -78,20 +73,20 @@ private:
     }
 
     static void dessinerFaces() {
-        for (Face<char> face : faces_GLOBAL) {
+        for (Face<char>* face : (*faces_GLOBAL)) {
             glBegin(GL_LINE_LOOP);
-            for (ArcTU<char> arc : face.arcs)
-                glVertex2f((float)arc.debut()->v.x, (float)arc.debut()->v.y);
+            for (ArcTU<char> arc : face->arcs)
+                    glVertex2f((float)arc.debut()->v.x, (float)arc.debut()->v.y);
             glEnd();
         }
     }
 
     static void dessinerSommetsATrianguler() {
         glPointSize(5);
-        if (sommets_GLOBAL.size()) {
+        if (sommets_GLOBAL->size()) {
             glBegin(GL_POINTS);
-            for (Sommet<Vecteur2D> s : sommets_GLOBAL)
-                glVertex2f((float)s.v.x, (float)s.v.y);
+            for (Sommet<Vecteur2D>* s : (*sommets_GLOBAL))
+                glVertex2f((float)s->v.x, (float)s->v.y);
 
             glEnd();
         }
@@ -100,10 +95,11 @@ private:
     static void dessinerSommets() {
         glPointSize(5);
 
-        for (Face<char> face : faces_GLOBAL) {
+        for (Face<char>* face : (*faces_GLOBAL)) {
             glBegin(GL_POINTS);
-            for (ArcTU<char> arc : face.arcs)
-                glVertex2f((float)arc.debut()->v.x, (float)arc.debut()->v.y);
+            for (ArcTU<char> arc : face->arcs)
+                if (arc.bonSens)
+                    glVertex2f((float)arc.debut()->v.x, (float)arc.debut()->v.y);
             glEnd();
         }
     }
@@ -158,12 +154,11 @@ private:
    * Met  l'chelle les faces
    * Les faces sont  l'chelle quand tout -1 <= x <= 1 et -1 <= y <=1
    */
-    vector<Face<char>> scale(vector<Face<char>*>* faces) {
+    vector<Face<char>*>* scale(vector<Face<char>*>* faces) {
         double maxX = 0;
         double maxY = 0;
         int absXArc, absYArc;
-        bool scaled[MAX_ARRAY] = { false };
-        vector<Face<char>> res;
+
         for (Face<char>* face : (*faces))
             for (ArcTU<char> arc : face->arcs) {
                 // On calcule la coordonne la plus loigne en x et en y
@@ -176,31 +171,29 @@ private:
                     maxY = absYArc;
             }
 
-        for (Face<char>* face : (*faces)) {
+        for (Face<char>* face : (*faces))
             for (ArcTU<char> arc : face->arcs) {
                 // On met  l'helle chaque coordonne
                 if (!scaled[arc.debut()->clef]) {
-                    arc.debut()->v.x /= (maxX/ scale_factor);
-                    arc.debut()->v.y /= (maxY/ scale_factor);
+                    arc.debut()->v.x /= (maxX / scale_factor);
+                    arc.debut()->v.y /= (maxY / scale_factor);
                     scaled[arc.debut()->clef] = true;
                 }
 
             }
-            res.push_back(*face);
-        }
-            
-        return res;
+        
+
+        return faces;
     }
 
     /**
     * Met  l'chelle les sommets
     * Les sommets sont  l'chelle quand tout -1 <= x <= 1 et -1 <= y <=1
     */
-    vector<Sommet<Vecteur2D>> scale(vector<Sommet<Vecteur2D>*>* sommets) {
+    vector<Sommet<Vecteur2D>*>* scale(vector<Sommet<Vecteur2D>*>* sommets) {
         double maxX = 0;
         double maxY = 0;
         int absXArc, absYArc;
-        vector<Sommet<Vecteur2D>> res;
         for (Sommet<Vecteur2D>* s : (*sommets)) {
             absXArc = abs(s->v.x);
             absYArc = abs(s->v.y);
@@ -212,13 +205,14 @@ private:
         }
 
         for (Sommet<Vecteur2D>* s : (*sommets)) {
-            s->v.x /= (maxX / scale_factor);
-            s->v.y /= (maxY / scale_factor);
-            res.push_back(*s);
+            if (!scaled[s->clef]) {
+                s->v.x /= (maxX / scale_factor);
+                s->v.y /= (maxY / scale_factor);
+                scaled[s->clef] = true;
+            }
         }
 
-        return res;
+        return sommets;
     }
-
 
 };
