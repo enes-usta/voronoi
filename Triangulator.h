@@ -13,10 +13,9 @@
 using namespace std;
 
 /*
-* Classe Triangulation
+* Classe Triangulator
 * Prends en entre une liste de sommets
-* et cre une liste de face reprsentant
-* un une triangulation
+* et crée une triangulation
 *
 * S est la nature de l'information porte par une arte
 */
@@ -29,7 +28,7 @@ public:
 	/**
 	* Retourne la liste traingule de la liste de sommets en entre
 	*/
-	vector<Face<S>*>* triangulate(vector<Sommet<Vecteur2D>*>* sommets, Graphe<S, Vecteur2D>* graphe) {
+	vector<Triangle<S>*>* triangulate(vector<Sommet<Vecteur2D>*>* sommets, Graphe<S, Vecteur2D>* graphe) {
 		init(sommets, graphe);
 		determiner_triangulation_englobante();
 		for (Sommet<Vecteur2D>* s : (*sommets)) {
@@ -44,7 +43,7 @@ public:
 
 		}
 
-		return (vector<Face<S>*>*)triangles;
+		return triangles;
 	}
 
 

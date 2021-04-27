@@ -1,4 +1,4 @@
-/*#include <iostream>
+#include <iostream>
 #include <stdio.h>
 #include <string>
 
@@ -25,4 +25,4 @@ int main(int argc, char** argv)
 	cout << "test" << endl;
 	return 0;
 
-}*/
+}

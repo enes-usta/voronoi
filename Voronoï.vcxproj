@@ -24,6 +24,8 @@
     <ClInclude Include="ArcTU.h" />
     <ClInclude Include="Arete.h" />
     <ClInclude Include="Cercle.h" />
+    <ClInclude Include="Color.h" />
+    <ClInclude Include="EdgeFlipper.h" />
     <ClInclude Include="Erreur.h" />
     <ClInclude Include="Face.h" />
     <ClInclude Include="GElement.h" />

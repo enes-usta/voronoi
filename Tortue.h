@@ -4,12 +4,14 @@
 #include "Vecteur2D.h"
 #include "Graphe.h"
 #include "Triangulator.h"
+#include "Color.h"
 
 class Tortue {
 public:
 	vector<Sommet<Vecteur2D>*> *germes;
-	vector<Face<char>*> *cellules;
+	vector<Face<Color*>*> *cellules;
 	Graphe<char, Vecteur2D> * graphe;	
+	Color * color = new Color(199, 199, 0, 0);
 
 	Tortue() {
 		germes = new vector<Sommet<Vecteur2D>*>();
@@ -39,6 +41,14 @@ private:
 
 	void triangulateGermes() {
 		Triangulator<char> triangulator;
-		cellules = triangulator.triangulate(germes, graphe);
+		cellules = (vector<Face<Color*>*>*) triangulator.triangulate(germes, graphe);
+	}
+
+	void colorierCellules() {
+		for (Face<Color*>* f : (*cellules)) {
+			for (ArcTU<Color*> a : f->arcs) {
+				a.arete->v = color;
+			}
+		}
 	}
 };

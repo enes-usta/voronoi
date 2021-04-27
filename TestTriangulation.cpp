@@ -1,4 +1,4 @@
-#include <iostream>
+/*#include <iostream>
 #include <string>
 #include "Graphe.h"
 #include "Triangle.h"
@@ -30,16 +30,16 @@ int main(int argc, char** argv)
 
 	//------------------ on insre des nouveaux sommets isols --------------------
 
-	/*s0 = graphe->creeSommet(Vecteur2D(1, 1));
+	s0 = graphe->creeSommet(Vecteur2D(1, 1));
 	s1 = graphe->creeSommet(Vecteur2D(3, 2));
 	s2 = graphe->creeSommet(Vecteur2D(5, 2));
 	s3 = graphe->creeSommet(Vecteur2D(2, 4));
-	s4 = graphe->creeSommet(Vecteur2D(4, 5));*/
+	s4 = graphe->creeSommet(Vecteur2D(4, 5));
 
-	s0 = graphe->creeSommet(Vecteur2D(1, 1));
-	s1 = graphe->creeSommet(Vecteur2D(1, 2));
-	s2 = graphe->creeSommet(Vecteur2D(2, 2));
-	s3 = graphe->creeSommet(Vecteur2D(2, 1));
+	//s0 = graphe->creeSommet(Vecteur2D(1, 1));
+	//s1 = graphe->creeSommet(Vecteur2D(1, 2));
+	//s2 = graphe->creeSommet(Vecteur2D(2, 2));
+	//s3 = graphe->creeSommet(Vecteur2D(2, 1));
 
 
 
@@ -65,3 +65,4 @@ int main(int argc, char** argv)
 	return 0;
 
 }
+*/

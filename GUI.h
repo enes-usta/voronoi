@@ -10,11 +10,12 @@
 #include<string.h>
 #include "Face.h"
 #include "Sommet.h"
+#include "Color.h"
 #include <unordered_map>
 
 #define MAX_ARRAY 1000
 
-vector<Face<char>*>* faces_GLOBAL;
+vector<Face<Color*>*>* faces_GLOBAL;
 vector<Sommet<Vecteur2D>*>* sommets_GLOBAL;
 bool scaled[MAX_ARRAY] = { false };
 
@@ -46,7 +47,7 @@ public:
     /**
     * Dessine la liste des faces passe en paramtre
     */
-    void dessiner(vector<Face<char>*>* faces, vector<Sommet<Vecteur2D>*>* sommets) {
+    void dessiner(vector<Face<Color*>*>* faces, vector<Sommet<Vecteur2D>*>* sommets) {
         // On met  l'chelle les faces
         faces_GLOBAL = scale(faces);
         sommets_GLOBAL = scale(sommets);
@@ -73,10 +74,13 @@ private:
     }
 
     static void dessinerFaces() {
-        for (Face<char>* face : (*faces_GLOBAL)) {
+        for (Face<Color*>* face : (*faces_GLOBAL)) {
             glBegin(GL_LINE_LOOP);
-            for (ArcTU<char> arc : face->arcs)
-                    glVertex2f((float)arc.debut()->v.x, (float)arc.debut()->v.y);
+            for (ArcTU<Color*> arc : face->arcs) {
+                if(arc.arete->v != nullptr)
+                    glColor3f(arc.arete->v->r, arc.arete->v->g, arc.arete->v->b);
+                glVertex2f((float)arc.debut()->v.x, (float)arc.debut()->v.y);
+            }
             glEnd();
         }
     }
@@ -95,9 +99,9 @@ private:
     static void dessinerSommets() {
         glPointSize(5);
 
-        for (Face<char>* face : (*faces_GLOBAL)) {
+        for (Face<Color*>* face : (*faces_GLOBAL)) {
             glBegin(GL_POINTS);
-            for (ArcTU<char> arc : face->arcs)
+            for (ArcTU<Color*> arc : face->arcs)
                 if (arc.bonSens)
                     glVertex2f((float)arc.debut()->v.x, (float)arc.debut()->v.y);
             glEnd();
@@ -154,13 +158,13 @@ private:
    * Met  l'chelle les faces
    * Les faces sont  l'chelle quand tout -1 <= x <= 1 et -1 <= y <=1
    */
-    vector<Face<char>*>* scale(vector<Face<char>*>* faces) {
+    vector<Face<Color*>*>* scale(vector<Face<Color*>*>* faces) {
         double maxX = 0;
         double maxY = 0;
         int absXArc, absYArc;
 
-        for (Face<char>* face : (*faces))
-            for (ArcTU<char> arc : face->arcs) {
+        for (Face<Color*>* face : (*faces))
+            for (ArcTU<Color*> arc : face->arcs) {
                 // On calcule la coordonne la plus loigne en x et en y
                 absXArc = abs(arc.debut()->v.x);
                 absYArc = abs(arc.debut()->v.y);
@@ -171,8 +175,8 @@ private:
                     maxY = absYArc;
             }
 
-        for (Face<char>* face : (*faces))
-            for (ArcTU<char> arc : face->arcs) {
+        for (Face<Color*>* face : (*faces))
+            for (ArcTU<Color*> arc : face->arcs) {
                 // On met  l'helle chaque coordonne
                 if (!scaled[arc.debut()->clef]) {
                     arc.debut()->v.x /= (maxX / scale_factor);
