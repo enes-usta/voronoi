@@ -115,7 +115,7 @@ private:
 	* Retourne le triangle contenant le sommet s, retourn null s'il n'en existe pas
 	*/
 	Triangle<S>* determiner_triangle_contenant_sommet(Sommet<Vecteur2D>* s) {
-		for (Triangle<S> *t : (*triangles))
+		for (Triangle<S>* t : (*triangles))
 			if (t->contientPoint(s))
 				return t;
 
@@ -141,7 +141,7 @@ private:
 	* Dtermine la liste des triangles  rajouter  la triangulation
 	*/
 	void determiner_NTL(Sommet<Vecteur2D>* s) {
-		for (Triangle<S> *t : (*DTL)) {
+		for (Triangle<S>* t : (*DTL)) {
 			for (int i = 0; i < 3; i++) {
 				Triangle<S>* triangleAdjacent = trouver_triangle_adjacent(t->arcs[i]);
 				if ((triangleAdjacent == NULL /*|| count(DTL->begin(), DTL->end(), triangleAdjacent)*/)
@@ -176,10 +176,10 @@ private:
 					}
 					i++;
 				}
-					
+
 			}
 		}
-			
+
 		DTL->clear();
 	}
 
@@ -188,12 +188,12 @@ private:
 	*/
 	Triangle<S>* trouver_triangle_adjacent(ArcTU<S> arcA) {
 
-		for (Triangle<S> *triangle : (*triangles))
+		for (Triangle<S>* triangle : (*triangles))
 			for (ArcTU<S> arcB : triangle->arcs)
 				if (arcB != arcA && arcA.arete->estEgal(arcB.arete->debut, arcB.arete->fin))
 					return triangle;
 
 		return NULL;
 	}
-	
+
 };
