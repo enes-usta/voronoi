@@ -23,13 +23,13 @@ using namespace std;
 template <class S>
 class Triangulator {
 public:
-	Triangulator() {}
+	Triangulator() { }
 	~Triangulator() {}
 
 	/**
 	* Retourne la liste traingule de la liste de sommets en entre
 	*/
-	vector<Face<S>> triangulate(vector<Sommet<Vecteur2D>*>* sommets, Graphe<S, Vecteur2D>* graphe) {
+	vector<Face<S>*>* triangulate(vector<Sommet<Vecteur2D>*>* sommets, Graphe<S, Vecteur2D>* graphe) {
 		init(sommets, graphe);
 		determiner_triangulation_englobante();
 		for (Sommet<Vecteur2D>* s : (*sommets)) {
@@ -44,11 +44,7 @@ public:
 
 		}
 
-		vector<Face<S>> faces;
-		for (Triangle<S> *t : (*triangles))
-			faces.push_back(Face<S>(t->arcs));
-
-		return faces;
+		return (vector<Face<S>*>*)triangles;
 	}
 
 
@@ -58,27 +54,21 @@ private:
 	vector<Triangle<S>*>* triangles;//Triangles en sortie
 	vector<Triangle<S>*>* DTL;//Triangles à supprimer de la triangulation
 
-	//Les deux triangles qui forment le rectangle qui englobe tous les points
-	Triangle<S> *triangleEnglobant1;
-	Triangle<S> *triangleEnglobant2;
-
 	/**
 	* Initialise les membres
 	*/
 	void init(vector<Sommet<Vecteur2D>*>* sommets, Graphe<S, Vecteur2D>* graphe) {
 		this->sommets = sommets;
 		this->graphe = graphe;
-		static vector<Triangle<S>*> vt;
-		triangles = &vt;
-		static vector<Triangle<S>*> vdtl;
-		DTL = &vdtl;
+		triangles = new vector<Triangle<S>*>();
+		DTL = new vector<Triangle<S>*>();
 	}
 
 	/**
 	* Dtermine une triangulation qui englobe tous les sommets  trianguler
 	*/
 	void determiner_triangulation_englobante() {
-		/* On cherche les points extrmes */
+		/* On cherche les points extrêmes */
 		int xMin = sommets->front()->v.x;
 		int xMax = sommets->front()->v.x;
 		int yMin = sommets->front()->v.y;
@@ -91,9 +81,9 @@ private:
 			if (s->v.y > yMax) yMax = s->v.y;
 		}
 
-		/* On cre les sommets/artes d'un rectangle avec ces points */
+		/* On crée les sommets/artes d'un rectangle avec ces points */
 		Sommet<Vecteur2D>* s0, * s1, * s2, * s3;
-		double marge = 1;//pour viter les sommets superposs
+		double marge = 1;//pour éviter les sommets superposs
 		s0 = graphe->creeSommet(Vecteur2D(xMin - marge, yMin - marge));
 		s1 = graphe->creeSommet(Vecteur2D(xMax + marge, yMin - marge));
 		s2 = graphe->creeSommet(Vecteur2D(xMax + marge, yMax + marge));
@@ -115,14 +105,10 @@ private:
 					a3
 		*/
 
-		/* On cre une triangulation de ce rectangle */
-		static Triangle<S> te1 = Triangle<S>(ArcTU<S>(a0, true), ArcTU<S>(a1, true), ArcTU<S>(a2, true));
-		static Triangle<S> te2 = Triangle<S>(ArcTU<S>(a0, false), ArcTU<S>(a3, true), ArcTU<S>(a4, true));
+		/* On crée une triangulation de ce rectangle */
 
-		triangleEnglobant1 = &te1;
-		triangleEnglobant2 = &te2;
-		triangles->push_back(&te1);
-		triangles->push_back(&te2);
+		triangles->push_back(new Triangle<S>(ArcTU<S>(a0, true), ArcTU<S>(a1, true), ArcTU<S>(a2, true)));
+		triangles->push_back(new Triangle<S>(ArcTU<S>(a0, false), ArcTU<S>(a3, true), ArcTU<S>(a4, true)));
 	}
 
 	/**
@@ -185,7 +171,6 @@ private:
 			if (dt != nullptr) {
 				for (Triangle<S>* t : (*triangles)) {
 					if (dt == t) {
-						//DTL->remove(DTL->begin(), DTL->end(), dt);
 						triangles->erase((triangles->begin() + i));
 						break;
 					}

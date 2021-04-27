@@ -14,8 +14,8 @@
 
 #define MAX_ARRAY 1000
 
-vector<Face<char>> faces_GLOBAL;
-vector<Sommet<Vecteur2D>> sommets_GLOBAL;
+vector<Face<char>*> *faces_GLOBAL;
+vector<Sommet<Vecteur2D>*> *sommets_GLOBAL;
 
 GLfloat ctrlpoints[4][3] = {
         { -4.0, -4.0, 0.0}, { -2.0, 4.0, 0.0},
@@ -49,7 +49,7 @@ public:
     /**
     * Dessine la liste des faces passée en paramètre
     */
-    void dessiner(vector<Face<char>> faces, vector<Sommet<Vecteur2D>> sommets) {
+    void dessiner(vector<Face<char>*> *faces, vector<Sommet<Vecteur2D>*> *sommets) {
         // On met à l'échelle les faces
         faces_GLOBAL = scale(faces);
         sommets_GLOBAL = scale(sommets);
@@ -76,9 +76,9 @@ private:
     }
 
     static void dessinerFaces() {
-        for (Face<char> face : faces_GLOBAL) {
+        for (Face<char> *face : (*faces_GLOBAL)) {
             glBegin(GL_LINE_LOOP);
-            for (ArcTU<char> arc : face.arcs) {
+            for (ArcTU<char> arc : face->arcs) {
                 if (arc.bonSens)
                     glVertex2f((float)arc.arete->debut->v.x, (float)arc.arete->debut->v.y);
                 else
@@ -90,10 +90,10 @@ private:
 
     static void dessinerSommetsATrianguler() {
         glPointSize(5);
-        if (sommets_GLOBAL.size()) {
+        if (sommets_GLOBAL->size()) {
             glBegin(GL_POINTS);
-            for (Sommet<Vecteur2D> s : sommets_GLOBAL)
-                glVertex2f((float)s.v.x, (float)s.v.y);
+            for (Sommet<Vecteur2D> *s : (*sommets_GLOBAL))
+                glVertex2f((float)s->v.x, (float)s->v.y);
 
             glEnd();
         }
@@ -102,9 +102,9 @@ private:
     static void dessinerSommets() {
         glPointSize(5);
 
-        for (Face<char> face : faces_GLOBAL) {
+        for (Face<char> *face : (*faces_GLOBAL)) {
             glBegin(GL_POINTS);
-            for (ArcTU<char> arc : face.arcs) {
+            for (ArcTU<char> arc : face->arcs) {
                 if (arc.bonSens)
                     glVertex2f((float)arc.arete->debut->v.x, (float)arc.arete->debut->v.y);
                 else
@@ -164,15 +164,15 @@ private:
    * Met à l'échelle les faces
    * Les faces sont à l'échelle quand tout -1 <= x <= 1 et -1 <= y <=1
    */
-    vector<Face<char>> scale(vector<Face<char>> faces) {
+    vector<Face<char>*>* scale(vector<Face<char>*>* faces) {
         double maxX = 0;
         double maxY = 0;
         int absXArc, absYArc;
         bool scaled[MAX_ARRAY] = { false };
 
         if (needToResize(faces)) {
-            for (Face<char> face : faces)
-                for (ArcTU<char> arc : face.arcs) {
+            for (Face<char> *face : (*faces))
+                for (ArcTU<char> arc : face->arcs) {
                     // On calcule la coordonnée la plus éloignée en x et en y
                     absXArc = abs(arc.debut()->v.x);
                     absYArc = abs(arc.debut()->v.y);
@@ -183,8 +183,8 @@ private:
                         maxY = absYArc;
                 }
 
-            for (Face<char> face : faces)
-                for (ArcTU<char> arc : face.arcs) {
+            for (Face<char> *face : (*faces))
+                for (ArcTU<char> arc : face->arcs) {
                     // On met à l'éhelle chaque coordonnée
                     if (!scaled[arc.debut()->clef]) {
                         arc.debut()->v.x /= (maxX / scale_factor);
@@ -195,8 +195,8 @@ private:
                 }
         }
         else {
-            for (Face<char> face : faces)
-                for (ArcTU<char> arc : face.arcs) {
+            for (Face<char> *face : (*faces))
+                for (ArcTU<char> arc : face->arcs) {
                     // On met à l'éhelle chaque coordonnée
                     if (!scaled[arc.debut()->clef]) {
                         arc.debut()->v.x *= scale_factor;
@@ -214,14 +214,14 @@ private:
     * Met à l'échelle les sommets
     * Les sommets sont à l'échelle quand tout -1 <= x <= 1 et -1 <= y <=1
     */
-    vector<Sommet<Vecteur2D>> scale(vector<Sommet<Vecteur2D>> sommets) {
+    vector<Sommet<Vecteur2D>*>* scale(vector<Sommet<Vecteur2D>*>* sommets) {
         double maxX = 0;
         double maxY = 0;
         int absXArc, absYArc;
         if (needToResize(sommets)) {
-            for (Sommet<Vecteur2D> s : sommets) {
-                absXArc = abs(s.v.x);
-                absYArc = abs(s.v.y);
+            for (Sommet<Vecteur2D> *s : (*sommets)) {
+                absXArc = abs(s->v.x);
+                absYArc = abs(s->v.y);
 
                 if (maxX < absXArc)
                     maxX = absXArc;
@@ -229,15 +229,15 @@ private:
                     maxY = absYArc;
             }
 
-            for (Sommet<Vecteur2D> s : sommets) {
-                s.v.x /= (maxX / scale_factor);
-                s.v.y /= (maxY / scale_factor);
+            for (Sommet<Vecteur2D> *s : (*sommets)) {
+                s->v.x /= (maxX / scale_factor);
+                s->v.y /= (maxY / scale_factor);
             }
         }
         else {
-            for (Sommet<Vecteur2D> s : sommets) {
-                s.v.x *= scale_factor;
-                s.v.y *= scale_factor;
+            for (Sommet<Vecteur2D> *s : (*sommets)) {
+                s->v.x *= scale_factor;
+                s->v.y *= scale_factor;
             }
         }
 
@@ -248,9 +248,9 @@ private:
     /** Retourne vrai si on doit (et on peut) scale les sommets
     *   On ne peut pas scale si il y a une valeur entre 0 et 1 (car la division de mise à l'échelle multiplierait)
     */
-    bool needToResize(vector<Face<char>> faces) {
-        for (Face<char> face : faces)
-            for (ArcTU<char> arc : face.arcs)
+    bool needToResize(vector<Face<char>*> *faces) {
+        for (Face<char> *face : (*faces))
+            for (ArcTU<char> arc : face->arcs)
                 if ((abs(arc.debut()->v.x) < 1 && abs(arc.debut()->v.x) > 0)
                     || (abs(arc.debut()->v.y) < 1 && abs(arc.debut()->v.y) > 0))
                     return false;
@@ -261,10 +261,10 @@ private:
     /** Retourne vrai si on doit (et on peut) scale les sommets
     *   On ne peut pas scale si il y a une valeur entre 0 et 1 (car la division de mise à l'échelle multiplierait)
     */
-    bool needToResize(vector<Sommet<Vecteur2D>> sommets) {
-        for (Sommet<Vecteur2D> s : sommets)
-            if ((abs(s.v.x) < 1 && abs(s.v.x) > 0)
-                || (abs(s.v.y) < 1 && abs(s.v.y) > 0))
+    bool needToResize(vector<Sommet<Vecteur2D>*> *sommets) {
+        for (Sommet<Vecteur2D> * s : (*sommets))
+            if ((abs(s->v.x) < 1 && abs(s->v.x) > 0)
+                || (abs(s->v.y) < 1 && abs(s->v.y) > 0))
                 return false;
 
         return true;
