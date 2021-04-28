@@ -10,7 +10,6 @@
 #include "Vecteur2D.h"
 #include "Graphe.h"
 
-
 using namespace std;
 
 /*
@@ -44,7 +43,6 @@ public:
 					if (triangle_adjacent != NULL) {
 						ArcTU<T>* arc2 = trouver_arc_adjacent(arc, triangle_adjacent);
 						if (shouldFlip(t, triangle_adjacent, arc, arc2)) {
-							cout << "ici" << endl;
 							flip(t, triangle_adjacent, arc, arc2);
 							amelioration = true;
 							goto next;
@@ -85,21 +83,12 @@ public:
 		b = arc->fin();
 		c = triangle->sommet_oppose(arc);
 		d = triangle2->sommet_oppose(arc2);
-		
-		//delete t;
-		//delete t2;
 
-		remove(triangulation->begin(), triangulation->end(), triangle); //marche pas 
-		remove(triangulation->begin(), triangulation->end(), triangle2); // marche pas
+		//remove(triangulation->begin(), triangulation->end(), triangle); //marche pas 
+		//remove(triangulation->begin(), triangulation->end(), triangle2); // marche pas
 
-		int i = 0;
-		for (Triangle<S, T>* t : (*triangulation)) {
-			if(t == triangle)
-				triangulation->erase((triangulation->begin() + i));
-			i++;
-		}
-
-		
+		supprimer_triangle(triangle);
+		supprimer_triangle(triangle2);
 
 		Arete<T, Vecteur2D>* bc = graphe->creeArete(T(), b, c);
 		Arete<T, Vecteur2D>* cd = graphe->creeArete(T(), c, d);
@@ -134,5 +123,17 @@ public:
 				return arcB;
 
 		return NULL;
+	}
+
+	void supprimer_triangle(Triangle<S, T>* triangle) {
+		int i = 0;
+		for (Triangle<S, T>* t : (*triangulation)) {
+			if (t == triangle) {
+				triangulation->erase((triangulation->begin() + i));
+				delete triangle;
+				break;
+			}
+			i++;
+		}
 	}
 };
