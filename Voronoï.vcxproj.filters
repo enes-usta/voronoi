@@ -75,6 +75,9 @@
     <ClInclude Include="DelaunayTriangulator.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="Geometrie.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TestGrapheGeneral.cpp">

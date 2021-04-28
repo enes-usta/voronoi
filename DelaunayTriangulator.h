@@ -24,7 +24,7 @@ public:
 	vector<Triangle<S, T>*>* triangulate(vector<Sommet<Vecteur2D>*>* sommets, Graphe<T, Vecteur2D>* graphe) {
 		Triangulator<S, T> triangulator;
 		EdgeFlipper<S, T> edgeFlipper;
-		return /*edgeFlipper.EdgeFlipDelaunay(*/triangulator.triangulate(sommets, graphe);//, graphe);
+		return edgeFlipper.EdgeFlipDelaunay(triangulator.triangulate(sommets, graphe), graphe);
 	}
 
 };

@@ -30,6 +30,7 @@
     <ClInclude Include="Erreur.h" />
     <ClInclude Include="Face.h" />
     <ClInclude Include="GElement.h" />
+    <ClInclude Include="Geometrie.h" />
     <ClInclude Include="Graphe.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="PElement.h" />

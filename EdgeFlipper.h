@@ -9,6 +9,7 @@
 #include "ArcTU.h"
 #include "Vecteur2D.h"
 #include "Graphe.h"
+#include "Geometrie.h"
 
 using namespace std;
 
@@ -60,17 +61,17 @@ public:
 	/**
 	* Retourn vrai si on devrait flip l'arête commune aux deux triangles compris dans les deux arcs
 	*/
-	bool shouldFlip(Triangle<S, T>* t, Triangle<S, T>* t2, ArcTU<T>* arc, ArcTU<T>* arc2) {
-		Sommet<Vecteur2D>* d = t2->sommet_oppose(arc2);
+	bool shouldFlip(Triangle<S, T>* triangle, Triangle<S, T>* triangle2, ArcTU<T>* arc, ArcTU<T>* arc2) {
+		Sommet<Vecteur2D>* d = triangle2->sommet_oppose(arc2);
 
-		return t->cercle_circonscrit().contientPoint(d->v);
+		return (triangle->cercle_circonscrit().contientPoint(d->v) && forment_polygone_convexe(triangle, triangle2, arc, arc2));
 	}
 
 	/**
 	* Retourne vrai si on devrait flip (si le cercle circonscrit du triangle abc contient d)
 	*/
 	bool shouldFlip(Sommet<Vecteur2D>* a, Sommet<Vecteur2D>* b, Sommet<Vecteur2D>* c, Sommet<Vecteur2D>* d) {
-		return Cercle(a->v, b->v, c->v).contientPoint(d->v);
+		return (Cercle(a->v, b->v, c->v).contientPoint(d->v) && forment_polygone_convexe(a, b, c, d));
 	}
 
 	/**
@@ -123,6 +124,24 @@ public:
 		return NULL;
 	}
 
+	/**
+	* Retourne vrai si les deux triangles forment un polygone convexe
+	*/
+	bool forment_polygone_convexe(Triangle<S, T>* triangle, Triangle<S, T>* triangle2, ArcTU<T>* arc, ArcTU<T>* arc2) {
+		Sommet<Vecteur2D>* a, * b, * c, * d;
+
+		a = arc->debut();
+		b = arc->fin();
+		c = triangle->sommet_oppose(arc);
+		d = triangle2->sommet_oppose(arc2);
+
+		return Geometrie::forment_polygone_convexe(a->v, b->v, c->v, d->v);
+	}
+
+	
+	/**
+	* Supprime le triangle de la triangulation
+	*/
 	void supprimer_triangle(Triangle<S, T>* triangle) {
 		int i = 0;
 		for (Triangle<S, T>* t : (*triangulation)) {
