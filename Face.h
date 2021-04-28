@@ -3,16 +3,17 @@
 #include "ArcTU.h"
 
 /**
-* S est la nature de l'information portée par une arête
+* T est la nature de l'information portée par une arête
+* S est la nature de l'information portée par cette face
 */
-template <class S>
+template <class S, class T>
 class Face{
 public:
-	vector<ArcTU<S>*> arcs;
+	vector<ArcTU<T>*> arcs;
 
 	Face() {}
 
-	Face(vector<ArcTU<S>*> arcs) {
+	Face(vector<ArcTU<T>*> arcs) {
 		this->arcs = arcs;
 		if (this->arcs.size() < 3)
 			throw "Une face est composée d'au moins 3 arcs!";
@@ -23,14 +24,14 @@ public:
 	* Retourne vrai si cette face contient le sommet s
 	*/
 	bool contientPoint(Sommet<Vecteur2D> *s) {
-		for(ArcTU<S>* arc : this->arcs)
+		for(ArcTU<T>* arc : this->arcs)
 			if (!arc->estAGauche(s))
 				return false;
 				
 		return true;
 	}
 
-	friend bool operator==(const Face<S>& lhs, const Face<S>& rhs) {
+	friend bool operator==(const Face<S, T>& lhs, const Face<S, T>& rhs) {
 		if (lhs.size() != rhs.size())
 			return false;
 
@@ -42,7 +43,7 @@ public:
 	}
 
 	void print() {
-			for (ArcTU<S>* a : arcs) {
+			for (ArcTU<T>* a : arcs) {
 				cout << "deb(" << a->debut()->v.x << ", " << a->debut()->v.y << ") ";
 				cout << "fin(" << a->fin()->v.x << ", " << a->fin()->v.y << ")" << endl;;
 			}

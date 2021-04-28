@@ -17,9 +17,10 @@ using namespace std;
 * Prends en entre une liste de sommets
 * et crée une triangulation
 *
-* S est la nature de l'information porte par une arte
+* T est la nature de l'information porte par une arête
+* S est la nature de l'information porte par une face
 */
-template <class S>
+template <class S, class T>
 class Triangulator {
 public:
 	Triangulator() { }
@@ -28,11 +29,11 @@ public:
 	/**
 	* Retourne la liste traingule de la liste de sommets en entre
 	*/
-	vector<Triangle<S>*>* triangulate(vector<Sommet<Vecteur2D>*>* sommets, Graphe<S, Vecteur2D>* graphe) {
+	vector<Triangle<S, T>*>* triangulate(vector<Sommet<Vecteur2D>*>* sommets, Graphe<T, Vecteur2D>* graphe) {
 		init(sommets, graphe);
 		determiner_triangulation_englobante();
 		for (Sommet<Vecteur2D>* s : (*sommets)) {
-			Triangle<S>* t = determiner_triangle_contenant_sommet(s);
+			Triangle<S, T>* t = determiner_triangle_contenant_sommet(s);
 			if (t) {
 				determiner_DTL(s, t);
 				determiner_NTL(s);
@@ -48,18 +49,18 @@ public:
 
 private:
 	vector<Sommet<Vecteur2D>*>* sommets;//Sommets en entrée
-	Graphe<S, Vecteur2D>* graphe;//Graphe utilisé pour créer des sommets
-	vector<Triangle<S>*>* triangles;//Triangles en sortie
-	vector<Triangle<S>*>* DTL;//Triangles à supprimer de la triangulation
+	Graphe<T, Vecteur2D>* graphe;//Graphe utilisé pour créer des sommets
+	vector<Triangle<S, T>*>* triangles;//Triangles en sortie
+	vector<Triangle<S, T>*>* DTL;//Triangles à supprimer de la triangulation
 
 	/**
 	* Initialise les membres
 	*/
-	void init(vector<Sommet<Vecteur2D>*>* sommets, Graphe<S, Vecteur2D>* graphe) {
+	void init(vector<Sommet<Vecteur2D>*>* sommets, Graphe<T, Vecteur2D>* graphe) {
 		this->sommets = sommets;
 		this->graphe = graphe;
-		triangles = new vector<Triangle<S>*>();
-		DTL = new vector<Triangle<S>*>();
+		triangles = new vector<Triangle<S, T>*>();
+		DTL = new vector<Triangle<S, T>*>();
 	}
 
 	/**
@@ -87,12 +88,12 @@ private:
 		s2 = graphe->creeSommet(Vecteur2D(xMax + marge, yMax + marge));
 		s3 = graphe->creeSommet(Vecteur2D(xMin - marge, yMax + marge));
 
-		Arete<S, Vecteur2D>* a0, * a1, * a2, * a3, * a4;
-		a0 = graphe->creeArete(S(), s0, s2);
-		a1 = graphe->creeArete(S(), s2, s3);
-		a2 = graphe->creeArete(S(), s3, s0);
-		a3 = graphe->creeArete(S(), s0, s1);
-		a4 = graphe->creeArete(S(), s1, s2);
+		Arete<T, Vecteur2D>* a0, * a1, * a2, * a3, * a4;
+		a0 = graphe->creeArete(T(), s0, s2);
+		a1 = graphe->creeArete(T(), s2, s3);
+		a2 = graphe->creeArete(T(), s3, s0);
+		a3 = graphe->creeArete(T(), s0, s1);
+		a4 = graphe->creeArete(T(), s1, s2);
 
 		/*
 		s3		 a1			s2
@@ -105,15 +106,15 @@ private:
 
 		/* On crée une triangulation de ce rectangle */
 
-		triangles->push_back(new Triangle<S>(new ArcTU<S>(a0, true), new ArcTU<S>(a1, true), new ArcTU<S>(a2, true)));
-		triangles->push_back(new Triangle<S>(new ArcTU<S>(a0, false), new ArcTU<S>(a3, true), new ArcTU<S>(a4, true)));
+		triangles->push_back(new Triangle<S, T>(new ArcTU<T>(a0, true), new ArcTU<T>(a1, true), new ArcTU<T>(a2, true)));
+		triangles->push_back(new Triangle<S, T>(new ArcTU<T>(a0, false), new ArcTU<T>(a3, true), new ArcTU<T>(a4, true)));
 	}
 
 	/**
 	* Retourne le triangle contenant le sommet s, retourn null s'il n'en existe pas
 	*/
-	Triangle<S>* determiner_triangle_contenant_sommet(Sommet<Vecteur2D>* s) {
-		for (Triangle<S>* t : (*triangles))
+	Triangle<S, T>* determiner_triangle_contenant_sommet(Sommet<Vecteur2D>* s) {
+		for (Triangle<S, T>* t : (*triangles))
 			if (t->contientPoint(s))
 				return t;
 
@@ -121,11 +122,11 @@ private:
 	}
 
 	// Dtermine la liste des triangles  supprimer de la triangulation
-	void determiner_DTL(Sommet<Vecteur2D>* s, Triangle<S>* t) {
+	void determiner_DTL(Sommet<Vecteur2D>* s, Triangle<S, T>* t) {
 		if (t != NULL) {
 			DTL->push_back(t);
 			for (int i = 0; i < 3; i++) {
-				Triangle<S>* triangleAdjacent = trouver_triangle_adjacent(t->arcs[i]);
+				Triangle<S, T>* triangleAdjacent = trouver_triangle_adjacent(t->arcs[i]);
 				if (triangleAdjacent != NULL && count(DTL->begin(), DTL->end(), triangleAdjacent) == 0) {
 					Cercle cercle = triangleAdjacent->cercle_circonscrit();
 					if (cercle.contientPoint(s->v))
@@ -139,20 +140,20 @@ private:
 	* Dtermine la liste des triangles  rajouter  la triangulation
 	*/
 	void determiner_NTL(Sommet<Vecteur2D>* s) {
-		for (Triangle<S>* t : (*DTL)) {
+		for (Triangle<S, T>* t : (*DTL)) {
 			for (int i = 0; i < 3; i++) {
-				Triangle<S>* triangleAdjacent = trouver_triangle_adjacent(t->arcs[i]);
+				Triangle<S, T>* triangleAdjacent = trouver_triangle_adjacent(t->arcs[i]);
 				if ((triangleAdjacent == NULL /*|| count(DTL->begin(), DTL->end(), triangleAdjacent)*/)
 					&& !t->arcs[i]->estCollineaire(s)) {
 					//On crée le nouveau triangle
-					vector<ArcTU<S>*> arcs;
-					bool bonSens = t->arcs[i]->estAGauche(s);
+					vector<ArcTU<T>*> arcs;
+					bool bonTens = t->arcs[i]->estAGauche(s);
 
-					arcs.push_back(new ArcTU<S>(t->arcs[i]->arete, bonSens));
-					arcs.push_back(new ArcTU<S>(graphe->creeArete(S(), t->arcs[i]->fin(), s), bonSens));
-					arcs.push_back(new ArcTU<S>(graphe->creeArete(S(), s, t->arcs[i]->debut()), bonSens));
+					arcs.push_back(new ArcTU<T>(t->arcs[i]->arete, bonTens));
+					arcs.push_back(new ArcTU<T>(graphe->creeArete(T(), t->arcs[i]->fin(), s), bonTens));
+					arcs.push_back(new ArcTU<T>(graphe->creeArete(T(), s, t->arcs[i]->debut()), bonTens));
 
-					Triangle<S>* new_triangle = new Triangle<S>(arcs);
+					Triangle<S, T>* new_triangle = new Triangle<S, T>(arcs);
 					this->triangles->push_back(new_triangle);
 				}
 			}
@@ -160,14 +161,14 @@ private:
 	}
 
 	/**
-	* Supprime les triangles en commun dans DTL et Triangles
+	* Tupprime les triangles en commun dans DTL et Triangles
 	*/
 	void supprimer_DTL() {
 		int i;
-		for (Triangle<S>* dt : (*DTL)) {
+		for (Triangle<S, T>* dt : (*DTL)) {
 			i = 0;
 			if (dt != nullptr) {
-				for (Triangle<S>* t : (*triangles)) {
+				for (Triangle<S, T>* t : (*triangles)) {
 					if (dt == t) {
 						triangles->erase((triangles->begin() + i));
 						break;
@@ -184,10 +185,10 @@ private:
 	/**
 	* Retourne un triangle adjacent  l'arc a s'il en existe un, sinon retourne null
 	*/
-	Triangle<S>* trouver_triangle_adjacent(ArcTU<S> *arcA) {
+	Triangle<S, T>* trouver_triangle_adjacent(ArcTU<T> *arcA) {
 
-		for (Triangle<S>* triangle : (*triangles))
-			for (ArcTU<S> *arcB : triangle->arcs)
+		for (Triangle<S, T>* triangle : (*triangles))
+			for (ArcTU<T> *arcB : triangle->arcs)
 				if ((*arcB) != (*arcA) && arcA->arete->estEgal(arcB->arete->debut, arcB->arete->fin))
 					return triangle;
 

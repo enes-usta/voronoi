@@ -15,7 +15,7 @@
 
 #define MAX_ARRAY 1000
 
-vector<Face<Color*>*>* faces_GLOBAL;
+vector<Face<Color*, Color*>*>* faces_GLOBAL;
 vector<Sommet<Vecteur2D>*>* sommets_GLOBAL;
 bool scaled[MAX_ARRAY] = { false };
 
@@ -47,7 +47,7 @@ public:
     /**
     * Dessine la liste des faces passe en paramtre
     */
-    void dessiner(vector<Face<Color*>*>* faces, vector<Sommet<Vecteur2D>*>* sommets) {
+    void dessiner(vector<Face<Color*, Color*>*>* faces, vector<Sommet<Vecteur2D>*>* sommets) {
         // On met  l'chelle les faces
         faces_GLOBAL = scale(faces);
         sommets_GLOBAL = scale(sommets);
@@ -74,7 +74,7 @@ private:
     }
 
     static void dessinerFaces() {
-        for (Face<Color*>* face : (*faces_GLOBAL)) {
+        for (Face<Color*, Color*>* face : (*faces_GLOBAL)) {
             glBegin(GL_LINE_LOOP);
             for (ArcTU<Color*>* arc : face->arcs) {
                 if(arc->arete->v != nullptr)
@@ -99,7 +99,7 @@ private:
     static void dessinerSommets() {
         glPointSize(5);
 
-        for (Face<Color*>* face : (*faces_GLOBAL)) {
+        for (Face<Color*, Color*>* face : (*faces_GLOBAL)) {
             glBegin(GL_POINTS);
             for (ArcTU<Color*> *arc : face->arcs)
                 if (arc->bonSens)
@@ -158,12 +158,12 @@ private:
    * Met  l'chelle les faces
    * Les faces sont  l'chelle quand tout -1 <= x <= 1 et -1 <= y <=1
    */
-    vector<Face<Color*>*>* scale(vector<Face<Color*>*>* faces) {
+    vector<Face<Color*, Color*>*>* scale(vector<Face<Color*, Color*>*>* faces) {
         double maxX = 0;
         double maxY = 0;
         int absXArc, absYArc;
 
-        for (Face<Color*>* face : (*faces))
+        for (Face<Color*, Color*>* face : (*faces))
             for (ArcTU<Color*> *arc : face->arcs) {
                 // On calcule la coordonne la plus loigne en x et en y
                 absXArc = abs(arc->debut()->v.x);
@@ -175,7 +175,7 @@ private:
                     maxY = absYArc;
             }
 
-        for (Face<Color*>* face : (*faces))
+        for (Face<Color*, Color*>* face : (*faces))
             for (ArcTU<Color*> *arc : face->arcs) {
                 // On met  l'helle chaque coordonne
                 if (!scaled[arc->debut()->clef]) {

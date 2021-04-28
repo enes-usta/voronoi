@@ -9,7 +9,7 @@
 class Tortue {
 public:
 	vector<Sommet<Vecteur2D>*> *germes;
-	vector<Face<Color*>*> *cellules;
+	vector<Face<Color*, Color*>*> *cellules;
 	Graphe<char, Vecteur2D> * graphe;	
 	Color* color;
 
@@ -41,13 +41,13 @@ private:
 	}
 
 	void triangulateGermes() {
-		Triangulator<char> triangulator;
-		cellules = (vector<Face<Color*>*>*) triangulator.triangulate(germes, graphe);
+		Triangulator<char, char> triangulator;
+		cellules = (vector<Face<Color*, Color*>*>*) triangulator.triangulate(germes, graphe);
 		colorierCellules();
 	}
 
 	void colorierCellules() {
-		for (Face<Color*>* f : (*cellules)) {
+		for (Face<Color*, Color*>* f : (*cellules)) {
 			for (ArcTU<Color*> *arc : f->arcs) {
 				arc->arete->v = color;
 			}

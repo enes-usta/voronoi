@@ -7,17 +7,18 @@
 #include "Cercle.h"
 
 /**
-* S est la nature de l'information portée par une arête
+* T est la nature de l'information portée par une arête
+* S est la nature de l'information portée par cette face
 */
-template <class S>
-class Triangle : public Face<S> {
+template <class S, class T>
+class Triangle : public Face<S, T> {
 public:
 
     Triangle(){}
 
-    Triangle(vector<ArcTU<S>*> arcs) : Face<S>(arcs) {}
+    Triangle(vector<ArcTU<T>*> arcs) : Face<S, T>(arcs) {}
 
-    Triangle(ArcTU<S>* a1, ArcTU<S>* a2, ArcTU<S>* a3) : Face<S>() {
+    Triangle(ArcTU<T>* a1, ArcTU<T>* a2, ArcTU<T>* a3) : Face<S, T>() {
         this->arcs.push_back(a1);
         this->arcs.push_back(a2);
         this->arcs.push_back(a3);
@@ -47,7 +48,7 @@ public:
         return Cercle(centre, rayon);
     }
 
-    friend bool operator==(const Triangle<S>& lhs, const Triangle<S>& rhs) {
+    friend bool operator==(const Triangle<S, T>& lhs, const Triangle<S, T>& rhs) {
         return (lhs.arcs[0]->arete == rhs.arcs[0]->arete &&
             lhs.arcs[1]->arete == rhs.arcs[1]->arete &&
             lhs.arcs[2]->arete == rhs.arcs[2]->arete);
