@@ -9,11 +9,12 @@
 template <class S, class T>
 class Face{
 public:
+	S v;
 	vector<ArcTU<T>*> arcs;
 
 	Face() {}
 
-	Face(vector<ArcTU<T>*> arcs) {
+	Face(vector<ArcTU<T>*> arcs, const S& v): v(v){
 		this->arcs = arcs;
 		if (this->arcs.size() < 3)
 			throw "Une face est composée d'au moins 3 arcs!";

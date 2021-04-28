@@ -11,10 +11,11 @@ public:
 	vector<Sommet<Vecteur2D>*> *germes;
 	vector<Face<Color*, Color*>*> *cellules;
 	Graphe<char, Vecteur2D> * graphe;	
-	Color* color;
+	Color* edge_color, *face_color;
 
 	Tortue() {
-		color = new Color(224, 192, 103, 0);
+		edge_color = new Color(224, 192, 103, 0);
+		face_color = new Color(150, 78, 56, 0);
 		germes = new vector<Sommet<Vecteur2D>*>();
 		graphe = new Graphe<char, Vecteur2D>();
 		init_germes();
@@ -43,14 +44,14 @@ private:
 	void triangulateGermes() {
 		Triangulator<char, char> triangulator;
 		cellules = (vector<Face<Color*, Color*>*>*) triangulator.triangulate(germes, graphe);
-		colorierCellules();
+		colorier();
 	}
 
-	void colorierCellules() {
+	void colorier() {
 		for (Face<Color*, Color*>* f : (*cellules)) {
-			for (ArcTU<Color*> *arc : f->arcs) {
-				arc->arete->v = color;
-			}
+			f->v = face_color;
+			for (ArcTU<Color*> *arc : f->arcs)
+				arc->arete->v = edge_color;
 		}
 	}
 };

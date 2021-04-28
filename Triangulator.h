@@ -153,7 +153,7 @@ private:
 					arcs.push_back(new ArcTU<T>(graphe->creeArete(T(), t->arcs[i]->fin(), s), bonTens));
 					arcs.push_back(new ArcTU<T>(graphe->creeArete(T(), s, t->arcs[i]->debut()), bonTens));
 
-					Triangle<S, T>* new_triangle = new Triangle<S, T>(arcs);
+					Triangle<S, T>* new_triangle = new Triangle<S, T>(arcs, S());
 					this->triangles->push_back(new_triangle);
 				}
 			}

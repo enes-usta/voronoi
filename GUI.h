@@ -73,12 +73,26 @@ private:
         glEnd();
     }
 
-    static void dessinerFaces() {
+    static void dessinerAretes() {
+        glLineWidth(5);
+
         for (Face<Color*, Color*>* face : (*faces_GLOBAL)) {
             glBegin(GL_LINE_LOOP);
             for (ArcTU<Color*>* arc : face->arcs) {
                 if(arc->arete->v != nullptr)
                     glColor3f(arc->arete->v->r, arc->arete->v->g, arc->arete->v->b);
+                glVertex2f((float)arc->debut()->v.x, (float)arc->debut()->v.y);
+            }
+            glEnd();
+        }
+    }
+
+    static void dessinerFaces() {
+        for (Face<Color*, Color*>* face : (*faces_GLOBAL)) {
+            glBegin(GL_POLYGON);
+            if (face->v != nullptr)
+                glColor3f(face->v->r, face->v->g, face->v->b);
+            for (ArcTU<Color*>* arc : face->arcs) {
                 glVertex2f((float)arc->debut()->v.x, (float)arc->debut()->v.y);
             }
             glEnd();
@@ -117,8 +131,12 @@ private:
         dessinerAxes();
 
         //On dessine les faces
-        glColor3f(1.0f, 1.0f, 1.0f); // Blanc
+        glColor3f(0.0f, 0.0f, 0.0f); // Noir
         dessinerFaces();
+
+        //On dessine les arêtes
+        glColor3f(1.0f, 1.0f, 1.0f); // Blanc
+        dessinerAretes();
 
         //On dessine les sommets
         glColor3f(0.0f, 0.0f, 1.0f); // Bleu
