@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 
 
 	//-------------- on dessine la triangulation -----------------------
-	Triangulator<Color*> triangulator;
+	Triangulator<Color*, Color*> triangulator;
 
 	vector<Sommet<Vecteur2D>*>* sommets = new vector<Sommet<Vecteur2D>*>;
 	//sommets->push_back(s0);
@@ -57,11 +57,12 @@ int main(int argc, char** argv)
 	for (int i = 0; i < 20; i++)
 		sommets->push_back(graphe->creeSommet(Vecteur2D(distribution(generator), distribution(generator))));
 
-	vector<Triangle<Color*>*>* triangulation = triangulator.triangulate(sommets, graphe);
+	vector<Triangle<Color*, Color*>*>* triangulation = triangulator.triangulate(sommets, graphe);
 
 	GUI gui(argc, argv);
 
-	gui.dessiner((vector<Face<Color*>*>*)triangulation, sommets);
+	gui.dessiner((vector<Face<Color*, Color*>*>*)triangulation, sommets);
 	return 0;
 
-}*/
+}
+*/

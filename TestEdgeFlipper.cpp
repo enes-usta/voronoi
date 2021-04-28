@@ -49,9 +49,11 @@ int main(int argc, char** argv)
 	sommets->push_back(c);
 	sommets->push_back(d);
 
+	EdgeFlipper<Color*, Color*> ef;
+
 	GUI gui(argc, argv);
 
-	gui.dessiner((vector<Face<Color*, Color*>*>*)triangulation, sommets);
+	gui.dessiner((vector<Face<Color*, Color*>*>*)ef.EdgeFlipDelaunay(triangulation, graphe), sommets);
 	return 0;
 
 }

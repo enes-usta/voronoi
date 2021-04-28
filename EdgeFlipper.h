@@ -43,8 +43,8 @@ public:
 					Triangle<S, T>* triangle_adjacent = trouver_triangle_adjacent(arc);
 					if (triangle_adjacent != NULL) {
 						ArcTU<T>* arc2 = trouver_arc_adjacent(arc, triangle_adjacent);
-						cout << "ici" <<endl;
 						if (shouldFlip(t, triangle_adjacent, arc, arc2)) {
+							cout << "ici" << endl;
 							flip(t, triangle_adjacent, arc, arc2);
 							amelioration = true;
 							goto next;
@@ -78,19 +78,28 @@ public:
 	* Flip l'arête commune aux deux triangles compris dans les deux arcs
 	* Supprime les deux triangles concernés et en crée deux nouveaux dans la triangulation 
 	*/
-	void flip(Triangle<S, T>* t, Triangle<S, T>* t2, ArcTU<T>* arc, ArcTU<T>* arc2){
+	void flip(Triangle<S, T>* triangle, Triangle<S, T>* triangle2, ArcTU<T>* arc, ArcTU<T>* arc2){
 		Sommet<Vecteur2D>* a, * b, * c, * d;
 
 		a = arc->debut();
 		b = arc->fin();
-		c = t->sommet_oppose(arc);
-		d = t->sommet_oppose(arc2);
+		c = triangle->sommet_oppose(arc);
+		d = triangle2->sommet_oppose(arc2);
 		
-		remove(triangulation->begin(), triangulation->end(), t);
-		remove(triangulation->begin(), triangulation->end(), t2);
-
 		//delete t;
 		//delete t2;
+
+		remove(triangulation->begin(), triangulation->end(), triangle); //marche pas 
+		remove(triangulation->begin(), triangulation->end(), triangle2); // marche pas
+
+		int i = 0;
+		for (Triangle<S, T>* t : (*triangulation)) {
+			if(t == triangle)
+				triangulation->erase((triangulation->begin() + i));
+			i++;
+		}
+
+		
 
 		Arete<T, Vecteur2D>* bc = graphe->creeArete(T(), b, c);
 		Arete<T, Vecteur2D>* cd = graphe->creeArete(T(), c, d);
