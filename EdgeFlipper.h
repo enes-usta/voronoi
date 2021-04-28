@@ -40,10 +40,10 @@ public:
 			amelioration = false;
 			for (Triangle<S, T>* t : (*triangulation)) {
 				for (ArcTU<T> *arc : t->arcs) {
-					Triangle<S, T>* triangle_adjacent = trouver_triangle_adjacent(t, arc);
+					Triangle<S, T>* triangle_adjacent = trouver_triangle_adjacent(arc);
 					if (triangle_adjacent != NULL) {
 						ArcTU<T>* arc2 = trouver_arc_adjacent(arc, triangle_adjacent);
-
+						cout << "ici" <<endl;
 						if (shouldFlip(t, triangle_adjacent, arc, arc2)) {
 							flip(t, triangle_adjacent, arc, arc2);
 							amelioration = true;
@@ -105,13 +105,12 @@ public:
 	/**
 	* Retourne un triangle adjacent l'arc s'il en existe un, sinon retourne null
 	*/
-	Triangle<S, T>* trouver_triangle_adjacent(Triangle<S, T>* triangle, ArcTU<T>* arc) {
+	Triangle<S, T>* trouver_triangle_adjacent(ArcTU<T>* arc) {
 
-		for (Triangle<S, T>* triangleB : (*triangulation))
-			//if (triangle != triangleB)
-			for (ArcTU<T>* arcB : triangleB->arcs)
-				if (((*arc) != (*arcB)) && arc->arete->estEgal(arcB->debut(), arcB->fin()))
-					return triangleB;
+		for (Triangle<S, T>* triangle : (*triangulation))
+			for (ArcTU<T>* arcB : triangle->arcs)
+				if ((*arc) != (*arcB) && arc->arete->estEgal(arcB->debut(), arcB->fin()))
+					return triangle;
 
 		return NULL;
 	}

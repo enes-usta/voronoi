@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TestDelaunayTriangulation.cpp" />
+    <ClCompile Include="TestEdgeFlipper.cpp" />
     <ClCompile Include="TestGrapheGeneral.cpp" />
     <ClCompile Include="TestOpenGL.cpp" />
     <ClCompile Include="TestTortue.cpp" />

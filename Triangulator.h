@@ -166,9 +166,9 @@ private:
 	Triangle<S, T>* trouver_triangle_adjacent(Triangle<S, T>* triangle, ArcTU<T>* arc) {
 
 		for (Triangle<S, T>* triangleB : (*triangulation))
-			//if (triangle != triangleB)
+			//if ((*triangle) != (*triangleB))
 				for (ArcTU<T>* arcB : triangleB->arcs)
-					if (((*arc) != (*arcB)) && arc->arete->estEgal(arcB->debut(), arcB->fin()))
+					if ((*arc) != (*arcB) && arc->arete->estEgal(arcB->debut(), arcB->fin()))
 						return triangleB;
 
 		return NULL;

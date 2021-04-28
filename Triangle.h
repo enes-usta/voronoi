@@ -64,10 +64,4 @@ public:
         return NULL;
     }
 
-    friend bool operator==(const Triangle<S, T>& lhs, const Triangle<S, T>& rhs) {
-        return (lhs.arcs[0]->arete == rhs.arcs[0]->arete &&
-            lhs.arcs[1]->arete == rhs.arcs[1]->arete &&
-            lhs.arcs[2]->arete == rhs.arcs[2]->arete);
-    }
-
 };

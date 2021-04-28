@@ -33,11 +33,12 @@ public:
 	}
 
 	friend bool operator==(const Face<S, T>& lhs, const Face<S, T>& rhs) {
-		if (lhs.size() != rhs.size())
+		if (lhs.arcs.size() != rhs.arcs.size())
 			return false;
 
-		for (int i = 0; i < lhs.size(); i++)
-			if (lhs.arcs[i]->arete != rhs.arcs[i]->arete)
+		for (int i = 0; i < lhs.arcs.size(); i++)
+			if (!(lhs.arcs[i]->arete->estEgal(rhs.arcs[i]->arete->debut, rhs.arcs[i]->arete->fin))
+				|| lhs.arcs[i]->bonSens != rhs.arcs[i]->bonSens)
 				return false;
 
 		return true;
