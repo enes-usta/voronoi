@@ -48,6 +48,22 @@ public:
         return Cercle(centre, rayon);
     }
 
+    Sommet<Vecteur2D>* sommet_oppose(ArcTU<T>* arc) {
+        for (ArcTU<T> *a : this->arcs) {
+            Sommet<Vecteur2D>* s = a->debut();
+            Sommet<Vecteur2D>* s2 = a->fin();
+
+            if ((s->v.x != arc->debut()->v.x && s->v.y != arc->debut()->v.y)
+                && (s->v.x != arc->fin()->v.x && s->v.y != arc->fin()->v.y))
+                return s;
+
+            if ((s2->v.x != arc->debut()->v.x && s2->v.y != arc->debut()->v.y)
+                && (s2->v.x != arc->fin()->v.x && s2->v.y != arc->fin()->v.y))
+                return s2;
+        }
+        return NULL;
+    }
+
     friend bool operator==(const Triangle<S, T>& lhs, const Triangle<S, T>& rhs) {
         return (lhs.arcs[0]->arete == rhs.arcs[0]->arete &&
             lhs.arcs[1]->arete == rhs.arcs[1]->arete &&

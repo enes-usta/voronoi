@@ -110,17 +110,6 @@ private:
 		return creeArete1(clef, info, debut, fin);
 	}
 
-	/**
-	 * crée un arc 
-	 * */
-
-	Arete<S, T>* creeArc(const int clef, const S& info, Sommet<T>* debut, Sommet<T>* fin, bool ccw)
-	{
-		majProchaineClef(clef);
-		Arete<S, T>* a = creeArete(clef, info, debut, fin);
-		return ArcTU(a, ccw);
-	}
-
 public:
 	/**
 	 * crée une arête joignant les 2 sommets debut et fin

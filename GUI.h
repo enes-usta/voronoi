@@ -74,7 +74,7 @@ private:
     }
 
     static void dessinerAretes() {
-        glLineWidth(5);
+        glLineWidth(3);
 
         for (Face<Color*, Color*>* face : (*faces_GLOBAL)) {
             glBegin(GL_LINE_LOOP);
@@ -92,15 +92,15 @@ private:
             glBegin(GL_POLYGON);
             if (face->v != nullptr)
                 glColor3f(face->v->r, face->v->g, face->v->b);
-            for (ArcTU<Color*>* arc : face->arcs) {
+            for (ArcTU<Color*>* arc : face->arcs)
                 glVertex2f((float)arc->debut()->v.x, (float)arc->debut()->v.y);
-            }
             glEnd();
         }
     }
 
     static void dessinerSommetsATrianguler() {
         glPointSize(5);
+
         if (sommets_GLOBAL->size()) {
             glBegin(GL_POINTS);
             for (Sommet<Vecteur2D>* s : (*sommets_GLOBAL))

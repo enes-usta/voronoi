@@ -25,6 +25,7 @@
     <ClInclude Include="Arete.h" />
     <ClInclude Include="Cercle.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="DelaunayTriangulator.h" />
     <ClInclude Include="EdgeFlipper.h" />
     <ClInclude Include="Erreur.h" />
     <ClInclude Include="Face.h" />
@@ -40,6 +41,7 @@
     <ClInclude Include="Triangulator.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="TestDelaunayTriangulation.cpp" />
     <ClCompile Include="TestGrapheGeneral.cpp" />
     <ClCompile Include="TestOpenGL.cpp" />
     <ClCompile Include="TestTortue.cpp" />
