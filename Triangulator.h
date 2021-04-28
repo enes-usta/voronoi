@@ -38,11 +38,10 @@ public:
 				determiner_NTL(s);
 				supprimer_DTL();
 			}
-			else
+			else 
 				throw Erreur("Aucun triangle contenant le sommet trouvé");
-
 		}
-
+		end:
 		return triangles;
 	}
 
@@ -106,8 +105,8 @@ private:
 
 		/* On crée une triangulation de ce rectangle */
 
-		triangles->push_back(new Triangle<S>(ArcTU<S>(a0, true), ArcTU<S>(a1, true), ArcTU<S>(a2, true)));
-		triangles->push_back(new Triangle<S>(ArcTU<S>(a0, false), ArcTU<S>(a3, true), ArcTU<S>(a4, true)));
+		triangles->push_back(new Triangle<S>(new ArcTU<S>(a0, true), new ArcTU<S>(a1, true), new ArcTU<S>(a2, true)));
+		triangles->push_back(new Triangle<S>(new ArcTU<S>(a0, false), new ArcTU<S>(a3, true), new ArcTU<S>(a4, true)));
 	}
 
 	/**
@@ -144,14 +143,14 @@ private:
 			for (int i = 0; i < 3; i++) {
 				Triangle<S>* triangleAdjacent = trouver_triangle_adjacent(t->arcs[i]);
 				if ((triangleAdjacent == NULL /*|| count(DTL->begin(), DTL->end(), triangleAdjacent)*/)
-					&& !t->arcs[i].estCollineaire(s)) {
+					&& !t->arcs[i]->estCollineaire(s)) {
 					//On crée le nouveau triangle
-					vector<ArcTU<S>> arcs;
-					bool bonSens = t->arcs[i].estAGauche(s);
+					vector<ArcTU<S>*> arcs;
+					bool bonSens = t->arcs[i]->estAGauche(s);
 
-					arcs.push_back(ArcTU<S>(t->arcs[i].arete, bonSens));
-					arcs.push_back(ArcTU<S>(graphe->creeArete(S(), t->arcs[i].fin(), s), bonSens));
-					arcs.push_back(ArcTU<S>(graphe->creeArete(S(), s, t->arcs[i].debut()), bonSens));
+					arcs.push_back(new ArcTU<S>(t->arcs[i]->arete, bonSens));
+					arcs.push_back(new ArcTU<S>(graphe->creeArete(S(), t->arcs[i]->fin(), s), bonSens));
+					arcs.push_back(new ArcTU<S>(graphe->creeArete(S(), s, t->arcs[i]->debut()), bonSens));
 
 					Triangle<S>* new_triangle = new Triangle<S>(arcs);
 					this->triangles->push_back(new_triangle);
@@ -185,11 +184,11 @@ private:
 	/**
 	* Retourne un triangle adjacent  l'arc a s'il en existe un, sinon retourne null
 	*/
-	Triangle<S>* trouver_triangle_adjacent(ArcTU<S> arcA) {
+	Triangle<S>* trouver_triangle_adjacent(ArcTU<S> *arcA) {
 
 		for (Triangle<S>* triangle : (*triangles))
-			for (ArcTU<S> arcB : triangle->arcs)
-				if (arcB != arcA && arcA.arete->estEgal(arcB.arete->debut, arcB.arete->fin))
+			for (ArcTU<S> *arcB : triangle->arcs)
+				if ((*arcB) != (*arcA) && arcA->arete->estEgal(arcB->arete->debut, arcB->arete->fin))
 					return triangle;
 
 		return NULL;

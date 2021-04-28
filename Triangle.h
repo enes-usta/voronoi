@@ -15,9 +15,9 @@ public:
 
     Triangle(){}
 
-    Triangle(vector<ArcTU<S>> arcs) : Face<S>(arcs) {}
+    Triangle(vector<ArcTU<S>*> arcs) : Face<S>(arcs) {}
 
-    Triangle(ArcTU<S> a1, ArcTU<S> a2, ArcTU<S> a3) : Face<S>() {
+    Triangle(ArcTU<S>* a1, ArcTU<S>* a2, ArcTU<S>* a3) : Face<S>() {
         this->arcs.push_back(a1);
         this->arcs.push_back(a2);
         this->arcs.push_back(a3);
@@ -28,9 +28,9 @@ public:
     */
     Cercle cercle_circonscrit() {
 
-        Vecteur2D a = this->arcs[0].debut()->v;
-        Vecteur2D b = this->arcs[1].debut()->v;
-        Vecteur2D c = this->arcs[2].debut()->v;
+        Vecteur2D a = this->arcs[0]->debut()->v;
+        Vecteur2D b = this->arcs[1]->debut()->v;
+        Vecteur2D c = this->arcs[2]->debut()->v;
 
         Vecteur2D centre;
         // Les formules : https://en.wikipedia.org/wiki/Circumscribed_circle#Circumcenter_coordinates
@@ -40,7 +40,7 @@ public:
         centre.y = ((a.x * a.x + a.y * a.y) * (c.x - b.x) + (b.x * b.x + b.y * b.y) * (a.x - c.x) + (c.x * c.x + c.y * c.y) * (b.x - a.x)) / d;
 
         //Un sommet du triangle
-        Vecteur2D s = this->arcs[0].arete->debut->v;
+        Vecteur2D s = this->arcs[0]->arete->debut->v;
 
         //Le rayon est égal à la distance entre le centre du cercle circonscrit et un des sommets du triangle
         double rayon = sqrt((s.x - centre.x) * (s.x - centre.x) + (s.y - centre.y) * (s.y - centre.y));
@@ -48,9 +48,9 @@ public:
     }
 
     friend bool operator==(const Triangle<S>& lhs, const Triangle<S>& rhs) {
-        return (lhs.arcs[0].arete == rhs.arcs[0].arete &&
-            lhs.arcs[1].arete == rhs.arcs[1].arete &&
-            lhs.arcs[2].arete == rhs.arcs[2].arete);
+        return (lhs.arcs[0]->arete == rhs.arcs[0]->arete &&
+            lhs.arcs[1]->arete == rhs.arcs[1]->arete &&
+            lhs.arcs[2]->arete == rhs.arcs[2]->arete);
     }
 
 };

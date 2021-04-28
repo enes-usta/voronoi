@@ -76,10 +76,10 @@ private:
     static void dessinerFaces() {
         for (Face<Color*>* face : (*faces_GLOBAL)) {
             glBegin(GL_LINE_LOOP);
-            for (ArcTU<Color*> arc : face->arcs) {
-                if(arc.arete->v != nullptr)
-                    glColor3f(arc.arete->v->r, arc.arete->v->g, arc.arete->v->b);
-                glVertex2f((float)arc.debut()->v.x, (float)arc.debut()->v.y);
+            for (ArcTU<Color*>* arc : face->arcs) {
+                if(arc->arete->v != nullptr)
+                    glColor3f(arc->arete->v->r, arc->arete->v->g, arc->arete->v->b);
+                glVertex2f((float)arc->debut()->v.x, (float)arc->debut()->v.y);
             }
             glEnd();
         }
@@ -101,9 +101,9 @@ private:
 
         for (Face<Color*>* face : (*faces_GLOBAL)) {
             glBegin(GL_POINTS);
-            for (ArcTU<Color*> arc : face->arcs)
-                if (arc.bonSens)
-                    glVertex2f((float)arc.debut()->v.x, (float)arc.debut()->v.y);
+            for (ArcTU<Color*> *arc : face->arcs)
+                if (arc->bonSens)
+                    glVertex2f((float)arc->debut()->v.x, (float)arc->debut()->v.y);
             glEnd();
         }
     }
@@ -164,10 +164,10 @@ private:
         int absXArc, absYArc;
 
         for (Face<Color*>* face : (*faces))
-            for (ArcTU<Color*> arc : face->arcs) {
+            for (ArcTU<Color*> *arc : face->arcs) {
                 // On calcule la coordonne la plus loigne en x et en y
-                absXArc = abs(arc.debut()->v.x);
-                absYArc = abs(arc.debut()->v.y);
+                absXArc = abs(arc->debut()->v.x);
+                absYArc = abs(arc->debut()->v.y);
 
                 if (maxX < absXArc)
                     maxX = absXArc;
@@ -176,12 +176,12 @@ private:
             }
 
         for (Face<Color*>* face : (*faces))
-            for (ArcTU<Color*> arc : face->arcs) {
+            for (ArcTU<Color*> *arc : face->arcs) {
                 // On met  l'helle chaque coordonne
-                if (!scaled[arc.debut()->clef]) {
-                    arc.debut()->v.x /= (maxX / scale_factor);
-                    arc.debut()->v.y /= (maxY / scale_factor);
-                    scaled[arc.debut()->clef] = true;
+                if (!scaled[arc->debut()->clef]) {
+                    arc->debut()->v.x /= (maxX / scale_factor);
+                    arc->debut()->v.y /= (maxY / scale_factor);
+                    scaled[arc->debut()->clef] = true;
                 }
 
             }

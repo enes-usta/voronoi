@@ -2,15 +2,14 @@
 
 class Color {
 public:
-	int r, g, b, a;
+	float r, g, b, a;
 	Color() {}
 	~Color() {}
 
 	Color(int r, int g, int b, int a) {
-		this->r = r;
-		this->g = g;
-		this->b = b;
-		this->a = a;
+		this->r = (float)r/255;
+		this->g = (float)g/255;
+		this->b = (float)b/255;
+		this->a = (float)a/255;
 	}
-
 };

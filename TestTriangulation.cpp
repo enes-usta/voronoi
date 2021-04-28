@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 	//uniform_real_distribution<double> distribution(-1, 1);
 
 
-	Graphe<char, Vecteur2D>* graphe = new Graphe<char, Vecteur2D>;	// cration  vide
+	Graphe<Color*, Vecteur2D>* graphe = new Graphe<Color*, Vecteur2D>;	// cration  vide
 	Sommet<Vecteur2D>* s0, * s1, * s2, * s3, * s4;
 
 	//------------------ on insre des nouveaux sommets isols --------------------
@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 
 
 	//-------------- on dessine la triangulation -----------------------
-	Triangulator<char> triangulator;
+	Triangulator<Color*> triangulator;
 
 	vector<Sommet<Vecteur2D>*>* sommets = new vector<Sommet<Vecteur2D>*>;
 	//sommets->push_back(s0);
@@ -57,12 +57,11 @@ int main(int argc, char** argv)
 	for (int i = 0; i < 20; i++)
 		sommets->push_back(graphe->creeSommet(Vecteur2D(distribution(generator), distribution(generator))));
 
-	vector<Face<char>*>* triangulation = triangulator.triangulate(sommets, graphe);
+	vector<Triangle<Color*>*>* triangulation = triangulator.triangulate(sommets, graphe);
 
 	GUI gui(argc, argv);
 
-	gui.dessiner(triangulation, sommets);
+	gui.dessiner((vector<Face<Color*>*>*)triangulation, sommets);
 	return 0;
 
-}
-*/
+}*/
