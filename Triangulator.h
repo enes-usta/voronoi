@@ -126,7 +126,7 @@ private:
 		if (t != NULL) {
 			DTL->push_back(t);
 			for (int i = 0; i < 3; i++) {
-				Triangle<S, T>* triangleAdjacent = trouver_triangle_adjacent(t, t->arcs[i]);
+				Triangle<S, T>* triangleAdjacent = trouver_triangle_adjacent(t->arcs[i]);
 				if (triangleAdjacent != NULL && count(DTL->begin(), DTL->end(), triangleAdjacent) == 0) {
 					Cercle cercle = triangleAdjacent->cercle_circonscrit();
 					if (cercle.contientPoint(s->v))
@@ -142,7 +142,7 @@ private:
 	void determiner_NTL(Sommet<Vecteur2D>* s) {
 		for (Triangle<S, T>* t : (*DTL)) {
 			for (int i = 0; i < 3; i++) {
-				Triangle<S, T>* triangleAdjacent = trouver_triangle_adjacent(t, t->arcs[i]);
+				Triangle<S, T>* triangleAdjacent = trouver_triangle_adjacent(t->arcs[i]);
 				if ((triangleAdjacent == NULL /*|| count(DTL->begin(), DTL->end(), triangleAdjacent)*/)
 					&& !t->arcs[i]->estCollineaire(s)) {
 					//On crée le nouveau triangle
@@ -163,10 +163,9 @@ private:
 	/**
 	* Retourne un triangle adjacent l'arc s'il en existe un, sinon retourne null
 	*/
-	Triangle<S, T>* trouver_triangle_adjacent(Triangle<S, T>* triangle, ArcTU<T>* arc) {
+	Triangle<S, T>* trouver_triangle_adjacent(ArcTU<T>* arc) {
 
 		for (Triangle<S, T>* triangleB : (*triangulation))
-			//if ((*triangle) != (*triangleB))
 				for (ArcTU<T>* arcB : triangleB->arcs)
 					if ((*arc) != (*arcB) && arc->arete->estEgal(arcB->debut(), arcB->fin()))
 						return triangleB;

@@ -37,13 +37,14 @@ public:
 
 		while (amelioration) {
 			amelioration = false;
-			for (Triangle<S, T>* t : (*triangulation)) {
-				for (ArcTU<T> *arc : t->arcs) {
+			for (Triangle<S, T>* triangle : (*(this->triangulation))) {
+				for (ArcTU<T> *arc : triangle->arcs) {
 					Triangle<S, T>* triangle_adjacent = trouver_triangle_adjacent(arc);
 					if (triangle_adjacent != NULL) {
+						cout << "ici" << endl;
 						ArcTU<T>* arc2 = trouver_arc_adjacent(arc, triangle_adjacent);
-						if (shouldFlip(t, triangle_adjacent, arc, arc2)) {
-							flip(t, triangle_adjacent, arc, arc2);
+						if (shouldFlip(triangle, triangle_adjacent, arc, arc2)) {
+							flip(triangle, triangle_adjacent, arc, arc2);
 							amelioration = true;
 							goto next;
 						}
@@ -83,9 +84,6 @@ public:
 		b = arc->fin();
 		c = triangle->sommet_oppose(arc);
 		d = triangle2->sommet_oppose(arc2);
-
-		//remove(triangulation->begin(), triangulation->end(), triangle); //marche pas 
-		//remove(triangulation->begin(), triangulation->end(), triangle2); // marche pas
 
 		supprimer_triangle(triangle);
 		supprimer_triangle(triangle2);

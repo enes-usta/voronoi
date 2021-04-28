@@ -1,4 +1,4 @@
-/*#include <iostream>
+#include <iostream>
 #include <string>
 #include "Graphe.h"
 #include "Triangle.h"
@@ -53,7 +53,7 @@ int main(int argc, char** argv)
 	//sommets->push_back(s4);
 
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < 3; i++)
 		sommets->push_back(graphe->creeSommet(Vecteur2D(distribution(generator), distribution(generator))));
 
 	vector<Triangle<Color*, Color*>*>* triangulation = delaunayTriangulator.triangulate(sommets, graphe);
@@ -64,4 +64,3 @@ int main(int argc, char** argv)
 	return 0;
 
 }
-*/
