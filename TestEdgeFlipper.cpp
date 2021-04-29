@@ -56,5 +56,4 @@ int main(int argc, char** argv)
 	gui.dessiner((vector<Face<Color*, Color*>*>*)ef.EdgeFlipDelaunay(triangulation, graphe), sommets);
 	return 0;
 
-}
-*/
+}*/

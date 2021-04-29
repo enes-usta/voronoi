@@ -116,8 +116,7 @@ private:
         for (Face<Color*, Color*>* face : (*faces_GLOBAL)) {
             glBegin(GL_POINTS);
             for (ArcTU<Color*> *arc : face->arcs)
-                if (arc->bonSens)
-                    glVertex2f((float)arc->debut()->v.x, (float)arc->debut()->v.y);
+                glVertex2f((float)arc->debut()->v.x, (float)arc->debut()->v.y);
             glEnd();
         }
     }

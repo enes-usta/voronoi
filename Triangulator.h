@@ -42,7 +42,9 @@ public:
 			else 
 				throw Erreur("Aucun triangle contenant le sommet trouvé");
 		}
-		end:
+
+		cout << les_arcs_sont_bien_orientes() << endl;
+
 		return triangulation;
 	}
 
@@ -137,9 +139,10 @@ private:
 	}
 
 	/**
-	* Dtermine la liste des trriangles à rajouter à la triangulation
+	* Dtermine la liste des triangles à rajouter à la triangulation
 	*/
 	void determiner_NTL(Sommet<Vecteur2D>* s) {
+		vector<ArcTU<T>*> arcs_crees;
 		for (Triangle<S, T>* t : (*DTL)) {
 			for (int i = 0; i < 3; i++) {
 				Triangle<S, T>* triangleAdjacent = trouver_triangle_adjacent(t->arcs[i]);
@@ -147,14 +150,39 @@ private:
 					&& !t->arcs[i]->estCollineaire(s)) {
 					//On crée le nouveau triangle
 					vector<ArcTU<T>*> arcs;
-					bool bonTens = t->arcs[i]->estAGauche(s);
 
-					arcs.push_back(new ArcTU<T>(t->arcs[i]->arete, bonTens));
-					arcs.push_back(new ArcTU<T>(graphe->creeArete(T(), t->arcs[i]->fin(), s), bonTens));
-					arcs.push_back(new ArcTU<T>(graphe->creeArete(T(), s, t->arcs[i]->debut()), bonTens));
+					//premier arc, rien ne change
+					arcs.push_back(t->arcs[i]);
 
-					Triangle<S, T>* new_triangle = new Triangle<S, T>(arcs, S());
-					this->triangulation->push_back(new_triangle);
+					//deuxième arc, si on a créé un arc ayant la même arête, on réutilise l'arête
+					bool cree = false;
+					for (ArcTU<T>* arc : arcs_crees) {
+						if (arc->arete->estEgal(t->arcs[i]->fin(), s)) {
+							arcs.push_back(new ArcTU<T>(arc->arete, !arc->bonSens));
+							cree = true;
+						}
+					}
+					if (!cree) {
+						ArcTU<T>* arc = new ArcTU<T>(graphe->creeArete(T(), t->arcs[i]->fin(), s), true);
+						arcs_crees.push_back(arc);
+						arcs.push_back(arc);
+					}
+
+					//troisième arc, même logique que pour le deuxième
+					cree = false;
+					for (ArcTU<T>* arc : arcs_crees) {
+						if (arc->arete->estEgal(s, t->arcs[i]->debut())) {
+							arcs.push_back(new ArcTU<T>(arc->arete, !arc->bonSens));
+							cree = true;
+						}
+					}
+					if (!cree) {
+						ArcTU<T>* arc = new ArcTU<T>(graphe->creeArete(T(), s, t->arcs[i]->debut()), true);
+						arcs_crees.push_back(arc);
+						arcs.push_back(arc);
+					}
+
+					this->triangulation->push_back(new Triangle<S, T>(arcs, S()));
 				}
 			}
 		}
@@ -193,5 +221,35 @@ private:
 		}
 
 		DTL->clear();
+	}
+
+
+	bool les_arcs_sont_bien_orientes() {
+		int cpt = 0;
+		for (Triangle<S, T>* triangle : (*triangulation)) {
+			for (ArcTU<T>* arc : triangle->arcs) {
+				ArcTU<T>* arc2 = trouver_arc_adjacent(arc);
+				if (arc2 != NULL) {
+					cpt++;
+					if (arc->bonSens == arc2->bonSens)
+						return false;
+				}
+			}
+		}
+
+		return cpt > 0;
+	}
+
+	/**
+	* Retourne l'arc adjacent à l'arc dans la triangulation s'il en existe un
+	*/
+	ArcTU<T>* trouver_arc_adjacent(ArcTU<T>* arc) {
+		Triangle<S, T>* triangle = trouver_triangle_adjacent(arc);
+		if (triangle != NULL)
+			for (ArcTU<T>* arcB : triangle->arcs)
+				if (arc->arete->estEgal(arcB->arete->debut, arcB->arete->fin))
+					return arcB;
+
+		return NULL;
 	}
 };

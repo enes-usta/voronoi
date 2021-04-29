@@ -53,12 +53,12 @@ public:
             Sommet<Vecteur2D>* s = a->debut();
             Sommet<Vecteur2D>* s2 = a->fin();
 
-            if ((s->v.x != arc->debut()->v.x && s->v.y != arc->debut()->v.y)
-                && (s->v.x != arc->fin()->v.x && s->v.y != arc->fin()->v.y))
+            if ((s->v.x != arc->debut()->v.x || s->v.y != arc->debut()->v.y)
+                && (s->v.x != arc->fin()->v.x || s->v.y != arc->fin()->v.y))
                 return s;
 
-            if ((s2->v.x != arc->debut()->v.x && s2->v.y != arc->debut()->v.y)
-                && (s2->v.x != arc->fin()->v.x && s2->v.y != arc->fin()->v.y))
+            if ((s2->v.x != arc->debut()->v.x || s2->v.y != arc->debut()->v.y)
+                && (s2->v.x != arc->fin()->v.x || s2->v.y != arc->fin()->v.y))
                 return s2;
         }
         return NULL;

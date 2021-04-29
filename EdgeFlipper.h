@@ -42,7 +42,6 @@ public:
 				for (ArcTU<T> *arc : triangle->arcs) {
 					Triangle<S, T>* triangle_adjacent = trouver_triangle_adjacent(arc);
 					if (triangle_adjacent != NULL) {
-						cout << "ici" << endl;
 						ArcTU<T>* arc2 = trouver_arc_adjacent(arc, triangle_adjacent);
 						if (shouldFlip(triangle, triangle_adjacent, arc, arc2)) {
 							flip(triangle, triangle_adjacent, arc, arc2);
@@ -106,9 +105,23 @@ public:
 
 		for (Triangle<S, T>* triangle : (*triangulation))
 			for (ArcTU<T>* arcB : triangle->arcs)
-				if ((*arc) != (*arcB) && arc->arete->estEgal(arcB->debut(), arcB->fin()))
-					return triangle;
+				if((*arc) != (*arcB))
+					if (arc->arete->estEgal(arcB->arete->debut, arcB->arete->fin))
+						return triangle;
 
+		return NULL;
+	}
+
+	/**
+	* Retourne l'arc adjacent à l'arc dans la triangulation s'il en existe un
+	*/
+	ArcTU<T>* trouver_arc_adjacent(ArcTU<T>* arc) {
+		Triangle<S, T>* triangle = trouver_triangle_adjacent(arc);
+		if (triangle != NULL) 
+			for (ArcTU<T>* arcB : triangle->arcs)
+				if (arc->arete->estEgal(arcB->arete->debut, arcB->arete->fin))
+					return arcB;
+		
 		return NULL;
 	}
 
@@ -152,5 +165,22 @@ public:
 			}
 			i++;
 		}
+	}
+
+
+	bool les_arcs_sont_bien_orientes() {
+		int cpt = 0;
+		for (Triangle<S, T>* triangle : (*triangulation)) {
+			for (ArcTU<T>* arc : triangle->arcs) {
+				ArcTU<T>* arc2 = trouver_arc_adjacent(arc);
+				if (arc2 != NULL) {
+					cpt++;
+					if (arc->bonSens == arc2->bonSens)
+						return false;
+				}	
+			}
+		}
+
+		return cpt > 0;
 	}
 };
