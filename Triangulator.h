@@ -15,7 +15,7 @@ using namespace std;
 /*
 * Classe Triangulator
 * Prends en entre une liste de sommets
-* et crée une triangulation
+* et crée une triangulation de Delaunay
 *
 * T est la nature de l'information porte par une arête
 * S est la nature de l'information porte par une face
@@ -27,7 +27,7 @@ public:
 	~Triangulator() {}
 
 	/**
-	* Retourne la liste traingule de la liste de sommets en entre
+	* Retourne une triangulation de Delaunay
 	*/
 	vector<Triangle<S, T>*>* triangulate(vector<Sommet<Vecteur2D>*>* sommets, Graphe<T, Vecteur2D>* graphe) {
 		init(sommets, graphe);
@@ -49,7 +49,7 @@ public:
 
 
 private:
-	vector<Sommet<Vecteur2D>*>* sommets; //Sommets en entrée
+	vector<Sommet<Vecteur2D>*>* sommets; //Sommets en entrée, les sommets ne doivent pas être dupliqués
 	Graphe<T, Vecteur2D>* graphe; //Graphe utilisé pour créer des sommets
 	vector<Triangle<S, T>*>* triangulation;//Triangles en sortie
 	vector<Triangle<S, T>*>* DTL; //Triangles à supprimer de la triangulation
