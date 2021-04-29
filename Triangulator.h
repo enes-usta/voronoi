@@ -43,8 +43,6 @@ public:
 				throw Erreur("Aucun triangle contenant le sommet trouvé");
 		}
 
-		cout << les_arcs_sont_bien_orientes() << endl;
-
 		return triangulation;
 	}
 
@@ -84,7 +82,7 @@ private:
 
 		/* On crée les sommets/artes d'un rectangle avec ces points */
 		Sommet<Vecteur2D>* s0, * s1, * s2, * s3;
-		double marge = 1;//pour éviter les sommets superposs
+		double marge = 10;//pour éviter les sommets superposs
 		s0 = graphe->creeSommet(Vecteur2D(xMin - marge, yMin - marge));
 		s1 = graphe->creeSommet(Vecteur2D(xMax + marge, yMin - marge));
 		s2 = graphe->creeSommet(Vecteur2D(xMax + marge, yMax + marge));
@@ -146,7 +144,7 @@ private:
 		for (Triangle<S, T>* t : (*DTL)) {
 			for (int i = 0; i < 3; i++) {
 				Triangle<S, T>* triangleAdjacent = trouver_triangle_adjacent(t->arcs[i]);
-				if ((triangleAdjacent == NULL /*|| count(DTL->begin(), DTL->end(), triangleAdjacent)*/)
+				if ((triangleAdjacent == NULL || count(DTL->begin(), DTL->end(), triangleAdjacent) == 0)
 					&& !t->arcs[i]->estCollineaire(s)) {
 					//On crée le nouveau triangle
 					vector<ArcTU<T>*> arcs;
@@ -221,35 +219,5 @@ private:
 		}
 
 		DTL->clear();
-	}
-
-
-	bool les_arcs_sont_bien_orientes() {
-		int cpt = 0;
-		for (Triangle<S, T>* triangle : (*triangulation)) {
-			for (ArcTU<T>* arc : triangle->arcs) {
-				ArcTU<T>* arc2 = trouver_arc_adjacent(arc);
-				if (arc2 != NULL) {
-					cpt++;
-					if (arc->bonSens == arc2->bonSens)
-						return false;
-				}
-			}
-		}
-
-		return cpt > 0;
-	}
-
-	/**
-	* Retourne l'arc adjacent à l'arc dans la triangulation s'il en existe un
-	*/
-	ArcTU<T>* trouver_arc_adjacent(ArcTU<T>* arc) {
-		Triangle<S, T>* triangle = trouver_triangle_adjacent(arc);
-		if (triangle != NULL)
-			for (ArcTU<T>* arcB : triangle->arcs)
-				if (arc->arete->estEgal(arcB->arete->debut, arcB->arete->fin))
-					return arcB;
-
-		return NULL;
 	}
 };

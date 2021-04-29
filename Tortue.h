@@ -3,7 +3,7 @@
 #include "Sommet.h"
 #include "Vecteur2D.h"
 #include "Graphe.h"
-#include "Triangulator.h"
+#include "DelaunayTriangulator.h"
 #include "Color.h"
 
 class Tortue {
@@ -42,7 +42,7 @@ private:
 	}
 
 	void triangulateGermes() {
-		Triangulator<char, char> triangulator;
+		DelaunayTriangulator<char, char> triangulator;
 		cellules = (vector<Face<Color*, Color*>*>*) triangulator.triangulate(germes, graphe);
 		colorier();
 	}

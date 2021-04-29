@@ -81,6 +81,8 @@ private:
         for (Face<Color*, Color*>* face : (*faces_GLOBAL)) {
             glBegin(GL_LINE_LOOP);
             for (ArcTU<Color*>* arc : face->arcs) {
+                if (face->arcs.size() != 3)
+                    cout << "fmdlsjqfkdsklfjsqdmfksqfjkmdsq" << endl;
                 if(arc->arete->v != nullptr)
                     glColor3f(arc->arete->v->r, arc->arete->v->g, arc->arete->v->b);
                 glVertex2f((float)arc->debut()->v.x, (float)arc->debut()->v.y);
