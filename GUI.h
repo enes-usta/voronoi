@@ -13,7 +13,7 @@
 #include "Color.h"
 #include <unordered_map>
 
-#define MAX_ARRAY 1000
+#define MAX_ARRAY 100000
 
 vector<Face<Color*, Color*>*>* faces_GLOBAL;
 vector<Sommet<Vecteur2D>*>* sommets_GLOBAL;
