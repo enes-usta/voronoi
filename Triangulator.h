@@ -84,7 +84,7 @@ private:
 
 		/* On crée les sommets/artes d'un rectangle avec ces points */
 		Sommet<Vecteur2D>* s0, * s1, * s2, * s3;
-		double marge = 10;//pour éviter les sommets superposs
+		double marge = 100;//pour éviter les sommets superposs
 		s0 = graphe->creeSommet(Vecteur2D(xMin - marge, yMin - marge));
 		s1 = graphe->creeSommet(Vecteur2D(xMax + marge, yMin - marge));
 		s2 = graphe->creeSommet(Vecteur2D(xMax + marge, yMax + marge));
@@ -221,18 +221,17 @@ private:
 		int i;
 		for (Triangle<S, T>* dt : (*DTL)) {
 			i = 0;
-			if (dt != nullptr) {
-				for (Triangle<S, T>* t : (*triangulation)) {
-					if (dt == t) {
-						triangulation->erase((triangulation->begin() + i));
-						break;
-					}
-					i++;
+			for (Triangle<S, T>* t : (*triangulation)) {
+				if (dt == t) {
+					triangulation->erase((triangulation->begin() + i));
+					break;
 				}
-
+				i++;
 			}
 		}
 
+		for(auto dt : (*DTL))
+			delete dt;
 		DTL->clear();
 	}
 

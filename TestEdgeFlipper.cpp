@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 	Graphe<Color*, Vecteur2D>* graphe = new Graphe<Color*, Vecteur2D>;
 	Sommet<Vecteur2D>* a, * b, * c, * d;
 
-	//------------------ on insre des nouveaux sommets isols --------------------
+	//------------------ cas simple --------------------
 
 	a = graphe->creeSommet(Vecteur2D(5, 0));
 	b = graphe->creeSommet(Vecteur2D(5, 8));
@@ -39,15 +39,19 @@ int main(int argc, char** argv)
 	db = graphe->creeArete(color, d, b);
 
 	vector <Triangle<Color*, Color*>*>* triangulation = new vector <Triangle<Color*, Color*>*>;
-	triangulation->push_back(new Triangle<Color*, Color*> (new ArcTU<Color*>(ab, true), new ArcTU<Color*>(bc, true), new ArcTU<Color*>(ca, true)));
-	triangulation->push_back(new Triangle<Color*, Color*> (new ArcTU<Color*>(ad, true), new ArcTU<Color*>(db, true), new ArcTU<Color*>(ab, false)));
+	//triangulation->push_back(new Triangle<Color*, Color*> (new ArcTU<Color*>(ab, true), new ArcTU<Color*>(bc, true), new ArcTU<Color*>(ca, true)));
+	//triangulation->push_back(new Triangle<Color*, Color*> (new ArcTU<Color*>(ad, true), new ArcTU<Color*>(db, true), new ArcTU<Color*>(ab, false)));
 
 
 	vector<Sommet<Vecteur2D>*>* sommets = new vector<Sommet<Vecteur2D>*>;
-	sommets->push_back(a);
-	sommets->push_back(b);
-	sommets->push_back(c);
-	sommets->push_back(d);
+	//sommets->push_back(a);
+	//sommets->push_back(b);
+	//sommets->push_back(c);
+	//sommets->push_back(d);
+
+	//------------------ distribution uniforme  --------------------
+	default_random_engine generator;
+	uniform_int_distribution<int> distribution(-10, 10);
 
 	EdgeFlipper<Color*, Color*> ef;
 
