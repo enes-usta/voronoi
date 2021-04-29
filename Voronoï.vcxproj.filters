@@ -75,6 +75,9 @@
     <ClInclude Include="Geometrie.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="Voronoizer.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TestGrapheGeneral.cpp">
@@ -89,10 +92,10 @@
     <ClCompile Include="TestTortue.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="TestDelaunayTriangulation.cpp">
+    <ClCompile Include="TestEdgeFlipper.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="TestEdgeFlipper.cpp">
+    <ClCompile Include="TestVoronoizer.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

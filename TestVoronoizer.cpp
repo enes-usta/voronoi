@@ -8,8 +8,7 @@
 #include "Vecteur2D.h"
 #include <vector>
 #include <stdio.h>
-#include "Triangulator.h"
-#include "DelaunayTriangulator.h"
+#include "Voronoizer.h"
 #include "GUI.h"
 #include <random>
 
@@ -20,7 +19,7 @@ using namespace std;
 int main(int argc, char** argv)
 {
 
-	// distribution uniforme
+	// distribution uniforme 
 	default_random_engine generator;
 	uniform_int_distribution<int> distribution(-10, 10);
 
@@ -35,15 +34,9 @@ int main(int argc, char** argv)
 	s3 = graphe->creeSommet(Vecteur2D(2, 4));
 	s4 = graphe->creeSommet(Vecteur2D(4, 5));
 
-	//s0 = graphe->creeSommet(Vecteur2D(1, 1));
-	//s1 = graphe->creeSommet(Vecteur2D(1, 2));
-	//s2 = graphe->creeSommet(Vecteur2D(2, 2));
-	//s3 = graphe->creeSommet(Vecteur2D(2, 1));
-
-
 
 	//-------------- on dessine la triangulation -----------------------
-	DelaunayTriangulator<Color*, Color*> delaunayTriangulator;
+	Triangulator<Color*, Color*> triangulator;
 
 	vector<Sommet<Vecteur2D>*>* sommets = new vector<Sommet<Vecteur2D>*>;
 	//sommets->push_back(s0);
@@ -53,14 +46,17 @@ int main(int argc, char** argv)
 	//sommets->push_back(s4);
 
 
-	for (int i = 0; i < 40; i++)
+	for (int i = 0; i < 50; i++)
 		sommets->push_back(graphe->creeSommet(Vecteur2D(distribution(generator), distribution(generator))));
 
-	vector<Triangle<Color*, Color*>*>* triangulation = delaunayTriangulator.triangulate(sommets, graphe);
+	Voronoizer<Color*, Color*> voronoizer;
+
+	vector<Face<Color*, Color*>*>* voronoi = voronoizer.voronoize(sommets, graphe);
+	vector< Sommet<Vecteur2D>*>* germes = voronoizer.germes();
 
 	GUI gui(argc, argv);
 
-	gui.dessiner((vector<Face<Color*, Color*>*>*)triangulation, sommets);
+	gui.dessiner(voronoi, germes);
 	return 0;
 
 }

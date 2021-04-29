@@ -9,6 +9,7 @@
 #include <vector>
 #include <stdio.h>
 #include "Triangulator.h"
+#include "EdgeFlipper.h"
 #include "GUI.h"
 #include <random>
 
@@ -22,10 +23,8 @@ int main(int argc, char** argv)
 	// distribution uniforme 
 	default_random_engine generator;
 	uniform_int_distribution<int> distribution(-10, 10);
-	//uniform_real_distribution<double> distribution(-1, 1);
 
-
-	Graphe<Color*, Vecteur2D>* graphe = new Graphe<Color*, Vecteur2D>;	// cration  vide
+	Graphe<Color*, Vecteur2D>* graphe = new Graphe<Color*, Vecteur2D>;
 	Sommet<Vecteur2D>* s0, * s1, * s2, * s3, * s4;
 
 	//------------------ on insre des nouveaux sommets isols --------------------
@@ -35,12 +34,6 @@ int main(int argc, char** argv)
 	s2 = graphe->creeSommet(Vecteur2D(5, 2));
 	s3 = graphe->creeSommet(Vecteur2D(2, 4));
 	s4 = graphe->creeSommet(Vecteur2D(4, 5));
-
-	//s0 = graphe->creeSommet(Vecteur2D(1, 1));
-	//s1 = graphe->creeSommet(Vecteur2D(1, 2));
-	//s2 = graphe->creeSommet(Vecteur2D(2, 2));
-	//s3 = graphe->creeSommet(Vecteur2D(2, 1));
-
 
 
 	//-------------- on dessine la triangulation -----------------------

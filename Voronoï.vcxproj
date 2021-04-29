@@ -39,14 +39,15 @@
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Vecteur2D.h" />
     <ClInclude Include="Triangulator.h" />
+    <ClInclude Include="Voronoizer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TestDelaunayTriangulation.cpp" />
     <ClCompile Include="TestEdgeFlipper.cpp" />
     <ClCompile Include="TestGrapheGeneral.cpp" />
     <ClCompile Include="TestOpenGL.cpp" />
     <ClCompile Include="TestTortue.cpp" />
     <ClCompile Include="TestTriangulation.cpp" />
+    <ClCompile Include="TestVoronoizer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

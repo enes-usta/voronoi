@@ -18,7 +18,7 @@ public:
 		Vecteur2D a = debut()->v;
 		Vecteur2D b = fin()->v;
 
-		return (b.x - a.x) * (s->v.y - a.y) - (s->v.x - a.x) * (b.y - a.y) >= 0;
+		return (b.x - a.x) * (s->v.y - a.y) - (s->v.x - a.x) * (b.y - a.y) > 0;
 	}
 
 	/**

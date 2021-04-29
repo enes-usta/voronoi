@@ -37,7 +37,7 @@ public:
         int x = glutGet(GLUT_SCREEN_WIDTH) / 2 - windowWidth / 2;
         int y = glutGet(GLUT_SCREEN_HEIGHT) / 2 - windowHeight / 2;
         glutInitWindowPosition(x, y); // Position the window's initial top-left corner
-        glutCreateWindow("Vorono. TEKELI USTA");  // Create window with the given title
+        glutCreateWindow("Voronoï TEKELI USTA");  // Create window with the given title
         glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
         glutDisplayFunc(render);       // Register callback handler for window re-paint event
         glutReshapeFunc(reshape);       // Register callback handler for window re-size event
@@ -45,12 +45,13 @@ public:
     }
 
     /**
-    * Dessine la liste des faces passe en paramtre
+    * Dessine les faces et les sommets passés en paramètre
     */
     void dessiner(vector<Face<Color*, Color*>*>* faces, vector<Sommet<Vecteur2D>*>* sommets) {
         // On met  l'chelle les faces
-        faces_GLOBAL = scale(faces);
-        sommets_GLOBAL = scale(sommets);
+        //faces_GLOBAL = scale(faces);
+        //sommets_GLOBAL = scale(sommets);
+        scale(faces, sommets);
         glutMainLoop();// Enter the event-processing loop
     }
 
@@ -77,7 +78,6 @@ private:
     }
 
     static void dessinerAretes() {
-
         for (Face<Color*, Color*>* face : (*faces_GLOBAL)) {
             glBegin(GL_LINE_LOOP);
             for (ArcTU<Color*>* arc : face->arcs) {
@@ -99,22 +99,20 @@ private:
                 for (ArcTU<Color*>* arc : face->arcs)
                     glVertex2f((float)arc->debut()->v.x, (float)arc->debut()->v.y);
             }
-                
-            glEnd();
-        }
-    }
-
-    static void dessinerSommetsATrianguler() {
-        if (sommets_GLOBAL->size()) {
-            glBegin(GL_POINTS);
-            for (Sommet<Vecteur2D>* s : (*sommets_GLOBAL))
-                glVertex2f((float)s->v.x, (float)s->v.y);
 
             glEnd();
         }
     }
 
     static void dessinerSommets() {
+        glBegin(GL_POINTS);
+        for (Sommet<Vecteur2D>* s : (*sommets_GLOBAL))
+            glVertex2f((float)s->v.x, (float)s->v.y);
+
+        glEnd();
+    }
+
+    static void dessinerSommetsFaces() {
         for (Face<Color*, Color*>* face : (*faces_GLOBAL)) {
             glBegin(GL_POINTS);
             for (ArcTU<Color*> *arc : face->arcs)
@@ -141,11 +139,11 @@ private:
 
         //On dessine les sommets
         glColor3f(0.0f, 0.0f, 1.0f); // Bleu
-        dessinerSommetsATrianguler();
-
-        //On dessine les sommets
-        glColor3f(0.0f, 1.0f, 0.0f); // Vert
         dessinerSommets();
+
+        //On dessine les sommets des faces
+        glColor3f(0.0f, 1.0f, 0.0f); // Vert
+        dessinerSommetsFaces();
 
         glFlush();  // Render now
     }
@@ -173,41 +171,14 @@ private:
         }
     }
 
-    /**
-   * Met  l'chelle les faces
-   * Les faces sont  l'chelle quand tout -1 <= x <= 1 et -1 <= y <=1
-   */
-    vector<Face<Color*, Color*>*>* scale(vector<Face<Color*, Color*>*>* faces) {
-        double max = 0;
-        int absXArc, absYArc;
+    void scale(vector<Face<Color*, Color*>*>* faces, vector<Sommet<Vecteur2D>*>* sommets) {
+        if (sommets == NULL)
+            sommets_GLOBAL = new vector<Sommet<Vecteur2D>*>;
 
-        for (Face<Color*, Color*>* face : (*faces))
-            for (ArcTU<Color*> *arc : face->arcs) {
-                // On calcule la coordonne la plus loigne en x et en y
-                absXArc = abs(arc->debut()->v.x);
-                absYArc = abs(arc->debut()->v.y);
-                max = max(max, max(absXArc, absYArc));
-            }
+        if (faces == NULL)
+            faces_GLOBAL = new vector<Face<Color*, Color*>*>;
 
-        for (Face<Color*, Color*>* face : (*faces))
-            for (ArcTU<Color*> *arc : face->arcs) {
-                // On met  l'helle chaque coordonne
-                if (!scaled[arc->debut()->clef]) {
-                    arc->debut()->v.x /= (max / scale_factor);
-                    arc->debut()->v.y /= (max / scale_factor);
-                    scaled[arc->debut()->clef] = true;
-                }
-            }
-        
-
-        return faces;
-    }
-
-    /**
-    * Met  l'chelle les sommets
-    * Les sommets sont  l'chelle quand tout -1 <= x <= 1 et -1 <= y <=1
-    */
-    vector<Sommet<Vecteur2D>*>* scale(vector<Sommet<Vecteur2D>*>* sommets) {
+        // Calcul du max dans les sommets et les faces
         double max = 0;
         int absXArc, absYArc;
         for (Sommet<Vecteur2D>* s : (*sommets)) {
@@ -216,15 +187,36 @@ private:
             max = max(max, max(absXArc, absYArc));
         }
 
-        for (Sommet<Vecteur2D>* s : (*sommets)) {
-            if (!scaled[s->clef]) {
-                s->v.x /= (max / scale_factor);
-                s->v.y /= (max / scale_factor);
-                scaled[s->clef] = true;
+        for (Face<Color*, Color*>* face : (*faces))
+            for (ArcTU<Color*>* arc : face->arcs) {
+                absXArc = abs(arc->debut()->v.x);
+                absYArc = abs(arc->debut()->v.y);
+                max = max(max, max(absXArc, absYArc));
             }
-        }
 
-        return sommets;
+
+        // On met à l'échelle
+        for (Sommet<Vecteur2D>* s : (*sommets))
+            scale(s, max);
+
+        for (Face<Color*, Color*>* face : (*faces))
+            for (ArcTU<Color*>* arc : face->arcs)
+                scale(arc->debut(), max);
+
+        sommets_GLOBAL = sommets;
+        faces_GLOBAL = faces;
+
+    }
+
+    /**
+    * Met à l'échelle le sommet passé en paramètre
+    */
+    void scale(Sommet<Vecteur2D>* sommet, double max) {
+        if (!scaled[sommet->clef]) {
+            sommet->v.x /= (max / scale_factor);
+            sommet->v.y /= (max / scale_factor);
+            scaled[sommet->clef] = true;
+        }
     }
 
 };

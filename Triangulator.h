@@ -144,7 +144,7 @@ private:
 	}
 
 	/**
-	* Dtermine la liste des triangles à rajouter à la triangulation
+	* Détermine la liste des triangles à rajouter à la triangulation
 	*/
 	void determiner_NTL(Sommet<Vecteur2D>* s) {
 		vector<ArcTU<T>*>* arcs_crees = new vector<ArcTU<T>*>;

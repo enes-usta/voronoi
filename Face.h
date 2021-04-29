@@ -20,11 +20,21 @@ public:
 			throw "Une face est composée d'au moins 3 arcs!";
 	}
 
+	/**
+	* Retourne vrai si cette face contient le sommet s
+	*/
+	bool contientPoint(Sommet<Vecteur2D>* s) {
+		for (ArcTU<T>* arc : this->arcs)
+			if (!(arc->estAGauche(s) || arc->estCollineaire(s)))
+				return false;
+
+		return true;
+	}
 
 	/**
 	* Retourne vrai si cette face contient le sommet s
 	*/
-	bool contientPoint(Sommet<Vecteur2D> *s) {
+	bool contientPointStrict(Sommet<Vecteur2D> *s) {
 		for(ArcTU<T>* arc : this->arcs)
 			if (!arc->estAGauche(s))
 				return false;

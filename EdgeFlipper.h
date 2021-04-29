@@ -35,9 +35,11 @@ public:
 		this->graphe = graphe;
 
 		bool amelioration = true;
+		int cpt = 0;
 
-		while (amelioration) {
+		while (amelioration && cpt < 1000) {
 			amelioration = false;
+			cpt++;
 			for (Triangle<S, T>* triangle : (*(this->triangulation))) {
 				for (ArcTU<T> *arc : triangle->arcs) {
 					Triangle<S, T>* triangle_adjacent = trouver_triangle_adjacent(arc);
