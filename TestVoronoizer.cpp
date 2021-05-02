@@ -22,7 +22,6 @@ int main(int argc, char** argv)
 	uniform_int_distribution<int> distribution(-100, 100);
 
 	//-------------- voronoizer, triangulateur et variables concernées -----------------------
-	Triangulator<Color*, Color*> triangulator;
 	Voronoizer<Color*, Color*> voronoizer;
 	Graphe<Color*, Vecteur2D>* graphe = new Graphe<Color*, Vecteur2D>;
 	vector<Sommet<Vecteur2D>*>* sommets = new vector<Sommet<Vecteur2D>*>;
