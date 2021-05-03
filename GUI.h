@@ -27,7 +27,6 @@ class GUI {
 public:
     int windowWidth = 800;
     int windowHeight = 800;
-    float scale_factor = 1;//0.75;
 
 
     /* Main function: GLUT runs as a console application starting at main()  */
@@ -218,8 +217,8 @@ private:
         double max2 = max(abs(maxY), abs(minY));
 
         double lambda = 1 / max(max1, max2);
-        double a = ((maxX + minX) / 2) * lambda;
-        double b = ((maxY + minY) / 2) * lambda;
+        double a = ((maxX + minX) / 2) / max1;
+        double b = ((maxY + minY) / 2) / max2;
 
         if (!scaled[sommet->clef]) {
             sommet->v.x = sommet->v.x * lambda-a;
