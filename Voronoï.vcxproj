@@ -25,7 +25,6 @@
     <ClInclude Include="Arete.h" />
     <ClInclude Include="Cercle.h" />
     <ClInclude Include="Color.h" />
-    <ClInclude Include="EdgeFlipper.h" />
     <ClInclude Include="Erreur.h" />
     <ClInclude Include="Face.h" />
     <ClInclude Include="FileLoader.h" />
@@ -35,6 +34,7 @@
     <ClInclude Include="GUI.h" />
     <ClInclude Include="PElement.h" />
     <ClInclude Include="Reels.h" />
+    <ClInclude Include="Serpent.h" />
     <ClInclude Include="Sommet.h" />
     <ClInclude Include="Tortue.h" />
     <ClInclude Include="Triangle.h" />
@@ -43,7 +43,7 @@
     <ClInclude Include="Voronoizer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TestEdgeFlipper.cpp" />
+    <ClCompile Include="TestSerpent.cpp" />
     <ClCompile Include="TestFileLoader.cpp" />
     <ClCompile Include="TestGrapheGeneral.cpp" />
     <ClCompile Include="TestOpenGL.cpp" />

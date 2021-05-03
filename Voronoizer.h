@@ -92,6 +92,8 @@ private:
 		Sommet<Vecteur2D>* germe = arc->debut();
 		// Centre circonscrit de ce triangle
 		Sommet<Vecteur2D>* centre_triangle = creer_sommet(triangle->cercle_circonscrit().centre, sommets_crees);
+		// Sommet de départ
+		Sommet<Vecteur2D>* depart = centre_triangle;
 		//On aborte dans certains cas
 		bool aborted = false;
 		vector<ArcTU<T>*>* arcs_cellule = new vector<ArcTU<T>*>;
@@ -109,9 +111,29 @@ private:
 			// Le centre de son cercle circonscrit
 			Sommet<Vecteur2D>* centre_triangle_adjacent = creer_sommet(triangle_adjacent->cercle_circonscrit().centre, sommets_crees);
 
-			// On crée l'arc
+			// Si on tourne pas dans le bon sens en partant de cet arc, on change de sens
 			bool bonSens = Geometrie::aGauche(centre_triangle->v, centre_triangle_adjacent->v, germe->v);
-			ArcTU<T>* nouvel_arc = creer_arc(centre_triangle, centre_triangle_adjacent, bonSens, arcs_crees);
+			if (!bonSens) {
+				// On décale à l'autre arc partant de ce germe
+				for (ArcTU<T>* a : triangle->arcs)
+					if (!a->arete->estEgal(arc->debut(), arc->fin())
+						&& (a->debut() == germe || a->fin() == germe))
+						arc = a;
+				
+				// Le triangle adjacent sur cet arc
+				triangle_adjacent = trouver_triangle_adjacent(arc);
+
+				// Si pas de triangle adjacent, on ne peut pas créer de polygone
+				if (triangle_adjacent == NULL) {
+					aborted = true;
+					goto next;
+				}
+
+				// Le centre de son cercle circonscrit
+				centre_triangle_adjacent = creer_sommet(triangle_adjacent->cercle_circonscrit().centre, sommets_crees);
+			}
+
+			ArcTU<T>* nouvel_arc = creer_arc(centre_triangle, centre_triangle_adjacent, arcs_crees);
 			arcs_cellule->push_back(nouvel_arc);
 
 			// On décale au nouveau sommet du polygone
@@ -130,7 +152,7 @@ private:
 			cout << nouvel_arc->bonSens << endl << endl;
 
 
-			if (arcs_cellule->size() && nouvel_arc->arete->fin == arcs_cellule->at(0)->arete->debut)
+			if (arcs_cellule->size() && nouvel_arc->fin() == depart)
 				goto next;
 		}
 	next:;
@@ -161,12 +183,12 @@ private:
 	/**
 	* Crée un arc en veillant à ce qu'il ne soit pas dupliqué
 	*/
-	ArcTU<T>* creer_arc(Sommet<Vecteur2D>* deb, Sommet<Vecteur2D>* fin, bool bonSens, vector<ArcTU<T>*>* arcs_crees) {
+	ArcTU<T>* creer_arc(Sommet<Vecteur2D>* deb, Sommet<Vecteur2D>* fin, vector<ArcTU<T>*>* arcs_crees) {
 		for (ArcTU<T>* arc : (*arcs_crees))
 			if (arc->arete->estEgal(deb, fin)) 
 				return new ArcTU<T>(arc->arete, !arc->bonSens);
 
-		ArcTU<T>* res = new ArcTU<T>(graphe->creeArete(T(), deb, fin), bonSens);
+		ArcTU<T>* res = new ArcTU<T>(graphe->creeArete(T(), deb, fin), true);
 		arcs_crees->push_back(res);
 		return res;
 	}

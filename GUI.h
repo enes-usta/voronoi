@@ -27,7 +27,7 @@ class GUI {
 public:
     int windowWidth = 800;
     int windowHeight = 800;
-    float scale_factor = 0.75;
+    float scale_factor = 1;//0.75;
 
 
     /* Main function: GLUT runs as a console application starting at main()  */
@@ -81,8 +81,6 @@ private:
         for (Face<Color*, Color*>* face : (*faces_GLOBAL)) {
             glBegin(GL_LINE_LOOP);
             for (ArcTU<Color*>* arc : face->arcs) {
-                if (face->arcs.size() != 3)
-                    cout << "fmdlsjqfkdsklfjsqdmfksqfjkmdsq" << endl;
                 if(arc->arete->v != nullptr)
                     glColor3f(arc->arete->v->r, arc->arete->v->g, arc->arete->v->b);
                 glVertex2f((float)arc->debut()->v.x, (float)arc->debut()->v.y);
@@ -173,35 +171,39 @@ private:
 
     void scale(vector<Face<Color*, Color*>*>* faces, vector<Sommet<Vecteur2D>*>* sommets) {
         if (sommets == NULL)
-            sommets_GLOBAL = new vector<Sommet<Vecteur2D>*>;
+            sommets = new vector<Sommet<Vecteur2D>*>;
 
         if (faces == NULL)
-            faces_GLOBAL = new vector<Face<Color*, Color*>*>;
+            faces = new vector<Face<Color*, Color*>*>;
 
         // Calcul du max dans les sommets et les faces
-        double max = 0;
-        int absXArc, absYArc;
+        double maxX = 0, minX = 0, maxY = 0, minY = 0;
+
         for (Sommet<Vecteur2D>* s : (*sommets)) {
-            absXArc = abs(s->v.x);
-            absYArc = abs(s->v.y);
-            max = max(max, max(absXArc, absYArc));
+            maxX = max(maxX, s->v.x);
+            minX = min(minX, s->v.x);
+            maxY = max(maxY, s->v.y);
+            minY = min(minY, s->v.y);
         }
 
         for (Face<Color*, Color*>* face : (*faces))
             for (ArcTU<Color*>* arc : face->arcs) {
-                absXArc = abs(arc->debut()->v.x);
-                absYArc = abs(arc->debut()->v.y);
-                max = max(max, max(absXArc, absYArc));
+                int x = arc->debut()->v.x;
+                int y = arc->debut()->v.y;
+                maxX = max(maxX, x);
+                minX = min(minX, x);
+                maxY = max(maxY, y);
+                minY = min(minY, y);
             }
 
-
-        // On met à l'échelle
+        // On met  l'chelle
         for (Sommet<Vecteur2D>* s : (*sommets))
-            scale(s, max);
+            scale(s, maxX, minX, maxY, minY);
 
         for (Face<Color*, Color*>* face : (*faces))
             for (ArcTU<Color*>* arc : face->arcs)
-                scale(arc->debut(), max);
+                scale(arc->debut(), maxX, minX, maxY, minY);
+
 
         sommets_GLOBAL = sommets;
         faces_GLOBAL = faces;
@@ -211,11 +213,17 @@ private:
     /**
     * Met à l'échelle le sommet passé en paramètre
     */
-    void scale(Sommet<Vecteur2D>* sommet, double max) {
+    void scale(Sommet<Vecteur2D>* sommet, double maxX, double minX, double maxY, double minY) {
+        double max1 = max(abs(maxX), abs(minX));
+        double max2 = max(abs(maxY), abs(minY));
+
+        double lambda = 1 / max(max1, max2);
+        double a = ((maxX + minX) / 2) * lambda;
+        double b = ((maxY + minY) / 2) * lambda;
+
         if (!scaled[sommet->clef]) {
-            //if(sommet->v.x < 1 && sommet->v.x > -1)
-            sommet->v.x /= (max / scale_factor);
-            sommet->v.y /= (max / scale_factor);
+            sommet->v.x = sommet->v.x * lambda-a;
+            sommet->v.y = sommet->v.y * lambda-b;
             scaled[sommet->clef] = true;
         }
     }
