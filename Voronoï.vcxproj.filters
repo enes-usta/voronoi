@@ -102,4 +102,12 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="ressources\Nuage_noyaux_ecailles.txt">
+      <Filter>Fichiers de ressources</Filter>
+    </Text>
+    <Text Include="ressources\Nuage_contour.txt">
+      <Filter>Fichiers de ressources</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

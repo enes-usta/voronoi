@@ -213,10 +213,36 @@ private:
     */
     void scale(Sommet<Vecteur2D>* sommet, double max) {
         if (!scaled[sommet->clef]) {
+            //if(sommet->v.x < 1 && sommet->v.x > -1)
             sommet->v.x /= (max / scale_factor);
             sommet->v.y /= (max / scale_factor);
             scaled[sommet->clef] = true;
         }
     }
+};
+/*
+class ChangementRepere {
+public:
+    double lambda1, lambda2, a, b;
+
+    ChangementRepere(const double lambda1, const double lambda2, const double a, const double b) {
+        this->lambda1 = lambda1;
+        this->lambda2 = lambda2;
+        this->a = a;
+        this->b = b;
+    }
+
+    ChangementRepere(const Vecteur2D p1, const Vecteur2D p2, const Vecteur2D p1p, const Vecteur2D p2p) {
+        // Calculer membres
+    }
+
+    const Vecteur2D appliquer(const Vecteur2D& v) const{
+        return Vecteur2D(lambda1 * v.x + a, lambda2 * v.y + b);
+    }
+
+    const Vecteur2D operator()(const Vecteur2D & v) const{
+        return this->appliquer(v);
+    }
 
 };
+*/

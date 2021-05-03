@@ -124,7 +124,13 @@ private:
 					arc = arc_ta;
 			}
 
-			if (arcs_cellule->size() && nouvel_arc->fin() == arcs_cellule->at(0)->debut())
+			cout << "nouvel arc" << endl;
+			cout << "(" << nouvel_arc->arete->debut->v.x << ", " << nouvel_arc->arete->debut->v.y << ")";
+			cout << "(" << nouvel_arc->arete->fin->v.x << ", " << nouvel_arc->arete->fin->v.y << ")";
+			cout << nouvel_arc->bonSens << endl << endl;
+
+
+			if (arcs_cellule->size() && nouvel_arc->arete->fin == arcs_cellule->at(0)->arete->debut)
 				goto next;
 		}
 	next:;

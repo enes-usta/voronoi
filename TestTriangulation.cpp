@@ -8,8 +8,6 @@
 #include "GUI.h"
 #include <random>
 
-
-
 using namespace std;
 
 int main(int argc, char** argv)
@@ -23,8 +21,6 @@ int main(int argc, char** argv)
 	Triangulator<Color*, Color*> triangulator;
 	Graphe<Color*, Vecteur2D>* graphe = new Graphe<Color*, Vecteur2D>;
 	vector<Sommet<Vecteur2D>*>* sommets = new vector<Sommet<Vecteur2D>*>;
-
-
 
 	//-------- génération des sommets en veillant à ce qu'il n'y ait pas de duplications ----------
 	for (int i = 0; i < 100; i++) {
