@@ -28,7 +28,6 @@ public:
     int windowWidth = 800;
     int windowHeight = 800;
 
-
     /* Main function: GLUT runs as a console application starting at main()  */
     GUI(int argc, char** argv) {
         glutInit(&argc, argv);          // Initialize GLUT        
@@ -215,14 +214,22 @@ private:
     void scale(Sommet<Vecteur2D>* sommet, double maxX, double minX, double maxY, double minY) {
         double max1 = max(abs(maxX), abs(minX));
         double max2 = max(abs(maxY), abs(minY));
+        int eps1 = 1;
+        int eps2 = 1;
+
+        if (maxX - minX < 0)
+            eps1 = -1;
+
+        if (maxY - minY < 0)
+            eps2 = -1;
 
         double lambda = 1 / max(max1, max2);
-        double a = ((maxX + minX) / 2) / max1;
-        double b = ((maxY + minY) / 2) / max2;
+        double a = -((maxX + minX) / 2) / max1;
+        double b = -((maxY + minY) / 2) / max2;
 
         if (!scaled[sommet->clef]) {
-            sommet->v.x = sommet->v.x * lambda-a;
-            sommet->v.y = sommet->v.y * lambda-b;
+            sommet->v.x = sommet->v.x * lambda * eps1 + a;
+            sommet->v.y = sommet->v.y * lambda * eps2 + b;
             scaled[sommet->clef] = true;
         }
     }
