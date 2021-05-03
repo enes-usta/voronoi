@@ -29,7 +29,7 @@ public:
 private:
 
 	void charger_contours() {
-		FileLoader f("C:\\dev\\projects\\voronoi\\ressources\\Nuage_contour.txt");
+		FileLoader f(".\\ressources\\Nuage_contour.txt");
 		vector<Sommet<Vecteur2D>*> contours;
 
 		for (Vecteur2D v : f.listeSommets) {

@@ -12,9 +12,9 @@
 #include <iostream>
 #include <string>
 #include <cmath>
-#include <AlgebreLineaire.h>
+#include "AlgebreLineaire.h"
 #include <float.h>
-#include <Reels.h>
+#include "Reels.h"
 
 
 using namespace std;
