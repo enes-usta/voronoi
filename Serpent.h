@@ -26,7 +26,6 @@ public:
 	}
 
 private:
-
 	void charger_geometries() {
 		charger_ecailles();
 		charger_contour();
@@ -34,7 +33,7 @@ private:
 	}
 
 	void charger_contour() {
-		FileLoader f("C:\\dev\\projects\\voronoi\\ressources\\Nuage_contour.txt");
+		FileLoader f(".\\ressources\\Nuage_contour.txt");
 		vector<Sommet<Vecteur2D>*> contours;
 
 		for (Vecteur2D v : f.listeSommets) {
@@ -55,7 +54,7 @@ private:
 	}
 
 	void charger_ecailles() {
-		FileLoader f("C:\\dev\\projects\\voronoi\\ressources\\Nuage_noyaux_ecailles.txt");
+		FileLoader f(".\\ressources\\Nuage_noyaux_ecailles.txt");
 
 		for (Vecteur2D v : f.listeSommets) {
 			germes->push_back(graphe->creeSommet(v));
