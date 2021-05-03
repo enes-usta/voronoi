@@ -22,13 +22,18 @@ public:
 		germes = new vector<Sommet<Vecteur2D>*>();
 		graphe = new Graphe<Color*, Vecteur2D>();
 		faces = new vector<Face<Color*, Color*>*>;
-		charger_contours();
-		//triangulate_germes();
+		charger_geometries();
 	}
 
 private:
 
-	void charger_contours() {
+	void charger_geometries() {
+		charger_ecailles();
+		charger_contour();
+		faces->push_back(contour);
+	}
+
+	void charger_contour() {
 		FileLoader f("C:\\dev\\projects\\voronoi\\ressources\\Nuage_contour.txt");
 		vector<Sommet<Vecteur2D>*> contours;
 
@@ -46,20 +51,17 @@ private:
 			i++;
 		}
 
-		faces->push_back(new Face<Color*, Color*>(arcs_contours, face_color));
-	}
-/*
-	void triangulate_germes() {
-		Triangulator<char, char> triangulator;
-		cellules = (vector<Face<Color*, Color*>*>*) triangulator.triangulate(germes, graphe);
-		colorier();
+		contour = new Face<Color*, Color*>(arcs_contours, NULL);
 	}
 
-	void colorier() {
-		for (Face<Color*, Color*>* f : (*cellules)) {
-			f->v = face_color;
-			for (ArcTU<Color*>* arc : f->arcs)
-				arc->arete->v = edge_color;
+	void charger_ecailles() {
+		FileLoader f("C:\\dev\\projects\\voronoi\\ressources\\Nuage_noyaux_ecailles.txt");
+
+		for (Vecteur2D v : f.listeSommets) {
+			germes->push_back(graphe->creeSommet(v));
 		}
-	}*/
+
+		Triangulator<Color*, Color*> triangulator;
+		faces = (vector<Face<Color*, Color*>*>*) triangulator.triangulate(germes, graphe);
+	}
 };
