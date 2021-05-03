@@ -28,6 +28,7 @@
     <ClInclude Include="EdgeFlipper.h" />
     <ClInclude Include="Erreur.h" />
     <ClInclude Include="Face.h" />
+    <ClInclude Include="FileLoader.h" />
     <ClInclude Include="GElement.h" />
     <ClInclude Include="Geometrie.h" />
     <ClInclude Include="Graphe.h" />
@@ -43,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TestEdgeFlipper.cpp" />
+    <ClCompile Include="TestFileLoader.cpp" />
     <ClCompile Include="TestGrapheGeneral.cpp" />
     <ClCompile Include="TestOpenGL.cpp" />
     <ClCompile Include="TestTortue.cpp" />
@@ -106,8 +108,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>.;C:\dev\lib\freeglut-3.0.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\dev\lib\freeglut-3.0.0\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files\Common Files\freeglut\include;.;C:\dev\lib\freeglut-3.0.0\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files\Common Files\freeglut\lib;C:\dev\lib\freeglut-3.0.0\lib;$(LibraryPath)</LibraryPath>
     <PublicIncludeDirectories>C:\dev\lib\freeglut-3.0.0\include;$(PublicIncludeDirectories)</PublicIncludeDirectories>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
