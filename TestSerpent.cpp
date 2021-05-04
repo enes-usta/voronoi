@@ -24,5 +24,4 @@ int main(int argc, char** argv)
 	gui.dessiner(serpent.faces, NULL);
 	return 0;
 
-}
-*/
+}*/

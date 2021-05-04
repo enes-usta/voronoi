@@ -4,11 +4,15 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <tuple>
 
 #include "Sommet.h"
 #include "Triangle.h"
 #include "Graphe.h"
 #include "Cercle.h"
+
+
+#define MAX 10000
 
 using namespace std;
 
@@ -54,6 +58,8 @@ private:
 	vector<Triangle<S, T>*>* triangulation;//Triangles en sortie
 	vector<Triangle<S, T>*>* DTL; //Triangles à supprimer de la triangulation
 	Sommet<Vecteur2D>* sommetsEnglobants[4] = { NULL }; //Sommets englobants les autres sommets, à supprimer à la fin
+	vector<tuple<ArcTU<T>*, Triangle<S, T>*>> adjacence; //Tableau d'adjacence
+	//vector<ArcTU<T>*>* arcs_crees = new vector<ArcTU<T>*>; //Pour éviter les duplications
 
 	/**
 	* Initialise les membres
@@ -84,7 +90,7 @@ private:
 
 		/* On crée les sommets/artes d'un rectangle avec ces points */
 		Sommet<Vecteur2D>* s0, * s1, * s2, * s3;
-		double marge = 100;//pour éviter les sommets superposs
+		double marge = 100; //pour éviter les sommets superposs
 		s0 = graphe->creeSommet(Vecteur2D(xMin - marge, yMin - marge));
 		s1 = graphe->creeSommet(Vecteur2D(xMax + marge, yMin - marge));
 		s2 = graphe->creeSommet(Vecteur2D(xMax + marge, yMax + marge));
@@ -171,32 +177,10 @@ private:
 		arcs.push_back(arc_guide);
 
 		//deuxième arc, si on a créé un arc ayant la même arête, on réutilise l'arête
-		bool cree = false;
-		for (ArcTU<T>* arc : (*arcs_crees)) {
-			if (arc->arete->estEgal(arc_guide->fin(), s)) {
-				arcs.push_back(new ArcTU<T>(arc->arete, !arc->bonSens));
-				cree = true;
-			}
-		}
-		if (!cree) {
-			ArcTU<T>* arc = new ArcTU<T>(graphe->creeArete(T(), arc_guide->fin(), s), true);
-			arcs_crees->push_back(arc);
-			arcs.push_back(arc);
-		}
+		arcs.push_back(creer_arc(arc_guide->fin(), s, arcs_crees));
 
 		//troisième arc, même logique que pour le deuxième
-		cree = false;
-		for (ArcTU<T>* arc : (*arcs_crees)) {
-			if (arc->arete->estEgal(s, arc_guide->debut())) {
-				arcs.push_back(new ArcTU<T>(arc->arete, !arc->bonSens));
-				cree = true;
-			}
-		}
-		if (!cree) {
-			ArcTU<T>* arc = new ArcTU<T>(graphe->creeArete(T(), s, arc_guide->debut()), true);
-			arcs_crees->push_back(arc);
-			arcs.push_back(arc);
-		}
+		arcs.push_back(creer_arc(s, arc_guide->debut(), arcs_crees));
 
 		this->triangulation->push_back(new Triangle<S, T>(arcs, S()));
 	}
@@ -212,6 +196,19 @@ private:
 						return triangleB;
 
 		return NULL;
+	}
+
+	/**
+	* Crée un arc en veillant à ce qu'il ne soit pas dupliqué
+	*/
+	ArcTU<T>* creer_arc(Sommet<Vecteur2D>* deb, Sommet<Vecteur2D>* fin, vector<ArcTU<T>*>* arcs_crees) {
+		for (ArcTU<T>* arc : (*arcs_crees))
+			if (arc->arete->estEgal(deb, fin))
+				return new ArcTU<T>(arc->arete, !arc->bonSens);
+
+		ArcTU<T>* res = new ArcTU<T>(graphe->creeArete(T(), deb, fin), true);
+		arcs_crees->push_back(res);
+		return res;
 	}
 
 	/**

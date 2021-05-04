@@ -30,7 +30,7 @@ private:
 	void charger_geometries() {
 		charger_ecailles();
 		charger_contour();
-		clipping();
+		//clipping();
 		faces->push_back(contour);
 
 	}
