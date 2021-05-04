@@ -44,7 +44,7 @@ public:
 		triangulation = triangulator.triangulate(sommets, graphe);
 		calculer_germes();
 		construire_cellules();
-		return (vector<Face<S, T>*>*) triangulation; // à changer
+		return this->cellules;
 	}
 
 	vector<Sommet<Vecteur2D>*>* germes() {
@@ -67,14 +67,16 @@ private:
 
 	void construire_cellules() {
 		bool fait[MAX_ARRAY] = { false };
-
+		// Pour éviter les duplications 
+		vector<ArcTU<T>*>* arcs_crees = new vector<ArcTU<T>*>;
+		vector<Sommet<Vecteur2D>*>* sommets_crees = new vector<Sommet<Vecteur2D>*>;
 		for (Triangle<S, T>* triangle : (*triangulation)) {
 			for (ArcTU<T>* arc : triangle->arcs) {
 				//Germe qu'on traite
-				Sommet<Vecteur2D>* germe = arc->debut();
+				Sommet<Vecteur2D>* germe = arc->fin();
 				// On vérifie si on a déjà traité ce germe
 				if (!fait[germe->clef]) {
-					pivoter_sur_germe(arc, triangle);
+					pivoter_sur_germe(arc, triangle, sommets_crees, arcs_crees);
 					fait[germe->clef] = true;
 				}
 			}
@@ -84,85 +86,52 @@ private:
 	/**
 	* Créé un polygone autour de ce germe si c'est possible
 	*/
-	void pivoter_sur_germe(ArcTU<T>* arc, Triangle<S, T>* triangle) {
-		// Pour éviter les duplications 
-		vector<ArcTU<T>*>* arcs_crees = new vector<ArcTU<T>*>;
-		vector<Sommet<Vecteur2D>*>* sommets_crees = new vector<Sommet<Vecteur2D>*>;
+	void pivoter_sur_germe(ArcTU<T>* arc, Triangle<S, T>* triangle, vector<Sommet<Vecteur2D>*>* sommets_crees, vector<ArcTU<T>*>* arcs_crees) {
 		//Germe qu'on traite
-		Sommet<Vecteur2D>* germe = arc->debut();
-		// Centre circonscrit de ce triangle
-		Sommet<Vecteur2D>* centre_triangle = creer_sommet(triangle->cercle_circonscrit().centre, sommets_crees);
+		Sommet<Vecteur2D>* germe = arc->fin();
+		//Cellules du diagramme de Voronoï
+		vector<Sommet<Vecteur2D>*> sommets_cellule;
 		// Sommet de départ
+		Sommet<Vecteur2D>* centre_triangle = creer_sommet(triangle->cercle_circonscrit().centre, sommets_crees);
 		Sommet<Vecteur2D>* depart = centre_triangle;
+		sommets_cellule.push_back(centre_triangle);
 		//On aborte dans certains cas
 		bool aborted = false;
-		vector<ArcTU<T>*>* arcs_cellule = new vector<ArcTU<T>*>;
 		
 		while (true) {
 			// Le triangle adjacent sur cet arc
-			Triangle<S, T>* triangle_adjacent = trouver_triangle_adjacent(arc);
+			triangle = trouver_triangle_adjacent(arc);
 
 			// Si pas de triangle adjacent, on ne peut pas créer de polygone
-			if (triangle_adjacent == NULL) {
+			if (triangle == NULL) {
 				aborted = true;
 				goto next;
 			}
 
-			// Le centre de son cercle circonscrit
-			Sommet<Vecteur2D>* centre_triangle_adjacent = creer_sommet(triangle_adjacent->cercle_circonscrit().centre, sommets_crees);
-
-			// Si on tourne pas dans le bon sens en partant de cet arc, on change de sens
-			bool bonSens = Geometrie::aGauche(centre_triangle->v, centre_triangle_adjacent->v, germe->v);
-			if (!bonSens) {
-				// On décale à l'autre arc partant de ce germe
-				for (ArcTU<T>* a : triangle->arcs)
-					if (!a->arete->estEgal(arc->debut(), arc->fin())
-						&& (a->debut() == germe || a->fin() == germe))
-						arc = a;
-				
-				// Le triangle adjacent sur cet arc
-				triangle_adjacent = trouver_triangle_adjacent(arc);
-
-				// Si pas de triangle adjacent, on ne peut pas créer de polygone
-				if (triangle_adjacent == NULL) {
-					aborted = true;
-					goto next;
-				}
-
-				// Le centre de son cercle circonscrit
-				centre_triangle_adjacent = creer_sommet(triangle_adjacent->cercle_circonscrit().centre, sommets_crees);
+			// On décale à l'arc qui pointe vers le germe
+			for (ArcTU<T>* a : triangle->arcs) {
+				if (a->fin() == germe)
+					arc = a;
 			}
 
-			ArcTU<T>* nouvel_arc = creer_arc(centre_triangle, centre_triangle_adjacent, arcs_crees);
-			arcs_cellule->push_back(nouvel_arc);
+			// Centre circonscrit de ce triangle
+			centre_triangle = creer_sommet(triangle->cercle_circonscrit().centre, sommets_crees);
+			sommets_cellule.push_back(centre_triangle);
 
-			// On décale au nouveau sommet du polygone
-			centre_triangle = centre_triangle_adjacent;
-
-			// On décale au prochain arc concerné
-			for (ArcTU<T>* arc_ta : triangle_adjacent->arcs) {
-				if(!arc_ta->arete->estEgal(arc->debut(), arc->fin())
-					&& (arc_ta->debut() == germe || arc_ta->fin() == germe))
-					arc = arc_ta;
-			}
-
-			cout << "nouvel arc" << endl;
-			cout << "(" << nouvel_arc->arete->debut->v.x << ", " << nouvel_arc->arete->debut->v.y << ")";
-			cout << "(" << nouvel_arc->arete->fin->v.x << ", " << nouvel_arc->arete->fin->v.y << ")";
-			cout << nouvel_arc->bonSens << endl << endl;
-
-
-			if (arcs_cellule->size() && nouvel_arc->fin() == depart)
+			// On arrête quand on a bouclé
+			if (centre_triangle == depart)
 				goto next;
 		}
 	next:;
-		if (aborted) {
-			//for (auto a : (*arcs_cellule))
-			//	delete a;
-			arcs_cellule->clear();
-		}
-		else {
-			this->cellules->push_back(new Face<S, T>(*arcs_cellule, S()));
+		if(!aborted){
+			int i = 0;
+			vector<ArcTU<T>*> arcs_cellule;
+			for (int i = 0; i < sommets_cellule.size() - 1; i++) {
+				ArcTU<T>* nouvel_arc = creer_arc(sommets_cellule[i], sommets_cellule[i+1], arcs_crees);
+				arcs_cellule.push_back(nouvel_arc);
+			}
+
+			this->cellules->push_back(new Face<S, T>(arcs_cellule, S()));
 		}
 	}
 

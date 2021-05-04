@@ -64,6 +64,33 @@ private:
 
     }
 
+    /* Handler for window-repaint event. Call back when the window first appears and
+               whenever the window needs to be re-painted. */
+    static void render() {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   // Clear the color buffer with current clearing color
+        //On dessine les axes
+        glColor3f(1.0f, 0.0f, 0.0f); // Rouge
+        //dessinerAxes();
+
+        //On dessine les faces
+        glColor3f(0.0f, 0.0f, 0.0f); // Noir
+        dessinerFaces();
+
+        //On dessine les arêtes
+        glColor3f(1.0f, 1.0f, 1.0f); // Blanc
+        dessinerAretes();
+
+        //On dessine les sommets
+        glColor3f(0.0f, 0.0f, 1.0f); // Bleu
+        dessinerSommets();
+
+        //On dessine les sommets des faces
+        glColor3f(0.0f, 1.0f, 0.0f); // Vert
+        dessinerSommetsFaces();
+
+        glFlush();  // Render now
+    }
+
     static void dessinerAxes() {
         glBegin(GL_LINES);
         glVertex2f(-1.0f, 0);
@@ -115,33 +142,6 @@ private:
                 glVertex2f((float)arc->debut()->v.x, (float)arc->debut()->v.y);
             glEnd();
         }
-    }
-
-    /* Handler for window-repaint event. Call back when the window first appears and
-               whenever the window needs to be re-painted. */
-    static void render() {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   // Clear the color buffer with current clearing color
-        //On dessine les axes
-        glColor3f(1.0f, 0.0f, 0.0f); // Rouge
-        dessinerAxes();
-
-        //On dessine les faces
-        glColor3f(0.0f, 0.0f, 0.0f); // Noir
-        dessinerFaces();
-
-        //On dessine les arêtes
-        glColor3f(1.0f, 1.0f, 1.0f); // Blanc
-        dessinerAretes();
-
-        //On dessine les sommets
-        glColor3f(0.0f, 0.0f, 1.0f); // Bleu
-        dessinerSommets();
-
-        //On dessine les sommets des faces
-        glColor3f(0.0f, 1.0f, 0.0f); // Vert
-        dessinerSommetsFaces();
-
-        glFlush();  // Render now
     }
 
     /* Handler for window re-size event. Called back when the window first appears and

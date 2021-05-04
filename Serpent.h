@@ -7,7 +7,7 @@
 #include "Color.h"
 #include <FileLoader.h>
 
-#define MAX 10000
+#define MAX 100000
 
 class Serpent {
 public:
@@ -30,8 +30,9 @@ private:
 	void charger_geometries() {
 		charger_ecailles();
 		charger_contour();
-		faces->push_back(contour);
 		clipping();
+		faces->push_back(contour);
+
 	}
 
 	void charger_contour() {
@@ -67,24 +68,33 @@ private:
 	}
 
 	void clipping() {
+		bool fait[MAX] = { false };
 		for (auto it = faces->begin(); it != faces->end(); ) {
 			bool deleted = false;
 			Triangle<Color*, Color*>* t = (Triangle<Color*, Color*>*) * it;
-			int nbIntersection = 0;
 			for (ArcTU<Color*>* arc : (t->arcs)) {
-				Vecteur2D centre = t->cercle_circonscrit().centre;
-				for (ArcTU<Color*>* a : contour->arcs) {
-					if (Geometrie::intersection(centre, Vecteur2D(MAX, MAX), a->debut()->v, a->fin()->v)) {
-						nbIntersection++;
+				if (!fait[arc->arete->clef]) {
+					fait[arc->arete->clef] = true;
+					int nbIntersection = 0;
+					double x = (arc->debut()->v.x + arc->fin()->v.x) / 2;
+					double y = (arc->debut()->v.y + arc->fin()->v.y) / 2;
+					Vecteur2D centre(x, y);
+
+					for (ArcTU<Color*>* a : contour->arcs)
+						if (Geometrie::intersection(centre, Vecteur2D(centre.x, MAX), a->debut()->v, a->fin()->v))
+							nbIntersection++;
+
+					cout << nbIntersection << endl;
+
+					if (nbIntersection % 2 == 0) {
+						delete* it;
+						it = faces->erase(it);
+						deleted = true;
+						goto next;
 					}
 				}
 			}
-			if (nbIntersection % 2 == 0) {
-				delete* it;
-				it = faces->erase(it);
-				deleted = true;
-				goto next;
-			}
+			
 		next:
 			if (!deleted)
 				++it;
