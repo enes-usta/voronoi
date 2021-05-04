@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <vector>
 #include "ArcTU.h"
+#include "Geometrie.h"
 
 /**
 * T est la nature de l'information portée par une arête
@@ -30,6 +31,18 @@ public:
 
 		return true;
 	}
+
+	/**
+	* Retourne vrai si cette face contient le sommet s
+	*/
+	bool contientPoint(Vecteur2D s) {
+		for (ArcTU<T>* arc : this->arcs)
+			if (!(Geometrie::aGaucheOuCollineaire(arc->debut()->v, arc->fin()->v, s)))
+				return false;
+
+		return true;
+	}
+
 
 	/**
 	* Retourne vrai si cette face contient le sommet s

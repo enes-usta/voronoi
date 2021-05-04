@@ -7,6 +7,7 @@
 #include "Color.h"
 #include <FileLoader.h>
 
+#define MAX 10000
 
 class Serpent {
 public:
@@ -30,6 +31,7 @@ private:
 		charger_ecailles();
 		charger_contour();
 		faces->push_back(contour);
+		clipping();
 	}
 
 	void charger_contour() {
@@ -62,5 +64,30 @@ private:
 
 		Triangulator<Color*, Color*> triangulator;
 		faces = (vector<Face<Color*, Color*>*>*) triangulator.triangulate(germes, graphe);
+	}
+
+	void clipping() {
+		for (auto it = faces->begin(); it != faces->end(); ) {
+			bool deleted = false;
+			Triangle<Color*, Color*>* t = (Triangle<Color*, Color*>*) * it;
+			int nbIntersection = 0;
+			for (ArcTU<Color*>* arc : (t->arcs)) {
+				Vecteur2D centre = t->cercle_circonscrit().centre;
+				for (ArcTU<Color*>* a : contour->arcs) {
+					if (Geometrie::intersection(centre, Vecteur2D(MAX, MAX), a->debut()->v, a->fin()->v)) {
+						nbIntersection++;
+					}
+				}
+			}
+			if (nbIntersection % 2 == 0) {
+				delete* it;
+				it = faces->erase(it);
+				deleted = true;
+				goto next;
+			}
+		next:
+			if (!deleted)
+				++it;
+		}
 	}
 };
