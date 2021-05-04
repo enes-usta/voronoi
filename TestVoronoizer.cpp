@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 
 
 	//-------- génération des sommets en veillant à ce qu'il n'y ait pas de duplications ----------
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 500; i++) {
 		Vecteur2D a = Vecteur2D(distribution(generator), distribution(generator));
 		//Si il n'existe aucun sommet, on l'ajoute
 		if (sommets->size() == 0)
