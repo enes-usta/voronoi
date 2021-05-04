@@ -20,8 +20,8 @@ public:
 	
 
 	Serpent() {
-		edge_color = new Color(255, 255, 255, 0);
-		face_color = new Color(255, 255, 0, 0);
+		edge_color = new Color(35, 138, 161, 0);
+		face_color = new Color(0, 0, 0, 0);
 		germes = new vector<Sommet<Vecteur2D>*>();
 		graphe = new Graphe<Color*, Vecteur2D>();
 		faces = new vector<Face<Color*, Color*>*>;
@@ -32,7 +32,7 @@ private:
 	void charger_geometries() {
 		charger_ecailles();
 		charger_contour();
-		//clipping();
+		clipping();
 		faces->push_back(contour);
 
 	}
@@ -62,6 +62,13 @@ private:
 	}
 
 	void charger_ecailles() {
+
+		FileLoader why(".\\ressources\\Nuage_contour.txt");
+		
+		for (Vecteur2D v : why.listeSommets)
+			germes->push_back(graphe->creeSommet(v));
+		
+
 		FileLoader f(".\\ressources\\Nuage_noyaux_ecailles.txt");
 
 		for (Vecteur2D v : f.listeSommets) {
@@ -70,6 +77,7 @@ private:
 
 		Triangulator<Color*, Color*> triangulator;
 		faces = (vector<Face<Color*, Color*>*>*) triangulator.triangulate(germes, graphe);
+		colorier();
 	}
 	
 	void charger_ecailles_voronoi() {
@@ -84,13 +92,21 @@ private:
 		faces = voronoizer.voronoize(germes, graphe);
 	}
 
+	void colorier() {
+		for (Face<Color*, Color*>* f : (*faces)) {
+			f->v = face_color;
+			for (ArcTU<Color*>* arc : f->arcs)
+				arc->arete->v = edge_color;
+		}
+	}
+
 	void clipping() {
 		bool fait[MAX] = { false };
 		for (auto it = faces->begin(); it != faces->end(); ) {
-			bool deleted = false;
+
 			Triangle<Color*, Color*>* t = (Triangle<Color*, Color*>*) * it;
 			Vecteur2D centre;
-			
+
 			// Calcul du centre de gravité du triangle
 			for (ArcTU<Color*>* arc : (t->arcs)) {
 				centre += arc->debut()->v;
@@ -98,9 +114,10 @@ private:
 			centre /= 3;
 
 			int nbIntersection = 0;
-
+			double s1;
+			double t1;
 			for (ArcTU<Color*>* a : contour->arcs)
-				if (Geometrie::intersection(centre, Vecteur2D(centre.x, MAX), a->debut()->v, a->fin()->v))
+				if (Geometrie::intersectionSegmentSegment(centre, Vecteur2D(centre.x, MAX), a->debut()->v, a->fin()->v, t1, s1))
 					nbIntersection++;
 
 			cout << nbIntersection << endl;
@@ -108,14 +125,8 @@ private:
 			if (nbIntersection % 2 == 0) {
 				delete* it;
 				it = faces->erase(it);
-				deleted = true;
 			}
-
-
-
-		next:
-			if (!deleted)
-				++it;
-			}
+			else ++it;
 		}
+	}
 };

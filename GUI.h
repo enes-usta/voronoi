@@ -58,8 +58,8 @@ private:
     /* Initialize OpenGL Graphics */
     void initGL() {
         // Set "clearing" or background color
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Black and opaque
-        glLineWidth(3);
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // Black and opaque
+        glLineWidth(2);
         glPointSize(5);
 
     }
@@ -82,11 +82,11 @@ private:
 
         //On dessine les sommets
         glColor3f(0.0f, 0.0f, 1.0f); // Bleu
-        dessinerSommets();
+//        dessinerSommets();
 
         //On dessine les sommets des faces
         glColor3f(0.0f, 1.0f, 0.0f); // Vert
-        dessinerSommetsFaces();
+//        dessinerSommetsFaces();
 
         glFlush();  // Render now
     }

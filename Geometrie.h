@@ -1,5 +1,6 @@
 #pragma once
 #include "Vecteur2D.h"
+#include "Erreur.h"
 
 class Geometrie {
 public:
@@ -110,24 +111,46 @@ public:
 	}
 
 
-	static void resoudreSysteme(const double a1, const double b1, const double c1, const double a2, const double b2, const double c2, double &s, double &t) {
+	static double det(Vecteur2D a, Vecteur2D b) {
+		return a.x *b.y - a.y *b.x;
+	}
 
+	static double det(double a1, double a2, double b1, double b2) {
+		return a1 * b2 - b1 * a2;
+	}
+
+	/**
+	 * a1 * t + b1 * s = c1
+	 * a2 * t + b2 * s = c2
+	 * 
+	 */
+	static void resoudreSysteme(const double a1, const double b1, const double c1, const double a2, const double b2, const double c2, double& t, double &s) {
+
+		double ddet = det(a1, a2, b1, b2);
+
+		t = det(a1, a2, c1, c2) / ddet;
+		s = det(c1, c2, b1, b2) / ddet;
 	}
 
 	/**
 	 */
-	static bool intersectionDroiteDroite(const Vecteur2D &p0, const Vecteur2D &p1, const Vecteur2D &q0, const Vecteur2D &q1,
+	static void intersectionDroiteDroite(const Vecteur2D &p0, const Vecteur2D &p1, const Vecteur2D &q0, const Vecteur2D &q1,
 							double &t, double &s){
 
+		Vecteur2D q0p0 = p0 - q0;
+		Vecteur2D q0q1 = q1 - q0;
+		Vecteur2D p0p1 = (p1 - p0) * -1;
 
+		Geometrie::resoudreSysteme(p0p1.x, q0q1.x, q0p0.x, p0p1.y, q0q1.y, q0p0.y, t, s);
 	}
 
 
 	static bool intersectionSegmentSegment(const Vecteur2D& p0, const Vecteur2D& p1, const Vecteur2D& q0, const Vecteur2D& q1,
-		double t, double s) {
+		double& t, double& s) {
 		intersectionDroiteDroite(p0, p1, q0, q1, t, s);
-		if (0< t < 1 && 0 < s < 1)
-			return true;
+//		cout << "t : " << t << " - s : " << s << endl;
+		return (0 < t && t < 1 && 0 < s && s < 1);
+
 	}
 
 
