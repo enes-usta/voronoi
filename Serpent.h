@@ -6,6 +6,7 @@
 #include "Triangulator.h"
 #include "Color.h"
 #include <FileLoader.h>
+#include <Voronoizer.h>
 
 #define MAX 100000
 
@@ -16,6 +17,7 @@ public:
 	Face<Color*, Color*>* contour;
 	Graphe<Color*, Vecteur2D>* graphe;
 	Color* edge_color, * face_color;
+	
 
 	Serpent() {
 		edge_color = new Color(255, 255, 255, 0);
@@ -30,10 +32,13 @@ private:
 	void charger_geometries() {
 		charger_ecailles();
 		charger_contour();
-		clipping();
+		//clipping();
 		faces->push_back(contour);
 
 	}
+
+
+
 
 	void charger_contour() {
 		FileLoader f(".\\ressources\\Nuage_contour.txt");
@@ -66,38 +71,51 @@ private:
 		Triangulator<Color*, Color*> triangulator;
 		faces = (vector<Face<Color*, Color*>*>*) triangulator.triangulate(germes, graphe);
 	}
+	
+	void charger_ecailles_voronoi() {
+
+		Voronoizer<Color*, Color*> voronoizer;
+
+		FileLoader f(".\\ressources\\Nuage_noyaux_ecailles.txt");
+
+		for (Vecteur2D v : f.listeSommets) 
+			germes->push_back(graphe->creeSommet(v));
+
+		faces = voronoizer.voronoize(germes, graphe);
+	}
 
 	void clipping() {
 		bool fait[MAX] = { false };
 		for (auto it = faces->begin(); it != faces->end(); ) {
 			bool deleted = false;
 			Triangle<Color*, Color*>* t = (Triangle<Color*, Color*>*) * it;
-			for (ArcTU<Color*>* arc : (t->arcs)) {
-				if (!fait[arc->arete->clef]) {
-					fait[arc->arete->clef] = true;
-					int nbIntersection = 0;
-					double x = (arc->debut()->v.x + arc->fin()->v.x) / 2;
-					double y = (arc->debut()->v.y + arc->fin()->v.y) / 2;
-					Vecteur2D centre(x, y);
-
-					for (ArcTU<Color*>* a : contour->arcs)
-						if (Geometrie::intersection(centre, Vecteur2D(centre.x, MAX), a->debut()->v, a->fin()->v))
-							nbIntersection++;
-
-					cout << nbIntersection << endl;
-
-					if (nbIntersection % 2 == 0) {
-						delete* it;
-						it = faces->erase(it);
-						deleted = true;
-						goto next;
-					}
-				}
-			}
+			Vecteur2D centre;
 			
+			// Calcul du centre de gravité du triangle
+			for (ArcTU<Color*>* arc : (t->arcs)) {
+				centre += arc->debut()->v;
+			}
+			centre /= 3;
+
+			int nbIntersection = 0;
+
+			for (ArcTU<Color*>* a : contour->arcs)
+				if (Geometrie::intersection(centre, Vecteur2D(centre.x, MAX), a->debut()->v, a->fin()->v))
+					nbIntersection++;
+
+			cout << nbIntersection << endl;
+
+			if (nbIntersection % 2 == 0) {
+				delete* it;
+				it = faces->erase(it);
+				deleted = true;
+			}
+
+
+
 		next:
 			if (!deleted)
 				++it;
+			}
 		}
-	}
 };

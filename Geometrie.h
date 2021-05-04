@@ -109,5 +109,30 @@ public:
 		return false; // Doesn't fall in any of the above cases
 	}
 
+
+	static void resoudreSysteme(const double a1, const double b1, const double c1, const double a2, const double b2, const double c2, double &s, double &t) {
+
+	}
+
+	/**
+	 */
+	static bool intersectionDroiteDroite(const Vecteur2D &p0, const Vecteur2D &p1, const Vecteur2D &q0, const Vecteur2D &q1,
+							double &t, double &s){
+
+
+	}
+
+
+	static bool intersectionSegmentSegment(const Vecteur2D& p0, const Vecteur2D& p1, const Vecteur2D& q0, const Vecteur2D& q1,
+		double t, double s) {
+		intersectionDroiteDroite(p0, p1, q0, q1, t, s);
+		if (0< t < 1 && 0 < s < 1)
+			return true;
+	}
+
+
+
+
+
 };
 
