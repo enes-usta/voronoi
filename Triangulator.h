@@ -50,13 +50,13 @@ public:
 		return triangulation;
 	}
 
-
+public:
+	double left, right, bottom, top;
 private:
 	vector<Sommet<Vecteur2D>*>* sommets; //Sommets en entrée, les sommets ne doivent pas être dupliqués
 	Graphe<T, Vecteur2D>* graphe; //Graphe utilisé pour créer des sommets
 	vector<Triangle<S, T>*>* triangulation;//Triangles en sortie
 	vector<Triangle<S, T>*>* DTL; //Triangles à supprimer de la triangulation
-	Sommet<Vecteur2D>* sommetsEnglobants[4] = { NULL }; //Sommets englobants les autres sommets, à supprimer à la fin
 	//vector<tuple<ArcTU<T>*, Triangle<S, T>*>> adjacence; //Tableau d'adjacence
 	//vector<ArcTU<T>*>* arcs_crees = new vector<ArcTU<T>*>; //Pour éviter les duplications
 
@@ -75,30 +75,25 @@ private:
 	*/
 	void determiner_triangulation_englobante() {
 		/* On cherche les points extrêmes */
-		int xMin = sommets->front()->v.x;
-		int xMax = sommets->front()->v.x;
-		int yMin = sommets->front()->v.y;
-		int yMax = sommets->front()->v.y;
+		left = sommets->front()->v.x;
+		right = sommets->front()->v.x;
+		bottom = sommets->front()->v.y;
+		top = sommets->front()->v.y;
 
 		for (Sommet<Vecteur2D>* s : (*sommets)) {
-			if (s->v.x < xMin) xMin = s->v.x;
-			if (s->v.y < yMin) yMin = s->v.y;
-			if (s->v.x > xMax) xMax = s->v.x;
-			if (s->v.y > yMax) yMax = s->v.y;
+			if (s->v.x < left) left = s->v.x;
+			if (s->v.x > right) right = s->v.x;
+			if (s->v.y < bottom) bottom = s->v.y;
+			if (s->v.y > top) top = s->v.y;
 		}
 
 		/* On crée les sommets/artes d'un rectangle avec ces points */
 		Sommet<Vecteur2D>* s0, * s1, * s2, * s3;
-		double marge = 100; //pour éviter les sommets superposs
-		s0 = graphe->creeSommet(Vecteur2D(xMin - marge, yMin - marge));
-		s1 = graphe->creeSommet(Vecteur2D(xMax + marge, yMin - marge));
-		s2 = graphe->creeSommet(Vecteur2D(xMax + marge, yMax + marge));
-		s3 = graphe->creeSommet(Vecteur2D(xMin - marge, yMax + marge));
-
-		sommetsEnglobants[0] = s0;
-		sommetsEnglobants[1] = s1;
-		sommetsEnglobants[2] = s2;
-		sommetsEnglobants[3] = s3;
+		double marge = 10; //pour éviter les sommets superposés
+		s0 = graphe->creeSommet(Vecteur2D(left - marge, bottom - marge));
+		s1 = graphe->creeSommet(Vecteur2D(right + marge, bottom - marge));
+		s2 = graphe->creeSommet(Vecteur2D(right + marge, top + marge));
+		s3 = graphe->creeSommet(Vecteur2D(left - marge, top + marge));
 
 		Arete<T, Vecteur2D>* a0, * a1, * a2, * a3, * a4;
 		a0 = graphe->creeArete(T(), s0, s2);
@@ -239,13 +234,12 @@ private:
 			bool deleted = false;
 			Triangle<S, T>* t = (Triangle<S, T>*) *it;
 			for (ArcTU<T>* arc : (t->arcs)) {
-				for (int j = 0; j < 4; j++) {
-					if (arc->debut() == sommetsEnglobants[j] || arc->fin() == sommetsEnglobants[j]) {
-						delete* it;
-						it = triangulation->erase(it);
-						deleted = true;
-						goto next;
-					}
+				if (arc->debut()->v.x < left || arc->debut()->v.x > right
+					|| arc->debut()->v.y < bottom || arc->debut()->v.y > top) {
+					delete* it;
+					it = triangulation->erase(it);
+					deleted = true;
+					goto next;
 				}
 			}
 			next:

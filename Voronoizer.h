@@ -30,7 +30,7 @@ template <class S, class T>
 class Voronoizer {
 public:
 	Voronoizer() {
-		this->_germes = new vector<Sommet<Vecteur2D>*>;
+		this->germes = new vector<Sommet<Vecteur2D>*>;
 		this->cellules = new vector<Face<S, T>*>;
 	}
 	~Voronoizer() {}
@@ -40,30 +40,21 @@ public:
 	*/
 	vector<Face<S, T>*>* voronoize(vector<Sommet<Vecteur2D>*>* sommets, Graphe<T, Vecteur2D>* graphe) {
 		this->graphe = graphe;
-		Triangulator<S, T> triangulator;
-		triangulation = triangulator.triangulate(sommets, graphe);
-		calculer_germes();
+		triangulator = new Triangulator<S, T>;
+		triangulation = triangulator->triangulate(sommets, graphe);
 		construire_cellules();
+		clipping();
 		return this->cellules;
 	}
 
-	vector<Sommet<Vecteur2D>*>* germes() {
-		return this->_germes;
-	}
-
+public:
+	vector<Sommet<Vecteur2D>*>* germes;
 private:
-	vector<Sommet<Vecteur2D>*>* _germes;
 	Graphe<T, Vecteur2D>* graphe;
+	Triangulator<S, T>* triangulator;
 	vector<Triangle<S, T>*>* triangulation;
 	vector<Face<S, T>*>* cellules;
 
-
-	void calculer_germes() {
-		for (Triangle<S, T>* triangle : (*triangulation)) {
-			Sommet<Vecteur2D>* s = graphe->creeSommet(triangle->cercle_circonscrit().centre);
-			_germes->push_back(s);
-		}
-	}
 
 	void construire_cellules() {
 		bool fait[MAX_ARRAY] = { false };
@@ -76,6 +67,7 @@ private:
 				Sommet<Vecteur2D>* germe = arc->fin();
 				// On vérifie si on a déjà traité ce germe
 				if (!fait[germe->clef]) {
+					germes->push_back(germe);
 					pivoter_sur_germe(arc, triangle, sommets_crees, arcs_crees);
 					fait[germe->clef] = true;
 				}
@@ -100,39 +92,67 @@ private:
 		
 		while (true) {
 			// Le triangle adjacent sur cet arc
-			triangle = trouver_triangle_adjacent(arc);
+			Triangle<S, T>* triangle_traite = trouver_triangle_adjacent(arc);
 
-			// Si pas de triangle adjacent, on ne peut pas créer de polygone
-			if (triangle == NULL) {
-				aborted = true;
-				goto next;
+			if (triangle_traite == NULL) {
+			// CAS D'EXCEPTION: on essaye de pivoter sur un germe mais on tombe sur un arc qui n'a pas de triangle adjacent
+			// Si pas de triangle adjacent, on ne peut pas créer de polygone complet
+			// On fait un tour en passant par le milieu des arcs de degré 1 et le germe,
+			// puis on continue l'algo normalement
+
+				Sommet<Vecteur2D>* milieu_arc = creer_sommet(Vecteur2D((arc->debut()->v + arc->fin()->v) / 2), sommets_crees);
+				sommets_cellule.push_back(milieu_arc);
+				sommets_cellule.push_back(germe);
+				// On se place sur le triangle de départ
+				Triangle<S, T>* triangle_adjacent = triangle;
+				triangle_traite = triangle_adjacent;
+				while(triangle_adjacent != NULL){
+					// On parcourt les triangles adjacents dans le sens horaire jusqu'à arriver au triangle extrême
+					for (ArcTU<T>* a : triangle_adjacent->arcs) {
+						if (a->debut() == germe) {
+							triangle_adjacent = trouver_triangle_adjacent(arc);
+							if (triangle_adjacent != NULL)
+								triangle_traite = triangle_adjacent;
+							break;
+						}
+					}
+				}
+
+				// On décale à l'arc qui part du germe
+				for (ArcTU<T>* a : triangle_traite->arcs) {
+					if (a->debut() == germe) {
+						milieu_arc = creer_sommet(Vecteur2D((a->debut()->v + a->fin()->v) / 2), sommets_crees);
+						sommets_cellule.push_back(milieu_arc);
+					}
+				}
+				//aborted = true;
 			}
 
+			// Centre du cercle circonscrit de ce triangle
+			centre_triangle = creer_sommet(triangle_traite->cercle_circonscrit().centre, sommets_crees);
+			sommets_cellule.push_back(centre_triangle);
+
 			// On décale à l'arc qui pointe vers le germe
-			for (ArcTU<T>* a : triangle->arcs) {
+			for (ArcTU<T>* a : triangle_traite->arcs) {
 				if (a->fin() == germe)
 					arc = a;
 			}
-
-			// Centre circonscrit de ce triangle
-			centre_triangle = creer_sommet(triangle->cercle_circonscrit().centre, sommets_crees);
-			sommets_cellule.push_back(centre_triangle);
 
 			// On arrête quand on a bouclé
 			if (centre_triangle == depart)
 				goto next;
 		}
 	next:;
-		if(!aborted){
-			int i = 0;
+		if (!aborted) {
 			vector<ArcTU<T>*> arcs_cellule;
 			for (int i = 0; i < sommets_cellule.size() - 1; i++) {
-				ArcTU<T>* nouvel_arc = creer_arc(sommets_cellule[i], sommets_cellule[i+1], arcs_crees);
+				ArcTU<T>* nouvel_arc = creer_arc(sommets_cellule[i], sommets_cellule[i + 1], arcs_crees);
 				arcs_cellule.push_back(nouvel_arc);
 			}
 
 			this->cellules->push_back(new Face<S, T>(arcs_cellule, S()));
 		}
+		
 	}
 
 
@@ -176,4 +196,39 @@ private:
 		return NULL;
 	}
 
+
+	/**
+	* Supprime les faces et les sommets qui sont à l'extérieur du rectangle
+	* décrit par les sommets extrêmes parmi les sommets à construire
+	*/
+	void clipping() {
+		// On supprime les faces
+		for (auto it = cellules->begin(); it != cellules->end(); ) {
+			bool deleted = false;
+			Face<S, T>* f = (Face<S, T>*) * it;
+			for (ArcTU<T>* arc : (f->arcs)) {
+				if (arc->debut()->v.x < triangulator->left || arc->debut()->v.x > triangulator->right
+					|| arc->debut()->v.y < triangulator->bottom || arc->debut()->v.y > triangulator->top) {
+					delete* it;
+					it = cellules->erase(it);
+					deleted = true;
+					goto next;
+				}
+			}
+		next:
+			if (!deleted)
+				++it;
+		}
+
+		// On supprime les sommets
+		for (auto it = germes->begin(); it != germes->end(); ) {
+			Sommet<Vecteur2D>* s = (Sommet<Vecteur2D>*) * it;
+			if (s->v.x < triangulator->left || s->v.x > triangulator->right
+				|| s->v.y < triangulator->bottom || s->v.y > triangulator->top) {
+				delete* it;
+				it = germes->erase(it);
+			}else
+				++it;
+		}
+	}
 };

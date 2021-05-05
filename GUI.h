@@ -46,8 +46,17 @@ public:
     * Dessine les faces et les sommets passés en paramètre
     */
     void dessiner(vector<Face<Color*, Color*>*>* faces, vector<Sommet<Vecteur2D>*>* sommets) {
-        // On met  l'chelle les faces
-        changement_repere(faces, sommets);
+        if (sommets == NULL)
+            sommets = new vector<Sommet<Vecteur2D>*>;
+
+        if (faces == NULL)
+            faces = new vector<Face<Color*, Color*>*>;
+
+        sommets_GLOBAL = sommets;
+        faces_GLOBAL = faces;
+
+        
+        changement_repere();// On change de repère 
         glutMainLoop();// Enter the event-processing loop
     }
 
@@ -56,8 +65,8 @@ private:
     /* Initialize OpenGL Graphics */
     void initGL() {
         // Set "clearing" or background color
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // Black and opaque
-        glLineWidth(1);
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // Blanc
+        glLineWidth(2);
         glPointSize(5);
 
     }
@@ -68,7 +77,7 @@ private:
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   // Clear the color buffer with current clearing color
         //On dessine les axes
         glColor3f(1.0f, 0.0f, 0.0f); // Rouge
-        //dessinerAxes();
+        dessinerAxes();
 
         //On dessine les faces
         glColor3f(0.0f, 0.0f, 0.0f); // Noir
@@ -89,17 +98,23 @@ private:
         glFlush();  // Render now
     }
 
+    /**
+    * Dessine deux axes orthogonaux 
+    */
     static void dessinerAxes() {
         glBegin(GL_LINES);
-        glVertex2f(-1.0f, 0);
-        glVertex2f(1.0f, 0);
+        glVertex2f(world_left, 0);
+        glVertex2f(world_right, 0);
         glEnd();
         glBegin(GL_LINES);
-        glVertex2f(0, -1.0f);
-        glVertex2f(0, 1.0f);
+        glVertex2f(0, world_bottom);
+        glVertex2f(0, world_top);
         glEnd();
     }
 
+    /**
+    * Dessine deux axes orthogonaux
+    */
     static void dessinerAretes() {
         for (Face<Color*, Color*>* face : (*faces_GLOBAL)) {
             glBegin(GL_LINE_LOOP);
@@ -112,6 +127,9 @@ private:
         }
     }
 
+    /**
+    * Dessine les faces
+    */
     static void dessinerFaces() {
         for (Face<Color*, Color*>* face : (*faces_GLOBAL)) {
             glBegin(GL_POLYGON);
@@ -125,6 +143,9 @@ private:
         }
     }
 
+    /**
+    * Dessine les sommets
+    */
     static void dessinerSommets() {
         glBegin(GL_POINTS);
         for (Sommet<Vecteur2D>* s : (*sommets_GLOBAL))
@@ -133,6 +154,9 @@ private:
         glEnd();
     }
 
+    /**
+    * Dessine les sommets des faces
+    */
     static void dessinerSommetsFaces() {
         for (Face<Color*, Color*>* face : (*faces_GLOBAL)) {
             glBegin(GL_POINTS);
@@ -142,58 +166,20 @@ private:
         }
     }
 
-    /* Handler for window re-size event. Called back when the window first appears and
-    whenever the window is re-sized with its new width and height */
-    static void reshape(GLsizei width, GLsizei height) {  // GLsizei for non-negative integer
-        // Compute aspect ratio of the new window
-        if (height == 0) height = 1;                // To prevent divide by 0
-        GLfloat aspect = (GLfloat)width / (GLfloat)height;
-
-        GLfloat world_aspect = world_width / world_height;
-
-        if (world_width >= world_height) {
-            glViewport(0, 0, width, width * world_height / world_width);
-        }
-        else {
-            glViewport(0, 0, height * world_width / world_height, height);
-        }
-        // Set the viewport to cover the new window
-        //glViewport(0, 0, width, height-200);
-
-        // Set the aspect ratio of the clipping area to match the viewport
-        glMatrixMode(GL_MODELVIEW);  // To operate on the Projection matrix
-
-        glLoadIdentity();             // Reset the projection matrix
-
-        /*if (width >= height) {
-            // aspect >= 1, set the height from -1 to 1, with larger width
-            gluOrtho2D(world_left * aspect, world_right * aspect, world_bottom, world_top);
-        }
-        else {
-            // aspect < 1, set the width to -1 to 1, with larger height
-            gluOrtho2D(world_left, world_right, world_bottom / aspect, world_top / aspect);
-        }*/
-        gluOrtho2D(world_left , world_right , world_bottom, world_top);
-
-
-    }
-
-    void changement_repere(vector<Face<Color*, Color*>*>* faces, vector<Sommet<Vecteur2D>*>* sommets) {
-        if (sommets == NULL)
-            sommets = new vector<Sommet<Vecteur2D>*>;
-
-        if (faces == NULL)
-            faces = new vector<Face<Color*, Color*>*>;
-
-        // Calcul des coins dans les sommets et les faces
-        for (Sommet<Vecteur2D>* s : (*sommets)) {
+    /**
+    * Calcul les points extrêmes du monde à dessiner. La fonction reshape s'occupe de d'adapter ce monde à la fenêtre.
+    */
+    void changement_repere() {
+        // Calcul des points extrêmes dans les sommets à dessiner
+        for (Sommet<Vecteur2D>* s : (*sommets_GLOBAL)) {
             world_left = min(world_left, s->v.x);
             world_right = max(world_right, s->v.x);
             world_bottom = min(world_bottom, s->v.y);
             world_top = max(world_top, s->v.y);
         }
 
-        for (Face<Color*, Color*>* face : (*faces))
+        // Caclul des points extrêmes dans les faces à dessiner
+        for (Face<Color*, Color*>* face : (*faces_GLOBAL))
             for (ArcTU<Color*>* arc : face->arcs) {
                 int x = arc->debut()->v.x;
                 int y = arc->debut()->v.y;
@@ -207,19 +193,40 @@ private:
         world_right++;
         world_bottom--;
         world_top++;
+        world_left--;
+        world_right++;
+        world_bottom--;
+        world_top++;
 
         world_width = world_right - world_left;
         world_height = world_top - world_bottom;
+    }
 
+    /* Handler for window re-size event. Called back when the window first appears and
+    whenever the window is re-sized with its new width and height */
+    static void reshape(GLsizei width, GLsizei height) {  // GLsizei for non-negative integer
+        // Compute aspect ratio of the new window
+        if (height == 0) height = 1;                // To prevent divide by 0
+        GLfloat aspect = (GLfloat)width / (GLfloat)height;
 
-        cout << world_left << endl;
-        cout << world_right << endl;
-        cout << world_bottom << endl;
-        cout << world_top << endl;
+        GLfloat world_aspect = world_width / world_height;
 
+        if (world_width >= world_height) {
+            GLfloat world_on_screen_height = width * world_height / world_width;
+            glViewport(0, height / 2 - world_on_screen_height / 2, width, world_on_screen_height);
+        }
+        else {
+            GLfloat world_on_screen_width = height * world_width / world_height;
+            glViewport(width / 2 - world_on_screen_width / 2, 0, world_on_screen_width, height);
+        }
 
-        sommets_GLOBAL = sommets;
-        faces_GLOBAL = faces;
+        // Set the aspect ratio of the clipping area to match the viewport
+        glMatrixMode(GL_MODELVIEW);  // To operate on the Projection matrix
+
+        glLoadIdentity();             // Reset the projection matrix
+
+        gluOrtho2D(world_left, world_right, world_bottom, world_top);
+
 
     }
 };

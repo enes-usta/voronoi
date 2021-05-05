@@ -20,8 +20,8 @@ public:
 	
 
 	Serpent() {
-		edge_color = new Color(35, 138, 161, 0);
-		face_color = new Color(0, 0, 0, 0);
+		edge_color = new Color(161, 128, 29, 0);
+		face_color = new Color(31, 163, 141, 0);
 		germes = new vector<Sommet<Vecteur2D>*>();
 		graphe = new Graphe<Color*, Vecteur2D>();
 		faces = new vector<Face<Color*, Color*>*>;
@@ -30,8 +30,9 @@ public:
 
 private:
 	void charger_geometries() {
-		//charger_ecailles();
 		charger_contour();
+		charger_ecailles();
+		//charger_ecailles_voronoi();
 		clipping();
 		faces->push_back(contour);
 
@@ -39,18 +40,15 @@ private:
 
 	void charger_contour() {
 		FileLoader f(".\\ressources\\Nuage_contour.txt");
-		vector<Sommet<Vecteur2D>*> contours;
-
-		for (Vecteur2D v : f.listeSommets) {
-			contours.push_back(graphe->creeSommet(v));
-		}
+		for (Vecteur2D *v : (*f.listeSommets))
+			germes->push_back(graphe->creeSommet(*v));
 
 		vector<ArcTU<Color*>*> arcs_contours;
 
 		int i = 0;
-		for (Sommet<Vecteur2D>* s : contours){
-			int j = (i + 1) % contours.size();
-			Arete<Color*, Vecteur2D>* a = graphe->creeArete(edge_color, contours[i], contours[j]);
+		for (Sommet<Vecteur2D>* s : (*germes)){
+			int j = (i + 1) % germes->size();
+			Arete<Color*, Vecteur2D>* a = graphe->creeArete(edge_color, (*germes)[i], (*germes)[j]);
 			arcs_contours.push_back(new ArcTU<Color*>(a, true));
 			i++;
 		}
@@ -59,18 +57,9 @@ private:
 	}
 
 	void charger_ecailles() {
-
-		FileLoader why(".\\ressources\\Nuage_contour.txt");
-		
-		for (Vecteur2D v : why.listeSommets)
-			germes->push_back(graphe->creeSommet(v));
-		
-
 		FileLoader f(".\\ressources\\Nuage_noyaux_ecailles.txt");
-
-		for (Vecteur2D v : f.listeSommets) {
-			germes->push_back(graphe->creeSommet(v));
-		}
+		for (Vecteur2D* v : (*f.listeSommets))
+			germes->push_back(graphe->creeSommet(*v));
 
 		Triangulator<Color*, Color*> triangulator;
 		faces = (vector<Face<Color*, Color*>*>*) triangulator.triangulate(germes, graphe);
@@ -78,15 +67,13 @@ private:
 	}
 	
 	void charger_ecailles_voronoi() {
+		FileLoader f(".\\ressources\\Nuage_noyaux_ecailles.txt");
+		for (Vecteur2D* v : (*f.listeSommets))
+			germes->push_back(graphe->creeSommet(*v));
 
 		Voronoizer<Color*, Color*> voronoizer;
-
-		FileLoader f(".\\ressources\\Nuage_noyaux_ecailles.txt");
-
-		for (Vecteur2D v : f.listeSommets) 
-			germes->push_back(graphe->creeSommet(v));
-
 		faces = voronoizer.voronoize(germes, graphe);
+		colorier();
 	}
 
 	void colorier() {
@@ -101,14 +88,14 @@ private:
 		bool fait[MAX] = { false };
 		for (auto it = faces->begin(); it != faces->end(); ) {
 
-			Triangle<Color*, Color*>* t = (Triangle<Color*, Color*>*) * it;
+			Face<Color*, Color*>* f =  *it;
 			Vecteur2D centre;
 
 			// Calcul du centre de gravité du triangle
-			for (ArcTU<Color*>* arc : (t->arcs)) {
+			for (ArcTU<Color*>* arc : (f->arcs)) {
 				centre += arc->debut()->v;
 			}
-			centre /= 3;
+			centre /= f->arcs.size();
 
 			int nbIntersection = 0;
 			double s1;

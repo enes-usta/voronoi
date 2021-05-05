@@ -13,7 +13,7 @@ private:
 	string _filename;
 
 public:
-    vector<Vecteur2D> listeSommets;
+    vector<Vecteur2D*>* listeSommets = new vector<Vecteur2D*>;
     FileLoader(string filename): _filename(filename){
 
     ifstream file(filename);
@@ -24,14 +24,14 @@ public:
 
         while (getline(file, line)){
             istringstream ss(line);
-            Vecteur2D v;
+            Vecteur2D* v = new Vecteur2D();
 
             getline(ss, coords, ',');
-            v.x = stod(coords);
+            v->x = stod(coords);
             getline(ss, coords);
 
-            v.y = stod(coords);
-            listeSommets.push_back(v);
+            v->y = stod(coords);
+            listeSommets->push_back(v);
         }
     }
     file.close();

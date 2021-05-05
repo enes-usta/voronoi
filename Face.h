@@ -43,7 +43,6 @@ public:
 		return true;
 	}
 
-
 	/**
 	* Retourne vrai si cette face contient le sommet s
 	*/
