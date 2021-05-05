@@ -25,9 +25,8 @@ public:
 	}
 
 	~Face() {
-		/*for (ArcTU<T, S>* arc : arcs) {
-			arc->face = NULL;
-		}*/
+		for (ArcTU<T, S>* arc : arcs)
+			delete arc;
 	}
 
 	/**

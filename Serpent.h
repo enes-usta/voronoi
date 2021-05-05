@@ -43,13 +43,13 @@ private:
 		for (Vecteur2D *v : (*f.listeSommets))
 			germes->push_back(graphe->creeSommet(*v));
 
-		vector<ArcTU<Color*>*> arcs_contours;
+		vector<ArcTU<Color*, Color*>*> arcs_contours;
 
 		int i = 0;
 		for (Sommet<Vecteur2D>* s : (*germes)){
 			int j = (i + 1) % germes->size();
 			Arete<Color*, Vecteur2D>* a = graphe->creeArete(edge_color, (*germes)[i], (*germes)[j]);
-			arcs_contours.push_back(new ArcTU<Color*>(a, true));
+			arcs_contours.push_back(new ArcTU<Color*, Color*>(a, true));
 			i++;
 		}
 
@@ -79,7 +79,7 @@ private:
 	void colorier() {
 		for (Face<Color*, Color*>* f : (*faces)) {
 			f->v = face_color;
-			for (ArcTU<Color*>* arc : f->arcs)
+			for (ArcTU<Color*, Color*>* arc : f->arcs)
 				arc->arete->v = edge_color;
 		}
 	}
@@ -92,7 +92,7 @@ private:
 			Vecteur2D centre;
 
 			// Calcul du centre de gravité du triangle
-			for (ArcTU<Color*>* arc : (f->arcs)) {
+			for (ArcTU<Color*, Color*>* arc : (f->arcs)) {
 				centre += arc->debut()->v;
 			}
 			centre /= f->arcs.size();
@@ -100,7 +100,7 @@ private:
 			int nbIntersection = 0;
 			double s1;
 			double t1;
-			for (ArcTU<Color*>* a : contour->arcs)
+			for (ArcTU<Color*, Color*>* a : contour->arcs)
 				if (Geometrie::intersectionSegmentSegment(centre, Vecteur2D(centre.x, MAX), a->debut()->v, a->fin()->v, t1, s1))
 					nbIntersection++;
 

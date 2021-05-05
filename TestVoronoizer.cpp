@@ -1,4 +1,4 @@
-/*#include <iostream>
+#include <iostream>
 #include <string>
 #include "Graphe.h"
 #include "Triangle.h"
@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 
 
 	//-------- génération des sommets en veillant à ce qu'il n'y ait pas de duplications ----------
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 1000; i++) {
 		Vecteur2D a = Vecteur2D(distribution(generator), distribution(generator));
 		//Si il n'existe aucun sommet, on l'ajoute
 		if (sommets->size() == 0)
@@ -54,4 +54,4 @@ int main(int argc, char** argv)
 	gui.dessiner(voronoi, germes);
 	return 0;
 
-}*/
+}

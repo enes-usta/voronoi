@@ -59,10 +59,10 @@ private:
 	void construire_cellules() {
 		bool fait[MAX_ARRAY] = { false };
 		// Pour éviter les duplications 
-		vector<ArcTU<T>*>* arcs_crees = new vector<ArcTU<T>*>;
+		vector<ArcTU<T, S>*>* arcs_crees = new vector<ArcTU<T, S>*>;
 		vector<Sommet<Vecteur2D>*>* sommets_crees = new vector<Sommet<Vecteur2D>*>;
 		for (Triangle<S, T>* triangle : (*triangulation)) {
-			for (ArcTU<T>* arc : triangle->arcs) {
+			for (ArcTU<T, S>* arc : triangle->arcs) {
 				//Germe qu'on traite
 				Sommet<Vecteur2D>* germe = arc->fin();
 				// On vérifie si on a déjà traité ce germe
@@ -78,7 +78,7 @@ private:
 	/**
 	* Créé un polygone autour de ce germe si c'est possible
 	*/
-	void pivoter_sur_germe(ArcTU<T>* arc, Triangle<S, T>* triangle, vector<Sommet<Vecteur2D>*>* sommets_crees, vector<ArcTU<T>*>* arcs_crees) {
+	void pivoter_sur_germe(ArcTU<T, S>* arc, Triangle<S, T>* triangle, vector<Sommet<Vecteur2D>*>* sommets_crees, vector<ArcTU<T, S>*>* arcs_crees) {
 		//Germe qu'on traite
 		Sommet<Vecteur2D>* germe = arc->fin();
 		//Cellules du diagramme de Voronoï
@@ -108,7 +108,7 @@ private:
 				triangle_traite = triangle_adjacent;
 				while(triangle_adjacent != NULL){
 					// On parcourt les triangles adjacents dans le sens horaire jusqu'à arriver au triangle extrême
-					for (ArcTU<T>* a : triangle_adjacent->arcs) {
+					for (ArcTU<T, S>* a : triangle_adjacent->arcs) {
 						if (a->debut() == germe) {
 							triangle_adjacent = trouver_triangle_adjacent(arc);
 							if (triangle_adjacent != NULL)
@@ -119,7 +119,7 @@ private:
 				}
 
 				// On décale à l'arc qui part du germe
-				for (ArcTU<T>* a : triangle_traite->arcs) {
+				for (ArcTU<T, S>* a : triangle_traite->arcs) {
 					if (a->debut() == germe) {
 						milieu_arc = creer_sommet(Vecteur2D((a->debut()->v + a->fin()->v) / 2), sommets_crees);
 						sommets_cellule.push_back(milieu_arc);
@@ -133,7 +133,7 @@ private:
 			sommets_cellule.push_back(centre_triangle);
 
 			// On décale à l'arc qui pointe vers le germe
-			for (ArcTU<T>* a : triangle_traite->arcs) {
+			for (ArcTU<T, S>* a : triangle_traite->arcs) {
 				if (a->fin() == germe)
 					arc = a;
 			}
@@ -144,13 +144,15 @@ private:
 		}
 	next:;
 		if (!aborted) {
-			vector<ArcTU<T>*> arcs_cellule;
+			vector<ArcTU<T, S>*> arcs_cellule;
+			Face<S, T>* face = new Face<S, T>();
 			for (int i = 0; i < sommets_cellule.size() - 1; i++) {
-				ArcTU<T>* nouvel_arc = creer_arc(sommets_cellule[i], sommets_cellule[i + 1], arcs_crees);
+				ArcTU<T, S>* nouvel_arc = creer_arc(sommets_cellule[i], sommets_cellule[i + 1], face, arcs_crees);
 				arcs_cellule.push_back(nouvel_arc);
 			}
+			face->arcs = arcs_cellule;
 
-			this->cellules->push_back(new Face<S, T>(arcs_cellule, S()));
+			this->cellules->push_back(face);
 		}
 		
 	}
@@ -172,12 +174,21 @@ private:
 	/**
 	* Crée un arc en veillant à ce qu'il ne soit pas dupliqué
 	*/
-	ArcTU<T>* creer_arc(Sommet<Vecteur2D>* deb, Sommet<Vecteur2D>* fin, vector<ArcTU<T>*>* arcs_crees) {
-		for (ArcTU<T>* arc : (*arcs_crees))
-			if (arc->arete->estEgal(deb, fin)) 
-				return new ArcTU<T>(arc->arete, !arc->bonSens);
+	ArcTU<T, S>* creer_arc(Sommet<Vecteur2D>* deb, Sommet<Vecteur2D>* fin, Face<S, T>* face, vector<ArcTU<T, S>*>* arcs_crees) {
+		for (ArcTU<T, S>* arc : (*arcs_crees))
+			if (arc->arete->estEgal(deb, fin)) {
+				ArcTU<T, S>* nouvel_arc = new ArcTU<T, S>(arc->arete, !arc->bonSens);
+				nouvel_arc->face_adjacente = arc->face;
+				nouvel_arc->arc_adjacent = arc;
+				nouvel_arc->face = face;
 
-		ArcTU<T>* res = new ArcTU<T>(graphe->creeArete(T(), deb, fin), true);
+				arc->face_adjacente = face;
+				arc->arc_adjacent = nouvel_arc;
+				return nouvel_arc;
+			}
+
+		ArcTU<T, S>* res = new ArcTU<T, S>(graphe->creeArete(T(), deb, fin), true);
+		res->face = face;
 		arcs_crees->push_back(res);
 		return res;
 	}
@@ -186,14 +197,8 @@ private:
 	/**
 	* Retourne un triangle adjacent l'arc s'il en existe un, sinon retourne null
 	*/
-	Triangle<S, T>* trouver_triangle_adjacent(ArcTU<T>* arc) {
-
-		for (Triangle<S, T>* triangleB : (*triangulation))
-			for (ArcTU<T>* arcB : triangleB->arcs)
-				if ((*arc) != (*arcB) && arc->arete->estEgal(arcB->debut(), arcB->fin()))
-					return triangleB;
-
-		return NULL;
+	Triangle<S, T>* trouver_triangle_adjacent(ArcTU<T, S>* arc) {
+		return (Triangle<S, T>*)arc->face_adjacente;
 	}
 
 
@@ -206,7 +211,7 @@ private:
 		for (auto it = cellules->begin(); it != cellules->end(); ) {
 			bool deleted = false;
 			Face<S, T>* f = (Face<S, T>*) * it;
-			for (ArcTU<T>* arc : (f->arcs)) {
+			for (ArcTU<T, S>* arc : (f->arcs)) {
 				if (arc->debut()->v.x < triangulator->left || arc->debut()->v.x > triangulator->right
 					|| arc->debut()->v.y < triangulator->bottom || arc->debut()->v.y > triangulator->top) {
 					delete* it;

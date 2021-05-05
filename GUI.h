@@ -191,12 +191,13 @@ private:
 
         world_left--;
         world_right++;
-        world_bottom--;
-        world_top++;
-        world_left--;
         world_right++;
         world_bottom--;
         world_top++;
+       /* world_left--;
+        world_right++;
+        world_bottom--;
+        world_top++;*/
 
         world_width = world_right - world_left;
         world_height = world_top - world_bottom;
@@ -209,16 +210,20 @@ private:
         if (height == 0) height = 1;                // To prevent divide by 0
         GLfloat aspect = (GLfloat)width / (GLfloat)height;
 
-        GLfloat world_aspect = world_width / world_height;
-
-        if (world_width >= world_height) {
+       /* if (world_width >= world_height) {
             GLfloat world_on_screen_height = width * world_height / world_width;
             glViewport(0, height / 2 - world_on_screen_height / 2, width, world_on_screen_height);
         }
         else {
             GLfloat world_on_screen_width = height * world_width / world_height;
-            glViewport(width / 2 - world_on_screen_width / 2, 0, world_on_screen_width, height);
+            glViewport(, 0, world_on_screen_width, height);
+        }*/
+        if (width >= height) {
+            GLfloat world_on_screen_width = height * world_width / world_height;
+            GLfloat world_on_screen_height = world_on_screen_width * world_height / world_width;
+            glViewport(world_on_screen_width / 2 - world_on_screen_width / 2, height / 2 - world_on_screen_height / 2, world_on_screen_width, world_on_screen_height);
         }
+        
 
         // Set the aspect ratio of the clipping area to match the viewport
         glMatrixMode(GL_MODELVIEW);  // To operate on the Projection matrix

@@ -1,4 +1,4 @@
-#include <iostream>
+/*#include <iostream>
 #include <string>
 #include "Graphe.h"
 #include "Vecteur2D.h"
@@ -15,7 +15,7 @@ int main(int argc, char** argv)
 
 	//--------------- généraeur de distribution uniforme -----------------
 	default_random_engine generator;
-	uniform_int_distribution<int> distribution(-100, 100);
+	uniform_int_distribution<int> distribution(-10, 10);
 
 	//-------------- triangulateur et variables concernées -----------------------
 	Triangulator<Color*, Color*> triangulator;
@@ -50,3 +50,4 @@ int main(int argc, char** argv)
 	return 0;
 
 }
+*/

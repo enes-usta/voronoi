@@ -57,8 +57,6 @@ private:
 	Graphe<T, Vecteur2D>* graphe; //Graphe utilisé pour créer des sommets
 	vector<Triangle<S, T>*>* triangulation;//Triangles en sortie
 	vector<Triangle<S, T>*>* DTL; //Triangles à supprimer de la triangulation
-	//vector<tuple<ArcTU<T, S>*, Triangle<S, T>*>> adjacence; //Tableau d'adjacence
-	//vector<ArcTU<T, S>*>* arcs_crees = new vector<ArcTU<T, S>*>; //Pour éviter les duplications
 
 	/**
 	* Initialise les membres
@@ -178,12 +176,21 @@ private:
 		vector<ArcTU<T, S>*> arcs;
 		Triangle<S, T>* triangle = new Triangle<S, T>();
 
-		//premier arc, rien ne change
-		arc_guide->face = triangle;
-		if (arc_guide->arc_adjacent != NULL) {
-			arc_guide->arc_adjacent->face_adjacente = triangle;
+		//premier arc, on supprime l'arc guide et on rétablit l'adjacence en créant une nouvel arc
+		Arete<T, Vecteur2D>* arete = arc_guide->arete;
+		bool bonSens = arc_guide->bonSens;
+		ArcTU<T, S>* arc_adjacent = arc_guide->arc_adjacent;
+		ArcTU<T, S>* nouvel_arc = new ArcTU<T, S>(arete, bonSens);
+		nouvel_arc->arc_adjacent = arc_adjacent;
+		nouvel_arc->face = triangle;
+		nouvel_arc->face_adjacente = arc_guide->face_adjacente;
+
+		if (arc_adjacent != NULL) {
+			arc_adjacent->face_adjacente = triangle;
+			arc_adjacent->arc_adjacent = nouvel_arc;
 		}
-		arcs.push_back(arc_guide);
+		arc_guide->arc_adjacent = NULL;// on détache les arcs pour éviter les problèmes après suppression de face 
+		arcs.push_back(nouvel_arc);
 
 
 		//deuxième arc, si on a créé un arc ayant la même arête, on réutilise l'arête
@@ -201,13 +208,6 @@ private:
 	* Retourne un triangle adjacent l'arc s'il en existe un, sinon retourne null
 	*/
 	Triangle<S, T>* trouver_triangle_adjacent(ArcTU<T, S>* arc) {
-
-		/*for (Triangle<S, T>* triangleB : (*triangulation))
-				for (ArcTU<T, S>* arcB : triangleB->arcs)
-					if ((*arc) != (*arcB) && arc->arete->estEgal(arcB->debut(), arcB->fin()))
-						return triangleB;
-
-		return NULL;*/
 		return (Triangle<S, T>*) arc->face_adjacente;
 	}
 
@@ -242,6 +242,7 @@ private:
 			i = 0;
 			for (Triangle<S, T>* t : (*triangulation)) {
 				if (dt == t) {
+					//delete t;
 					triangulation->erase((triangulation->begin() + i));
 					break;
 				}

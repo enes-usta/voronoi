@@ -24,8 +24,10 @@ public:
 
 	~ArcTU() {
 		arete->degre--;
-		arc_adjacent->arc_adjacent = NULL;
-		arc_adjacent->face_adjacente = NULL;
+		if (arc_adjacent != NULL) {
+			arc_adjacent->arc_adjacent = NULL;
+			arc_adjacent->face_adjacente = NULL;
+		}
 	}
 
 	/**
