@@ -30,15 +30,12 @@ public:
 
 private:
 	void charger_geometries() {
-		charger_ecailles();
+		//charger_ecailles();
 		charger_contour();
 		clipping();
 		faces->push_back(contour);
 
 	}
-
-
-
 
 	void charger_contour() {
 		FileLoader f(".\\ressources\\Nuage_contour.txt");
@@ -119,8 +116,6 @@ private:
 			for (ArcTU<Color*>* a : contour->arcs)
 				if (Geometrie::intersectionSegmentSegment(centre, Vecteur2D(centre.x, MAX), a->debut()->v, a->fin()->v, t1, s1))
 					nbIntersection++;
-
-			cout << nbIntersection << endl;
 
 			if (nbIntersection % 2 == 0) {
 				delete* it;

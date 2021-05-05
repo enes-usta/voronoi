@@ -18,7 +18,7 @@
 vector<Face<Color*, Color*>*>* faces_GLOBAL;
 vector<Sommet<Vecteur2D>*>* sommets_GLOBAL;
 bool scaled[MAX_ARRAY] = { false };
-
+GLfloat world_left = 0, world_right = 0, world_bottom = 0, world_top = 0;
 
 /**
 * S est la nature de l'information porte par une arte
@@ -47,9 +47,7 @@ public:
     */
     void dessiner(vector<Face<Color*, Color*>*>* faces, vector<Sommet<Vecteur2D>*>* sommets) {
         // On met  l'chelle les faces
-        //faces_GLOBAL = scale(faces);
-        //sommets_GLOBAL = scale(sommets);
-        scale(faces, sommets);
+        changement_repere(faces, sommets);
         glutMainLoop();// Enter the event-processing loop
     }
 
@@ -59,7 +57,7 @@ private:
     void initGL() {
         // Set "clearing" or background color
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // Black and opaque
-        glLineWidth(2);
+        glLineWidth(1);
         glPointSize(5);
 
     }
@@ -77,7 +75,7 @@ private:
         dessinerFaces();
 
         //On dessine les arêtes
-        glColor3f(1.0f, 1.0f, 1.0f); // Blanc
+        glColor3f(0.0f, 0.0f, 0.0f); // Blanc
         dessinerAretes();
 
         //On dessine les sommets
@@ -157,106 +155,49 @@ private:
         // Set the aspect ratio of the clipping area to match the viewport
         glMatrixMode(GL_PROJECTION);  // To operate on the Projection matrix
         glLoadIdentity();             // Reset the projection matrix
+
+        cout << world_left<< endl;
+        cout << world_right << endl;
+        cout << world_bottom << endl;
+        cout << world_top << endl << endl;
+
         if (width >= height) {
             // aspect >= 1, set the height from -1 to 1, with larger width
-            gluOrtho2D(-1.0 * aspect, 1.0 * aspect, -1.0, 1.0);
+            gluOrtho2D(world_left * aspect, world_right * aspect, world_bottom, world_top);
         }
         else {
             // aspect < 1, set the width to -1 to 1, with larger height
-            gluOrtho2D(-1.0, 1.0, -1.0 / aspect, 1.0 / aspect);
+            gluOrtho2D(world_left, world_right, world_bottom / aspect, world_top / aspect);
         }
     }
 
-    void scale(vector<Face<Color*, Color*>*>* faces, vector<Sommet<Vecteur2D>*>* sommets) {
+    void changement_repere(vector<Face<Color*, Color*>*>* faces, vector<Sommet<Vecteur2D>*>* sommets) {
         if (sommets == NULL)
             sommets = new vector<Sommet<Vecteur2D>*>;
 
         if (faces == NULL)
             faces = new vector<Face<Color*, Color*>*>;
 
-        // Calcul du max dans les sommets et les faces
-        double maxX = 0, minX = 0, maxY = 0, minY = 0;
-
+        // Calcul des coins dans les sommets et les faces
         for (Sommet<Vecteur2D>* s : (*sommets)) {
-            maxX = max(maxX, s->v.x);
-            minX = min(minX, s->v.x);
-            maxY = max(maxY, s->v.y);
-            minY = min(minY, s->v.y);
+            world_left = min(world_left, s->v.x);
+            world_right = max(world_right, s->v.x);
+            world_bottom = min(world_bottom, s->v.y);
+            world_top = max(world_top, s->v.y);
         }
 
         for (Face<Color*, Color*>* face : (*faces))
             for (ArcTU<Color*>* arc : face->arcs) {
                 int x = arc->debut()->v.x;
                 int y = arc->debut()->v.y;
-                maxX = max(maxX, x);
-                minX = min(minX, x);
-                maxY = max(maxY, y);
-                minY = min(minY, y);
+                world_left = min(world_left, x);
+                world_right = max(world_right, x);
+                world_bottom = min(world_bottom, y);
+                world_top = max(world_top, y);
             }
-
-        // On met  l'chelle
-        for (Sommet<Vecteur2D>* s : (*sommets))
-            scale(s, maxX, minX, maxY, minY);
-
-        for (Face<Color*, Color*>* face : (*faces))
-            for (ArcTU<Color*>* arc : face->arcs)
-                scale(arc->debut(), maxX, minX, maxY, minY);
-
 
         sommets_GLOBAL = sommets;
         faces_GLOBAL = faces;
 
     }
-
-    /**
-    * Met à l'échelle le sommet passé en paramètre
-    */
-    void scale(Sommet<Vecteur2D>* sommet, double maxX, double minX, double maxY, double minY) {
-        double max1 = max(abs(maxX), abs(minX));
-        double max2 = max(abs(maxY), abs(minY));
-        int eps1 = 1;
-        int eps2 = 1;
-
-        if (maxX - minX < 0)
-            eps1 = -1;
-
-        if (maxY - minY < 0)
-            eps2 = -1;
-
-        double lambda = 1 / max(max1, max2);
-        double a = -((maxX + minX) / 2) / max1;
-        double b = -((maxY + minY) / 2) / max2;
-
-        if (!scaled[sommet->clef]) {
-            sommet->v.x = sommet->v.x * lambda * eps1 + a;
-            sommet->v.y = sommet->v.y * lambda * eps2 + b;
-            scaled[sommet->clef] = true;
-        }
-    }
 };
-/*
-class ChangementRepere {
-public:
-    double lambda1, lambda2, a, b;
-
-    ChangementRepere(const double lambda1, const double lambda2, const double a, const double b) {
-        this->lambda1 = lambda1;
-        this->lambda2 = lambda2;
-        this->a = a;
-        this->b = b;
-    }
-
-    ChangementRepere(const Vecteur2D p1, const Vecteur2D p2, const Vecteur2D p1p, const Vecteur2D p2p) {
-        // Calculer membres
-    }
-
-    const Vecteur2D appliquer(const Vecteur2D& v) const{
-        return Vecteur2D(lambda1 * v.x + a, lambda2 * v.y + b);
-    }
-
-    const Vecteur2D operator()(const Vecteur2D & v) const{
-        return this->appliquer(v);
-    }
-
-};
-*/

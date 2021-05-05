@@ -148,14 +148,7 @@ public:
 	static bool intersectionSegmentSegment(const Vecteur2D& p0, const Vecteur2D& p1, const Vecteur2D& q0, const Vecteur2D& q1,
 		double& t, double& s) {
 		intersectionDroiteDroite(p0, p1, q0, q1, t, s);
-//		cout << "t : " << t << " - s : " << s << endl;
 		return (0 < t && t < 1 && 0 < s && s < 1);
-
 	}
-
-
-
-
-
 };
 

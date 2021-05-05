@@ -11,7 +11,6 @@
 #include "Graphe.h"
 #include "Cercle.h"
 
-
 #define MAX 10000
 
 using namespace std;
@@ -58,7 +57,7 @@ private:
 	vector<Triangle<S, T>*>* triangulation;//Triangles en sortie
 	vector<Triangle<S, T>*>* DTL; //Triangles à supprimer de la triangulation
 	Sommet<Vecteur2D>* sommetsEnglobants[4] = { NULL }; //Sommets englobants les autres sommets, à supprimer à la fin
-	vector<tuple<ArcTU<T>*, Triangle<S, T>*>> adjacence; //Tableau d'adjacence
+	//vector<tuple<ArcTU<T>*, Triangle<S, T>*>> adjacence; //Tableau d'adjacence
 	//vector<ArcTU<T>*>* arcs_crees = new vector<ArcTU<T>*>; //Pour éviter les duplications
 
 	/**
@@ -134,7 +133,7 @@ private:
 		return NULL;
 	}
 
-	// Dtermine la liste des triangles  supprimer de la triangulation
+	// Détermine la liste des triangles  supprimer de la triangulation
 	void determiner_DTL(Sommet<Vecteur2D>* s, Triangle<S, T>* t) {
 		if (t != NULL) {
 			DTL->push_back(t);
