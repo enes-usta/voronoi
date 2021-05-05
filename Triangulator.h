@@ -179,7 +179,12 @@ private:
 		Triangle<S, T>* triangle = new Triangle<S, T>();
 
 		//premier arc, rien ne change
+		arc_guide->face = triangle;
+		if (arc_guide->arc_adjacent != NULL) {
+			arc_guide->arc_adjacent->face_adjacente = triangle;
+		}
 		arcs.push_back(arc_guide);
+
 
 		//deuxième arc, si on a créé un arc ayant la même arête, on réutilise l'arête
 		arcs.push_back(creer_arc(arc_guide->fin(), s, triangle, arcs_crees));
