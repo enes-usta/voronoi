@@ -118,7 +118,7 @@ private:
     static void dessinerAretes() {
         for (Face<Color*, Color*>* face : (*faces_GLOBAL)) {
             glBegin(GL_LINE_LOOP);
-            for (ArcTU<Color*>* arc : face->arcs) {
+            for (ArcTU<Color*, Color*>* arc : face->arcs) {
                 if(arc->arete->v != nullptr)
                     glColor3f(arc->arete->v->r, arc->arete->v->g, arc->arete->v->b);
                 glVertex2f((float)arc->debut()->v.x, (float)arc->debut()->v.y);
@@ -135,7 +135,7 @@ private:
             glBegin(GL_POLYGON);
             if (face->v != nullptr) {
                 glColor3f(face->v->r, face->v->g, face->v->b);
-                for (ArcTU<Color*>* arc : face->arcs)
+                for (ArcTU<Color*, Color*>* arc : face->arcs)
                     glVertex2f((float)arc->debut()->v.x, (float)arc->debut()->v.y);
             }
 
@@ -160,7 +160,7 @@ private:
     static void dessinerSommetsFaces() {
         for (Face<Color*, Color*>* face : (*faces_GLOBAL)) {
             glBegin(GL_POINTS);
-            for (ArcTU<Color*> *arc : face->arcs)
+            for (ArcTU<Color*, Color*> *arc : face->arcs)
                 glVertex2f((float)arc->debut()->v.x, (float)arc->debut()->v.y);
             glEnd();
         }
@@ -180,7 +180,7 @@ private:
 
         // Caclul des points extrêmes dans les faces à dessiner
         for (Face<Color*, Color*>* face : (*faces_GLOBAL))
-            for (ArcTU<Color*>* arc : face->arcs) {
+            for (ArcTU<Color*, Color*>* arc : face->arcs) {
                 int x = arc->debut()->v.x;
                 int y = arc->debut()->v.y;
                 world_left = min(world_left, x);

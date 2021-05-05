@@ -26,6 +26,7 @@ class Arete : public GElement<S>
 {
 public:
 	Sommet <T>* debut, * fin;	// debut et fin peuvent être interprétées comme des clefs étrangères vers une table de sommets
+	int degre = 0;
 
 	/**
 	met à jour le degré des sommets que cette nouvelle arête va connecter

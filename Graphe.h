@@ -33,9 +33,11 @@ protected:
 	/** la  clef qui sera attribuée au prochain élément (sommet ou arête) créé dans le graphe par les méthodes creeSommet(info)
 	ou creeArete(info,debut,fin) fonctionne comme auto-increment d'une base de données */
 
-	int prochaineClef;
+	//int prochaineClef;
 
 public:
+	int prochaineClef;
+
 
 	PElement< Sommet<T> >* lSommets; // liste de sommets
 	PElement< Arete<S, T> >* lAretes; // liste d'arêtes

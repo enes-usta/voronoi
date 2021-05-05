@@ -11,21 +11,30 @@ template <class S, class T>
 class Face{
 public:
 	S v;
-	vector<ArcTU<T>*> arcs;
+	vector<ArcTU<T, S>*> arcs;
 
 	Face() {}
 
-	Face(vector<ArcTU<T>*> arcs, const S& v): v(v){
+	Face(vector<ArcTU<T, S>*> arcs, const S& v): v(v){
 		this->arcs = arcs;
 		if (this->arcs.size() < 3)
 			throw "Une face est composée d'au moins 3 arcs!";
+		
+		for (ArcTU<T, S>* arc : arcs)
+			arc->face = this;
+	}
+
+	~Face() {
+		/*for (ArcTU<T, S>* arc : arcs) {
+			arc->face = NULL;
+		}*/
 	}
 
 	/**
 	* Retourne vrai si cette face contient le sommet s
 	*/
 	bool contientPoint(Sommet<Vecteur2D>* s) {
-		for (ArcTU<T>* arc : this->arcs)
+		for (ArcTU<T, S>* arc : this->arcs)
 			if (!(arc->estAGauche(s) || arc->estCollineaire(s)))
 				return false;
 
@@ -36,7 +45,7 @@ public:
 	* Retourne vrai si cette face contient le sommet s
 	*/
 	bool contientPoint(Vecteur2D s) {
-		for (ArcTU<T>* arc : this->arcs)
+		for (ArcTU<T, S>* arc : this->arcs)
 			if (!(Geometrie::aGaucheOuCollineaire(arc->debut()->v, arc->fin()->v, s)))
 				return false;
 
@@ -47,7 +56,7 @@ public:
 	* Retourne vrai si cette face contient le sommet s
 	*/
 	bool contientPointStrict(Sommet<Vecteur2D> *s) {
-		for(ArcTU<T>* arc : this->arcs)
+		for(ArcTU<T, S>* arc : this->arcs)
 			if (!arc->estAGauche(s))
 				return false;
 				
@@ -67,7 +76,7 @@ public:
 	}
 
 	void print() {
-			for (ArcTU<T>* a : arcs) {
+			for (ArcTU<T, S>* a : arcs) {
 				cout << "deb(" << a->debut()->v.x << ", " << a->debut()->v.y << ") ";
 				cout << "fin(" << a->fin()->v.x << ", " << a->fin()->v.y << ")" << endl;;
 			}

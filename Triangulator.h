@@ -57,8 +57,8 @@ private:
 	Graphe<T, Vecteur2D>* graphe; //Graphe utilisé pour créer des sommets
 	vector<Triangle<S, T>*>* triangulation;//Triangles en sortie
 	vector<Triangle<S, T>*>* DTL; //Triangles à supprimer de la triangulation
-	//vector<tuple<ArcTU<T>*, Triangle<S, T>*>> adjacence; //Tableau d'adjacence
-	//vector<ArcTU<T>*>* arcs_crees = new vector<ArcTU<T>*>; //Pour éviter les duplications
+	//vector<tuple<ArcTU<T, S>*, Triangle<S, T>*>> adjacence; //Tableau d'adjacence
+	//vector<ArcTU<T, S>*>* arcs_crees = new vector<ArcTU<T, S>*>; //Pour éviter les duplications
 
 	/**
 	* Initialise les membres
@@ -71,7 +71,7 @@ private:
 	}
 
 	/**
-	* Dtermine une triangulation qui englobe tous les sommets  trianguler
+	* Détermine une triangulation qui englobe tous les sommets à trianguler
 	*/
 	void determiner_triangulation_englobante() {
 		/* On cherche les points extrêmes */
@@ -95,13 +95,6 @@ private:
 		s2 = graphe->creeSommet(Vecteur2D(right + marge, top + marge));
 		s3 = graphe->creeSommet(Vecteur2D(left - marge, top + marge));
 
-		Arete<T, Vecteur2D>* a0, * a1, * a2, * a3, * a4;
-		a0 = graphe->creeArete(T(), s0, s2);
-		a1 = graphe->creeArete(T(), s2, s3);
-		a2 = graphe->creeArete(T(), s3, s0);
-		a3 = graphe->creeArete(T(), s0, s1);
-		a4 = graphe->creeArete(T(), s1, s2);
-
 		/*
 		s3		 a1			s2
 			-------------
@@ -112,9 +105,24 @@ private:
 		*/
 
 		/* On crée une triangulation de ce rectangle */
+		Triangle<S, T>* t1 = new Triangle<S, T>();
+		Triangle<S, T>* t2 = new Triangle<S, T>();
+		vector<ArcTU<T, S>*>* arc_crees = new vector<ArcTU<T, S>*>;
+		vector<ArcTU<T, S>*> arcs1;
+		vector<ArcTU<T, S>*> arcs2;
 
-		triangulation->push_back(new Triangle<S, T>(new ArcTU<T>(a0, true), new ArcTU<T>(a1, true), new ArcTU<T>(a2, true)));
-		triangulation->push_back(new Triangle<S, T>(new ArcTU<T>(a0, false), new ArcTU<T>(a3, true), new ArcTU<T>(a4, true)));
+		arcs1.push_back(creer_arc(s0, s2, t1, arc_crees));
+		arcs1.push_back(creer_arc(s2, s3, t1, arc_crees));
+		arcs1.push_back(creer_arc(s3, s0, t1, arc_crees));
+		t1->arcs = arcs1;
+
+		arcs2.push_back(creer_arc(s0, s2, t2, arc_crees));
+		arcs2.push_back(creer_arc(s0, s1, t2, arc_crees));
+		arcs2.push_back(creer_arc(s1, s2, t2, arc_crees));
+		t2->arcs = arcs2;
+
+		triangulation->push_back(t1);
+		triangulation->push_back(t2);
 	}
 
 	/**
@@ -133,11 +141,13 @@ private:
 		if (t != NULL) {
 			DTL->push_back(t);
 			for (int i = 0; i < 3; i++) {
-				Triangle<S, T>* triangleAdjacent = trouver_triangle_adjacent(t->arcs[i]);
-				if (triangleAdjacent != NULL && count(DTL->begin(), DTL->end(), triangleAdjacent) == 0) {
-					Cercle cercle = triangleAdjacent->cercle_circonscrit();
-					if (cercle.contientPoint(s->v))
-						determiner_DTL(s, triangleAdjacent);
+				if (t->arcs[i]->arete->degre > 1) {
+					Triangle<S, T>* triangleAdjacent = trouver_triangle_adjacent(t->arcs[i]);
+					if (count(DTL->begin(), DTL->end(), triangleAdjacent) == 0) {
+						Cercle cercle = triangleAdjacent->cercle_circonscrit();
+						if (cercle.contientPoint(s->v))
+							determiner_DTL(s, triangleAdjacent);
+					}
 				}
 			}
 		}
@@ -147,7 +157,7 @@ private:
 	* Détermine la liste des triangles à rajouter à la triangulation
 	*/
 	void determiner_NTL(Sommet<Vecteur2D>* s) {
-		vector<ArcTU<T>*>* arcs_crees = new vector<ArcTU<T>*>;
+		vector<ArcTU<T, S>*>* arcs_crees = new vector<ArcTU<T, S>*>;
 		for (Triangle<S, T>* t : (*DTL)) {
 			for (int i = 0; i < 3; i++) {
 				Triangle<S, T>* triangleAdjacent = trouver_triangle_adjacent(t->arcs[i]);
@@ -163,50 +173,63 @@ private:
 	* Crée un triangle avec l'arc guide et le sommet s
 	* utilise les arcs déjà créés pour ne pas dupliquer les arêtes et garder la convention du bonhomme d'ampère
 	*/
-	void creer_triangle(ArcTU<T>* arc_guide, Sommet<Vecteur2D>* s, vector<ArcTU<T>*>* arcs_crees) {
+	void creer_triangle(ArcTU<T, S>* arc_guide, Sommet<Vecteur2D>* s, vector<ArcTU<T, S>*>* arcs_crees) {
 		//On crée le nouveau triangle
-		vector<ArcTU<T>*> arcs;
+		vector<ArcTU<T, S>*> arcs;
+		Triangle<S, T>* triangle = new Triangle<S, T>();
 
 		//premier arc, rien ne change
 		arcs.push_back(arc_guide);
 
 		//deuxième arc, si on a créé un arc ayant la même arête, on réutilise l'arête
-		arcs.push_back(creer_arc(arc_guide->fin(), s, arcs_crees));
+		arcs.push_back(creer_arc(arc_guide->fin(), s, triangle, arcs_crees));
 
 		//troisième arc, même logique que pour le deuxième
-		arcs.push_back(creer_arc(s, arc_guide->debut(), arcs_crees));
+		arcs.push_back(creer_arc(s, arc_guide->debut(), triangle, arcs_crees));
 
-		this->triangulation->push_back(new Triangle<S, T>(arcs, S()));
+		//on l'ajoute à la triangulation
+		triangle->arcs = arcs;
+		this->triangulation->push_back(triangle);
 	}
 
 	/**
 	* Retourne un triangle adjacent l'arc s'il en existe un, sinon retourne null
 	*/
-	Triangle<S, T>* trouver_triangle_adjacent(ArcTU<T>* arc) {
+	Triangle<S, T>* trouver_triangle_adjacent(ArcTU<T, S>* arc) {
 
-		for (Triangle<S, T>* triangleB : (*triangulation))
-				for (ArcTU<T>* arcB : triangleB->arcs)
+		/*for (Triangle<S, T>* triangleB : (*triangulation))
+				for (ArcTU<T, S>* arcB : triangleB->arcs)
 					if ((*arc) != (*arcB) && arc->arete->estEgal(arcB->debut(), arcB->fin()))
 						return triangleB;
 
-		return NULL;
+		return NULL;*/
+		return (Triangle<S, T>*) arc->face_adjacente;
 	}
 
 	/**
 	* Crée un arc en veillant à ce qu'il ne soit pas dupliqué
 	*/
-	ArcTU<T>* creer_arc(Sommet<Vecteur2D>* deb, Sommet<Vecteur2D>* fin, vector<ArcTU<T>*>* arcs_crees) {
-		for (ArcTU<T>* arc : (*arcs_crees))
-			if (arc->arete->estEgal(deb, fin))
-				return new ArcTU<T>(arc->arete, !arc->bonSens);
+	ArcTU<T, S>* creer_arc(Sommet<Vecteur2D>* deb, Sommet<Vecteur2D>* fin, Triangle<S, T> * triangle, vector<ArcTU<T, S>*>* arcs_crees) {
+		for (ArcTU<T, S>* arc : (*arcs_crees))
+			if (arc->arete->estEgal(deb, fin)) {
+				ArcTU<T, S>* nouvel_arc = new ArcTU<T, S>(arc->arete, !arc->bonSens);
+				nouvel_arc->face_adjacente = arc->face;
+				nouvel_arc->arc_adjacent = arc;
+				nouvel_arc->face = triangle;
 
-		ArcTU<T>* res = new ArcTU<T>(graphe->creeArete(T(), deb, fin), true);
+				arc->face_adjacente = triangle;
+				arc->arc_adjacent = nouvel_arc;
+				return nouvel_arc;
+			}
+
+		ArcTU<T, S>* res = new ArcTU<T, S>(graphe->creeArete(T(), deb, fin), true);
+		res->face = triangle;
 		arcs_crees->push_back(res);
 		return res;
 	}
 
 	/**
-	* Tupprime les triangulation en commun dans DTL et Triangles
+	* Supprime les triangulation en commun dans DTL et Triangles
 	*/
 	void supprimer_DTL() {
 		int i;
@@ -233,7 +256,7 @@ private:
 		for (auto it = triangulation->begin(); it != triangulation->end(); ) {
 			bool deleted = false;
 			Triangle<S, T>* t = (Triangle<S, T>*) *it;
-			for (ArcTU<T>* arc : (t->arcs)) {
+			for (ArcTU<T, S>* arc : (t->arcs)) {
 				if (arc->debut()->v.x < left || arc->debut()->v.x > right
 					|| arc->debut()->v.y < bottom || arc->debut()->v.y > top) {
 					delete* it;

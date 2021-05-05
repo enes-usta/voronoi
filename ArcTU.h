@@ -1,15 +1,32 @@
 #pragma once
 #include "Arete.h"
 #include "Sommet.h"
+
+template <class S, class T>
+class Face;
+
 /**
 * S est la nature de l'information portée par une arête
+* T est la nature de l'information portée par une face
 */
-template <class S>
+template <class S, class T>
 class ArcTU {
 public:
 	Arete<S, Vecteur2D> *arete;
 	bool bonSens; // vrai si dans le bon sens
-	ArcTU(Arete<S, Vecteur2D>* arete, int bonSens): arete(arete), bonSens(bonSens){}
+	Face<T, S>* face = NULL; // face à laquelle cet arc appartient
+	Face<T, S>* face_adjacente = NULL; // face adjacente à cet arc
+	ArcTU<S, T>* arc_adjacent = NULL; //arc adjacent à cet arc
+
+	ArcTU(Arete<S, Vecteur2D>* arete, int bonSens): arete(arete), bonSens(bonSens){
+		arete->degre++;
+	}
+
+	~ArcTU() {
+		arete->degre--;
+		arc_adjacent->arc_adjacent = NULL;
+		arc_adjacent->face_adjacente = NULL;
+	}
 
 	/**
 	* Retourne vrai si le sommet s est à gauche de cet arc (ou s'il est collinéaire)
@@ -51,7 +68,7 @@ public:
 			return arete->debut;
 	}
 
-	friend bool operator==(const ArcTU<S>& lhs, const ArcTU<S>& rhs) {
+	friend bool operator==(const ArcTU<S, T>& lhs, const ArcTU<S, T>& rhs) {
 		return (lhs.arete->estEgal(rhs.arete->debut, rhs.arete->fin) && lhs.bonSens == rhs.bonSens);
 	}
 

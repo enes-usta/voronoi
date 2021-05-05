@@ -16,9 +16,9 @@ public:
 
     Triangle(){}
 
-    Triangle(vector<ArcTU<T>*> arcs, const S& v) : Face<S, T>(arcs, v) {}
+    Triangle(vector<ArcTU<T, S>*> arcs, const S& v) : Face<S, T>(arcs, v) {}
 
-    Triangle(ArcTU<T>* a1, ArcTU<T>* a2, ArcTU<T>* a3) : Face<S, T>() {
+    Triangle(ArcTU<T, S>* a1, ArcTU<T, S>* a2, ArcTU<T, S>* a3) : Face<S, T>() {
         this->arcs.push_back(a1);
         this->arcs.push_back(a2);
         this->arcs.push_back(a3);
@@ -48,8 +48,8 @@ public:
         return Cercle(centre, rayon);
     }
 
-    Sommet<Vecteur2D>* sommet_oppose(ArcTU<T>* arc) {
-        for (ArcTU<T> *a : this->arcs) {
+    Sommet<Vecteur2D>* sommet_oppose(ArcTU<T, S>* arc) {
+        for (ArcTU<T, S> *a : this->arcs) {
             Sommet<Vecteur2D>* s = a->debut();
             Sommet<Vecteur2D>* s2 = a->fin();
 
