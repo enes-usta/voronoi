@@ -18,7 +18,7 @@
 vector<Face<Color*, Color*>*>* faces_GLOBAL;
 vector<Sommet<Vecteur2D>*>* sommets_GLOBAL;
 bool scaled[MAX_ARRAY] = { false };
-GLfloat world_left = 0, world_right = 0, world_bottom = 0, world_top = 0;
+GLfloat world_left = 0, world_right = 0, world_bottom = 0, world_top = 0, world_width = 1, world_height = 1;
 
 /**
 * S est la nature de l'information porte par une arte
@@ -149,26 +149,33 @@ private:
         if (height == 0) height = 1;                // To prevent divide by 0
         GLfloat aspect = (GLfloat)width / (GLfloat)height;
 
+        GLfloat world_aspect = world_width / world_height;
+
+        if (world_width >= world_height) {
+            glViewport(0, 0, width, width * world_height / world_width);
+        }
+        else {
+            glViewport(0, 0, height * world_width / world_height, height);
+        }
         // Set the viewport to cover the new window
-        glViewport(0, 0, width, height);
+        //glViewport(0, 0, width, height-200);
 
         // Set the aspect ratio of the clipping area to match the viewport
-        glMatrixMode(GL_PROJECTION);  // To operate on the Projection matrix
+        glMatrixMode(GL_MODELVIEW);  // To operate on the Projection matrix
+
         glLoadIdentity();             // Reset the projection matrix
 
-        cout << world_left<< endl;
-        cout << world_right << endl;
-        cout << world_bottom << endl;
-        cout << world_top << endl << endl;
-
-        if (width >= height) {
+        /*if (width >= height) {
             // aspect >= 1, set the height from -1 to 1, with larger width
             gluOrtho2D(world_left * aspect, world_right * aspect, world_bottom, world_top);
         }
         else {
             // aspect < 1, set the width to -1 to 1, with larger height
             gluOrtho2D(world_left, world_right, world_bottom / aspect, world_top / aspect);
-        }
+        }*/
+        gluOrtho2D(world_left , world_right , world_bottom, world_top);
+
+
     }
 
     void changement_repere(vector<Face<Color*, Color*>*>* faces, vector<Sommet<Vecteur2D>*>* sommets) {
@@ -195,6 +202,21 @@ private:
                 world_bottom = min(world_bottom, y);
                 world_top = max(world_top, y);
             }
+
+        world_left--;
+        world_right++;
+        world_bottom--;
+        world_top++;
+
+        world_width = world_right - world_left;
+        world_height = world_top - world_bottom;
+
+
+        cout << world_left << endl;
+        cout << world_right << endl;
+        cout << world_bottom << endl;
+        cout << world_top << endl;
+
 
         sommets_GLOBAL = sommets;
         faces_GLOBAL = faces;
