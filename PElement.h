@@ -4,6 +4,8 @@
 #include <string>
 #include <sstream>
 
+int n = 0;
+
 template <class T>
 class PElement {
 public:
@@ -41,6 +43,8 @@ PElement<T>::PElement(PElement<T>* s, T* v) {
 
 template <class T>
 int PElement<T>::taille(const PElement<T>* l) {
+	n++;
+	std::cout << n << std::endl;
 	if (l == nullptr)
 		return 0;
 	else

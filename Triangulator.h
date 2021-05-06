@@ -46,7 +46,7 @@ public:
 				throw Erreur("Aucun triangle contenant le sommet trouvé");
 		}
 		supprimer_englobants();
-
+		//cout << graphe->lAretes->taille(graphe->lAretes);
 		return triangulation;
 	}
 
@@ -105,18 +105,18 @@ private:
 		/* On crée une triangulation de ce rectangle */
 		Triangle<S, T>* t1 = new Triangle<S, T>();
 		Triangle<S, T>* t2 = new Triangle<S, T>();
-		vector<ArcTU<T, S>*>* arc_crees = new vector<ArcTU<T, S>*>;
+		vector<ArcTU<T, S>*>* arcs_crees = new vector<ArcTU<T, S>*>;
 		vector<ArcTU<T, S>*> arcs1;
 		vector<ArcTU<T, S>*> arcs2;
 
-		arcs1.push_back(creer_arc(s0, s2, t1, arc_crees));
-		arcs1.push_back(creer_arc(s2, s3, t1, arc_crees));
-		arcs1.push_back(creer_arc(s3, s0, t1, arc_crees));
+		arcs1.push_back(creer_arc(s0, s2, t1, arcs_crees));
+		arcs1.push_back(creer_arc(s2, s3, t1, arcs_crees));
+		arcs1.push_back(creer_arc(s3, s0, t1, arcs_crees));
 		t1->arcs = arcs1;
 
-		arcs2.push_back(creer_arc(s0, s2, t2, arc_crees));
-		arcs2.push_back(creer_arc(s0, s1, t2, arc_crees));
-		arcs2.push_back(creer_arc(s1, s2, t2, arc_crees));
+		arcs2.push_back(creer_arc(s0, s2, t2, arcs_crees));
+		arcs2.push_back(creer_arc(s0, s1, t2, arcs_crees));
+		arcs2.push_back(creer_arc(s1, s2, t2, arcs_crees));
 		t2->arcs = arcs2;
 
 		triangulation->push_back(t1);
@@ -242,7 +242,12 @@ private:
 			i = 0;
 			for (Triangle<S, T>* t : (*triangulation)) {
 				if (dt == t) {
-					//delete t;
+					for (ArcTU<T, S>* arc : t->arcs) {
+						if (arc->arete->degre == 1) {
+							graphe->lAretes->retire(arc->arete, graphe->lAretes);
+							delete arc;
+						}
+					}
 					triangulation->erase((triangulation->begin() + i));
 					break;
 				}

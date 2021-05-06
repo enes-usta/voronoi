@@ -31,9 +31,9 @@ public:
 private:
 	void charger_geometries() {
 		charger_contour();
-		charger_ecailles();
-		//charger_ecailles_voronoi();
-		clipping();
+		//charger_ecailles();
+		charger_ecailles_voronoi();
+		//clipping();
 		faces->push_back(contour);
 
 	}

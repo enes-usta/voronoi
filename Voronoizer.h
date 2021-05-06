@@ -43,7 +43,7 @@ public:
 		triangulator = new Triangulator<S, T>;
 		triangulation = triangulator->triangulate(sommets, graphe);
 		construire_cellules();
-		clipping();
+		//clipping();
 		return this->cellules;
 	}
 
@@ -126,6 +126,7 @@ private:
 					}
 				}
 				//aborted = true;
+				//goto next;
 			}
 
 			// Centre du cercle circonscrit de ce triangle

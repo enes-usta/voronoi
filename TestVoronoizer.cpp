@@ -1,4 +1,4 @@
-#include <iostream>
+/*#include <iostream>
 #include <string>
 #include "Graphe.h"
 #include "Triangle.h"
@@ -54,4 +54,4 @@ int main(int argc, char** argv)
 	gui.dessiner(voronoi, germes);
 	return 0;
 
-}
+}*/
