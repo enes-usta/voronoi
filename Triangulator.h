@@ -46,7 +46,6 @@ public:
 				throw Erreur("Aucun triangle contenant le sommet trouvé");
 		}
 		supprimer_englobants();
-		//cout << graphe->lAretes->taille(graphe->lAretes);
 		return triangulation;
 	}
 
@@ -139,13 +138,11 @@ private:
 		if (t != NULL) {
 			DTL->push_back(t);
 			for (int i = 0; i < 3; i++) {
-				if (t->arcs[i]->arete->degre > 1) {
-					Triangle<S, T>* triangleAdjacent = trouver_triangle_adjacent(t->arcs[i]);
-					if (count(DTL->begin(), DTL->end(), triangleAdjacent) == 0) {
-						Cercle cercle = triangleAdjacent->cercle_circonscrit();
-						if (cercle.contientPoint(s->v))
-							determiner_DTL(s, triangleAdjacent);
-					}
+				Triangle<S, T>* triangleAdjacent = trouver_triangle_adjacent(t->arcs[i]);
+				if (triangleAdjacent != NULL && count(DTL->begin(), DTL->end(), triangleAdjacent) == 0) {
+					Cercle cercle = triangleAdjacent->cercle_circonscrit();
+					if (cercle.contientPoint(s->v))
+						determiner_DTL(s, triangleAdjacent);
 				}
 			}
 		}
@@ -177,10 +174,11 @@ private:
 		Triangle<S, T>* triangle = new Triangle<S, T>();
 
 		//premier arc, on supprime l'arc guide et on rétablit l'adjacence en créant une nouvel arc
-		Arete<T, Vecteur2D>* arete = arc_guide->arete;
-		bool bonSens = arc_guide->bonSens;
+
 		ArcTU<T, S>* arc_adjacent = arc_guide->arc_adjacent;
-		ArcTU<T, S>* nouvel_arc = new ArcTU<T, S>(arete, bonSens);
+		ArcTU<T, S>* nouvel_arc = new ArcTU<T, S>(arc_guide->arete, arc_guide->bonSens);
+		arc_guide->arc_adjacent = NULL;// on détache les arcs pour éviter les problèmes après suppression de face 
+//		arc_guide->ar
 		nouvel_arc->arc_adjacent = arc_adjacent;
 		nouvel_arc->face = triangle;
 		nouvel_arc->face_adjacente = arc_guide->face_adjacente;
@@ -189,7 +187,6 @@ private:
 			arc_adjacent->face_adjacente = triangle;
 			arc_adjacent->arc_adjacent = nouvel_arc;
 		}
-		arc_guide->arc_adjacent = NULL;// on détache les arcs pour éviter les problèmes après suppression de face 
 		arcs.push_back(nouvel_arc);
 
 
@@ -242,12 +239,6 @@ private:
 			i = 0;
 			for (Triangle<S, T>* t : (*triangulation)) {
 				if (dt == t) {
-					for (ArcTU<T, S>* arc : t->arcs) {
-						if (arc->arete->degre == 1) {
-							graphe->lAretes->retire(arc->arete, graphe->lAretes);
-							delete arc;
-						}
-					}
 					triangulation->erase((triangulation->begin() + i));
 					break;
 				}
@@ -255,9 +246,15 @@ private:
 			}
 		}
 
-		for(auto dt : (*DTL))
-			delete dt;
-		DTL->clear();
+		for (auto& t : (*DTL)) {
+			for (ArcTU<T, S>* arc : t->arcs)
+				if (arc->arete->degre < 2)
+					graphe->lAretes->retire(arc->arete, graphe->lAretes);
+			
+			delete t;
+			t = nullptr;
+		}
+		DTL->erase(remove(DTL->begin(), DTL->end(), nullptr), DTL->end());
 	}
 
 	/**
@@ -268,8 +265,9 @@ private:
 			bool deleted = false;
 			Triangle<S, T>* t = (Triangle<S, T>*) *it;
 			for (ArcTU<T, S>* arc : (t->arcs)) {
-				if (arc->debut()->v.x < left || arc->debut()->v.x > right
-					|| arc->debut()->v.y < bottom || arc->debut()->v.y > top) {
+				Sommet<Vecteur2D>* s = arc->debut();
+				if (s->v.x < left || s->v.x > right
+					|| s->v.y < bottom || s->v.y > top) {
 					delete* it;
 					it = triangulation->erase(it);
 					deleted = true;
