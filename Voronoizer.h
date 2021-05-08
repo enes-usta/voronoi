@@ -142,49 +142,42 @@ private:
 				}
 				// Cellule complète, on ajoute les deux intersections sur la bordure
 				else {
-					for (ArcTU<T, S>* a2 : triangle->arcs) 
-						if (a2->debut() == germe) {
-							Vecteur2D centre_arc = (a2->debut()->v + a2->fin()->v) / 2;
-							if(centre_arc == centre_triangle->v)
-								sommets_cellule->push_back(centre_triangle);
-							else
-								for (ArcTU<T, S>* a3 : triangulator->contour->arcs)
-									if (Geometrie::intersectionSegmentSegment(a3->debut()->v, a3->fin()->v, centre_arc, centre_triangle->v, t, s)) {
-										Vecteur2D inter = Geometrie::intersection(a3->debut()->v, a3->fin()->v, centre_arc, centre_triangle->v);
-										sommets_cellule->push_back(creer_sommet(inter, sommets_crees));
-										break;
-									}
-								
-						}
-					
-					// Si on a pas encore bouclé
+					// Premmière intersection
+					for (ArcTU<T, S>* a2 : triangle->arcs)
+						if (a2->debut() == germe)
+							ajouter_intersection(a2, centre_triangle, germe, sommets_cellule, sommets_crees);
+
+					// Si on a pas encore bouclé, on ajoute la deuxième intersection
 					if (sommets_cellule->front() != sommets_cellule->back())
-						for (ArcTU<T, S>* a2 : triangle->arcs) {
-							if (a2->fin() == germe) {
-								Vecteur2D centre_arc = (a2->debut()->v + a2->fin()->v) / 2;
-								if (centre_arc == centre_triangle->v)
-									sommets_cellule->push_back(centre_triangle);
-								else 
-									for (ArcTU<T, S>* a3 : triangulator->contour->arcs)
-										if (Geometrie::intersectionSegmentSegment(a3->debut()->v, a3->fin()->v, centre_arc, centre_triangle->v, t, s)) {
-											Vecteur2D inter = Geometrie::intersection(a3->debut()->v, a3->fin()->v, centre_arc, centre_triangle->v);
-											sommets_cellule->push_back(creer_sommet(inter, sommets_crees));
-											break;
-										}
-							}
-							
-						}
+						for (ArcTU<T, S>* a2 : triangle->arcs)
+							if (a2->fin() == germe) 
+								ajouter_intersection(a2, centre_triangle, germe, sommets_cellule, sommets_crees);
 				}
 				centre_dehors = true;
 			}
 		}
-		
+
 		if (!centre_dehors)
 			sommets_cellule->push_back(centre_triangle);
 	}
 
-	bool dehors() {
-		return false;
+	/**
+	*	Ajoute l'intersection entre le segment [milieu de l'arc, centre du triangle] et le contour à la liste des sommets de la cellule
+	*/
+	void ajouter_intersection(ArcTU<T, S>* arc, Sommet<Vecteur2D>* centre_triangle, Sommet<Vecteur2D>* germe, vector< Sommet<Vecteur2D>*>* sommets_cellule, vector< Sommet<Vecteur2D>*>* sommets_crees) {
+		double t, s;
+
+		Vecteur2D centre_arc = (arc->debut()->v + arc->fin()->v) / 2;
+		if (centre_arc == centre_triangle->v)
+			sommets_cellule->push_back(centre_triangle);
+		else
+			for (ArcTU<T, S>* a : triangulator->contour->arcs)
+				if (Geometrie::intersectionSegmentSegment(a->debut()->v, a->fin()->v, centre_arc, centre_triangle->v, t, s)) {
+					Vecteur2D inter = Geometrie::intersection(a->debut()->v, a->fin()->v, centre_arc, centre_triangle->v);
+					sommets_cellule->push_back(creer_sommet(inter, sommets_crees));
+					break;
+				}
+
 	}
 
 	/**
@@ -272,6 +265,7 @@ private:
 
 		return triangle_traite;*/
 	}
+
 
 	/**
 	* Crée un sommet en veillant à ce qu'il ne soit pas dupliqué
