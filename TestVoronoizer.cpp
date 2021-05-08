@@ -60,8 +60,8 @@ int main(int argc, char** argv)
 		//voronoi->push_back(t);
 	}
 
-	Face<Color*, Color*>* contour = triangulator.contour;
-	voronoi->push_back(contour);
+	//Face<Color*, Color*>* contour = triangulator.contour;
+	//voronoi->push_back(contour);
 
 	vector< Sommet<Vecteur2D>*>* centres = new vector< Sommet<Vecteur2D>*>;
 

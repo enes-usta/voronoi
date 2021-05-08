@@ -65,7 +65,7 @@ private:
     /* Initialize OpenGL Graphics */
     void initGL() {
         // Set "clearing" or background color
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // Blanc
+        glClearColor(0.0f, 1.0f, 0.0f, 1.0f); // Blanc
         glLineWidth(2);
         glPointSize(5);
 

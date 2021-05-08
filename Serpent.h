@@ -20,8 +20,8 @@ public:
 	
 
 	Serpent() {
-		edge_color = new Color(161, 128, 29, 0);
-		face_color = new Color(31, 163, 141, 0);
+		edge_color = new Color(0, 0, 0, 0);
+		face_color = new Color(255, 255, 255, 0);
 		germes = new vector<Sommet<Vecteur2D>*>();
 		graphe = new Graphe<Color*, Vecteur2D>();
 		faces = new vector<Face<Color*, Color*>*>;
