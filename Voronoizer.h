@@ -146,9 +146,19 @@ private:
 		Sommet<Vecteur2D>* centre_triangle = creer_sommet(triangle->cercle_circonscrit().centre, sommets_crees);
 		bool centre_dehors = false;
 		for (ArcTU<T, S>* a : triangle->arcs) {
-			if (trouver_triangle_adjacent(a) == NULL && !a->estAGauche(centre_triangle)) {
+			if (!this->triangulator->contour->contientPointConcave(centre_triangle)/*trouver_triangle_adjacent(a) == NULL*/ && !a->estAGauche(centre_triangle)) {
 				// Cellule complète, on ajoute les deux intersections sur la l'arc de la bordure
-				if (a->debut() != germe && a->fin() != germe) {
+				if (a->debut() == germe || a->fin() == germe) {
+					for (ArcTU<T, S>* a2 : triangle->arcs) {
+						Triangle<S, T>* triangle_adjacent = trouver_triangle_adjacent(a2);
+						if ((a2->fin() == germe || a2->debut() == germe) && triangle_adjacent != NULL) {
+							Vecteur2D inter = Geometrie::intersection(a->debut()->v, a->fin()->v, triangle_adjacent->cercle_circonscrit().centre, centre_triangle->v);
+							sommets_cellule->push_back(creer_sommet(inter, sommets_crees));
+						}
+					}
+				}
+				//cellule infinie
+				else {
 					for (ArcTU<T, S>* a2 : triangle->arcs) {
 						if (a2->debut() == germe) {
 							Triangle<S, T>* triangle_adjacent = trouver_triangle_adjacent(a2);
@@ -166,20 +176,6 @@ private:
 							}
 						}
 					}
-					
-					//sommets_cellule->push_back(creer_sommet(Vecteur2D((a->debut()->v + a->fin()->v) / 2), sommets_crees));
-				}
-				//cellule infinie
-				else {
-					for (ArcTU<T, S>* a2 : triangle->arcs) {
-						Triangle<S, T>* triangle_adjacent = trouver_triangle_adjacent(a2);
-						if ((a2->fin() == germe || a2->debut() == germe) && triangle_adjacent != NULL) {
-							Vecteur2D inter = Geometrie::intersection(a->debut()->v, a->fin()->v, triangle_adjacent->cercle_circonscrit().centre, centre_triangle->v);
-							sommets_cellule->push_back(creer_sommet(inter, sommets_crees));
-						}
-					}
-					
-					//sommets_cellule->push_back(creer_sommet(Vecteur2D((a->debut()->v + a->fin()->v) / 2), sommets_crees));
 				}
 				centre_dehors = true;
 			}
