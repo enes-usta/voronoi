@@ -147,7 +147,7 @@ private:
 		bool centre_dehors = false;
 		for (ArcTU<T, S>* a : triangle->arcs) {
 			if (!this->triangulator->contour->contientPointConcave(centre_triangle)/*trouver_triangle_adjacent(a) == NULL*/ && !a->estAGauche(centre_triangle)) {
-				// Cellule complète, on ajoute les deux intersections sur la l'arc de la bordure
+				// Cellule infinie
 				if (a->debut() == germe || a->fin() == germe) {
 					for (ArcTU<T, S>* a2 : triangle->arcs) {
 						Triangle<S, T>* triangle_adjacent = trouver_triangle_adjacent(a2);
@@ -157,7 +157,7 @@ private:
 						}
 					}
 				}
-				//cellule infinie
+				// Cellule complète, on ajoute les deux intersections sur la l'arc de la bordure
 				else {
 					for (ArcTU<T, S>* a2 : triangle->arcs) {
 						if (a2->debut() == germe) {

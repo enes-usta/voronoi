@@ -1,4 +1,4 @@
-/*#include <iostream>
+#include <iostream>
 #include <string>
 #include "Graphe.h"
 #include "Triangle.h"
@@ -75,4 +75,4 @@ GUI gui(argc, argv);
 gui.dessiner(voronoi, centres);
 return 0;
 
-}*/
+}
