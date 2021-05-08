@@ -52,24 +52,24 @@ int main(int argc, char** argv)
 	Triangulator<Color*, Color*> triangulator;
 	vector<Triangle<Color*, Color*>*>* triangulation = triangulator.triangulate(sommets, graphe);
 
-	Color* col = new Color(255, 0, 0, 0);
+	/*Color* col = new Color(255, 0, 0, 0);
 	for (Triangle<Color*, Color*>* t : (*triangulation)) {
 		for (ArcTU<Color*, Color*>* a : t->arcs) {
 			a->arete->v = col;
 		}
 		voronoi->push_back(t);
-	}
+	}*/
 
 	vector< Sommet<Vecteur2D>*>* centres = new vector< Sommet<Vecteur2D>*>;
 
 
-	/*for (Triangle<Color*, Color*>* t : (*triangulation)) {
-		centres->push_back(graphe->creeSommet(t->cercle_circonscrit().centre));
-	}*/
+	//for (Triangle<Color*, Color*>* t : (*triangulation)) {
+	//	centres->push_back(graphe->creeSommet(t->cercle_circonscrit().centre));
+	//}
 
-	GUI gui(argc, argv);
+GUI gui(argc, argv);
 
-	gui.dessiner(voronoi, centres);
-	return 0;
+gui.dessiner(voronoi, centres);
+return 0;
 
 }

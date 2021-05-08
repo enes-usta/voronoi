@@ -33,7 +33,7 @@ private:
 		charger_contour();
 		//charger_ecailles();
 		charger_ecailles_voronoi();
-		clipping();
+		//clipping();
 		faces->push_back(contour);
 	}
 

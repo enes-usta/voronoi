@@ -93,19 +93,7 @@ private:
 
 			if (trouver_triangle_adjacent(arc) == NULL) {
 				// On ajoute le centre à la liste des sommets de la face
-				Sommet<Vecteur2D>* centre_triangle = creer_sommet(triangle_traite->cercle_circonscrit().centre, sommets_crees);
-				bool centre_dehors = false;
-				for (ArcTU<T, S>* a : triangle->arcs) {
-					if (a->debut() != germe && a->fin() != germe && trouver_triangle_adjacent(a) == NULL) {
-						Vecteur2D intersection;
-						Geometrie::intersectionSegmentSegment(a->debut()->v, a->fin()->v, sommets_crees->back()->v, centre_triangle->v, intersection.x, intersection.y);
-						sommets_cellule->push_back(creer_sommet(intersection, sommets_crees));
-						centre_dehors = true;
-					}
-				}
-
-				if(!centre_dehors)
-					sommets_cellule->push_back(centre_triangle);
+				ajouter_sommet_cellule(triangle_traite, germe, sommets_cellule, sommets_crees);
 
 				// On arrête quand on a bouclé
 				if (sommets_cellule->size() > 1 && sommets_cellule->back() == sommets_cellule->front())
@@ -117,8 +105,7 @@ private:
 			}
 			else {
 				// On ajoute le centre à la liste des sommets de la face
-				Sommet<Vecteur2D>* centre_triangle = creer_sommet(triangle_traite->cercle_circonscrit().centre, sommets_crees);
-				sommets_cellule->push_back(centre_triangle);
+				ajouter_sommet_cellule(triangle_traite, germe, sommets_cellule, sommets_crees);
 
 				// On arrête quand on a bouclé
 				if (sommets_cellule->size() > 1 && sommets_cellule->back() == sommets_cellule->front())
@@ -138,13 +125,65 @@ private:
 			vector<ArcTU<T, S>*> arcs_cellule;
 			Face<S, T>* face = new Face<S, T>();
 			for (int i = 0; i < sommets_cellule->size() - 1; i++) {
-				ArcTU<T, S>* nouvel_arc = creer_arc(sommets_cellule->at(i), sommets_cellule->at(i + 1), face, arcs_crees);
-				arcs_cellule.push_back(nouvel_arc);
+				if (sommets_cellule->at(i) != sommets_cellule->at(i + 1)) {
+					ArcTU<T, S>* nouvel_arc = creer_arc(sommets_cellule->at(i), sommets_cellule->at(i + 1), face, arcs_crees);
+					arcs_cellule.push_back(nouvel_arc);
+				}
+				
 			}
 			face->arcs = arcs_cellule;
 			this->cellules->push_back(face);
 		}
 		
+	}
+
+	/**
+	*	Ajoute les sommets de la cellule de Voronoï générée par germe sur ce triangle
+	*/
+	void ajouter_sommet_cellule(Triangle<S, T>* triangle, Sommet<Vecteur2D>* germe, vector<Sommet<Vecteur2D>*>* sommets_cellule, vector<Sommet<Vecteur2D>*>* sommets_crees) {
+		Sommet<Vecteur2D>* centre_triangle = creer_sommet(triangle->cercle_circonscrit().centre, sommets_crees);
+		bool centre_dehors = false;
+		for (ArcTU<T, S>* a : triangle->arcs) {
+			if (trouver_triangle_adjacent(a) == NULL && !a->estAGauche(centre_triangle)) {
+				// Cellule complète, on ajoute les deux intersections sur la l'arc de la bordure
+				if (a->debut() != germe && a->fin() != germe) {
+					/*for (ArcTU<T, S>* a2 : triangle->arcs) {
+						if (a2->debut() == germe) {
+							Vecteur2D inter;
+							Triangle<S, T>* triangle_adjacent = trouver_triangle_adjacent(a2);
+							Geometrie::intersectionSegmentSegment(a->debut()->v, a->fin()->v, triangle_adjacent->cercle_circonscrit().centre, centre_triangle->v, inter.x, inter.y);
+							sommets_cellule->push_back(creer_sommet(inter, sommets_crees));
+						}
+					}
+					for (ArcTU<T, S>* a2 : triangle->arcs) {
+						if (a2->fin() == germe) {
+							Vecteur2D inter;
+							Triangle<S, T>* triangle_adjacent = trouver_triangle_adjacent(a2);
+							Geometrie::intersectionSegmentSegment(a->debut()->v, a->fin()->v, triangle_adjacent->cercle_circonscrit().centre, centre_triangle->v, inter.x, inter.y);
+							sommets_cellule->push_back(creer_sommet(inter, sommets_crees));
+						}
+					}*/
+					sommets_cellule->push_back(creer_sommet(Vecteur2D((a->debut()->v + a->fin()->v) / 2), sommets_crees));
+				}
+				//cellule infinie
+				else {
+					/*for (ArcTU<T, S>* a2 : triangle->arcs) {
+						Triangle<S, T>* triangle_adjacent = trouver_triangle_adjacent(a2);
+						if ((a2->fin() == germe || a2->debut() == germe) && triangle_adjacent != NULL) {
+							Vecteur2D inter;
+							Geometrie::intersectionSegmentSegment(a->debut()->v, a->fin()->v, triangle_adjacent->cercle_circonscrit().centre, centre_triangle->v, inter.x, inter.y);
+							sommets_cellule->push_back(creer_sommet(inter, sommets_crees));
+						}
+					}*/
+					
+					sommets_cellule->push_back(creer_sommet(Vecteur2D((a->debut()->v + a->fin()->v) / 2), sommets_crees));
+				}
+				centre_dehors = true;
+			}
+		}
+
+		if (!centre_dehors)
+			sommets_cellule->push_back(centre_triangle);
 	}
 
 	/**
@@ -181,41 +220,6 @@ private:
 
 		return triangle_traite;
 	}
-
-	/**
-	*	CAS D'EXCEPTION: on essaye de pivoter sur un germe mais on tombe sur un arc qui n'a pas de triangle adjacent
-	*	Si pas de triangle adjacent, on ne peut pas créer de polygone complet
-	*	On fait un tour en passant par le milieu des arcs de degré 1 et le germe,
-	*/
-	Triangle<S, T>* pivoter_sur_germe_au_bord(Triangle<S, T>* triangle, ArcTU<T, S>* arc, Sommet<Vecteur2D>* germe, vector<Sommet<Vecteur2D>*> sommets_cellule, vector<Sommet<Vecteur2D>*>* sommets_crees) {
-		Sommet<Vecteur2D>* milieu_arc = creer_sommet(Vecteur2D((arc->debut()->v + arc->fin()->v) / 2), sommets_crees);
-		sommets_cellule.push_back(milieu_arc);
-		sommets_cellule.push_back(germe);
-		// On se place sur le triangle de départ
-		Triangle<S, T>* triangle_adjacent = triangle;
-		while (triangle_adjacent != NULL) {
-			// On parcourt les triangles adjacents dans le sens horaire jusqu'à arriver au triangle extrême
-			for (ArcTU<T, S>* a : triangle_adjacent->arcs) {
-				if (a->debut() == germe) {
-					triangle_adjacent = trouver_triangle_adjacent(a);
-					if (triangle_adjacent != NULL)
-						triangle = triangle_adjacent;
-					break;
-				}
-			}
-		}
-
-		// On décale à l'arc qui part du germe
-		for (ArcTU<T, S>* a : triangle->arcs) {
-			if (a->debut() == germe) {
-				milieu_arc = creer_sommet(Vecteur2D((a->debut()->v + a->fin()->v) / 2), sommets_crees);
-				sommets_cellule.push_back(milieu_arc);
-			}
-		}
-
-		return triangle;
-	}
-
 
 	/**
 	* Crée un sommet en veillant à ce qu'il ne soit pas dupliqué
