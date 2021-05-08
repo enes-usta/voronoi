@@ -94,14 +94,18 @@ private:
 			if (trouver_triangle_adjacent(arc) == NULL) {
 				// On ajoute le centre à la liste des sommets de la face
 				Sommet<Vecteur2D>* centre_triangle = creer_sommet(triangle_traite->cercle_circonscrit().centre, sommets_crees);
-				/*for (ArcTU<T, S>* a : triangle->arcs) {
+				bool centre_dehors = false;
+				for (ArcTU<T, S>* a : triangle->arcs) {
 					if (a->debut() != germe && a->fin() != germe && trouver_triangle_adjacent(a) == NULL) {
 						Vecteur2D intersection;
 						Geometrie::intersectionSegmentSegment(a->debut()->v, a->fin()->v, sommets_crees->back()->v, centre_triangle->v, intersection.x, intersection.y);
 						sommets_cellule->push_back(creer_sommet(intersection, sommets_crees));
 						centre_dehors = true;
-					}*/
-				sommets_cellule->push_back(centre_triangle);
+					}
+				}
+
+				if(!centre_dehors)
+					sommets_cellule->push_back(centre_triangle);
 
 				// On arrête quand on a bouclé
 				if (sommets_cellule->size() > 1 && sommets_cellule->back() == sommets_cellule->front())
