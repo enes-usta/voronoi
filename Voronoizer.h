@@ -82,80 +82,134 @@ private:
 		//Germe qu'on traite
 		Sommet<Vecteur2D>* germe = arc->fin();
 		//Cellules du diagramme de Voronoï
-		vector<Sommet<Vecteur2D>*> sommets_cellule;
+		vector<Sommet<Vecteur2D>*>* sommets_cellule = new vector<Sommet<Vecteur2D>*>;
 		// Sommet de départ
-		Sommet<Vecteur2D>* centre_triangle = creer_sommet(triangle->cercle_circonscrit().centre, sommets_crees);
-		Sommet<Vecteur2D>* depart = centre_triangle;
-		sommets_cellule.push_back(centre_triangle);
+		Triangle<S, T>* triangle_traite = triangle;
+		//sommets_cellule.push_back(centre_triangle);
 		//On aborte dans certains cas
 		bool aborted = false;
 		
 		while (true) {
-			// Le triangle adjacent sur cet arc
-			Triangle<S, T>* triangle_traite = trouver_triangle_adjacent(arc);
 
-			if (triangle_traite == NULL) {
-			// CAS D'EXCEPTION: on essaye de pivoter sur un germe mais on tombe sur un arc qui n'a pas de triangle adjacent
-			// Si pas de triangle adjacent, on ne peut pas créer de polygone complet
-			// On fait un tour en passant par le milieu des arcs de degré 1 et le germe,
-			// puis on continue l'algo normalement
+			if (trouver_triangle_adjacent(arc) == NULL) {
+				// On ajoute le centre à la liste des sommets de la face
+				Sommet<Vecteur2D>* centre_triangle = creer_sommet(triangle_traite->cercle_circonscrit().centre, sommets_crees);
+				/*for (ArcTU<T, S>* a : triangle->arcs) {
+					if (a->debut() != germe && a->fin() != germe && trouver_triangle_adjacent(a) == NULL) {
+						Vecteur2D intersection;
+						Geometrie::intersectionSegmentSegment(a->debut()->v, a->fin()->v, sommets_crees->back()->v, centre_triangle->v, intersection.x, intersection.y);
+						sommets_cellule->push_back(creer_sommet(intersection, sommets_crees));
+						centre_dehors = true;
+					}*/
+				sommets_cellule->push_back(centre_triangle);
 
-				Sommet<Vecteur2D>* milieu_arc = creer_sommet(Vecteur2D((arc->debut()->v + arc->fin()->v) / 2), sommets_crees);
-				sommets_cellule.push_back(milieu_arc);
-				sommets_cellule.push_back(germe);
-				// On se place sur le triangle de départ
-				Triangle<S, T>* triangle_adjacent = triangle;
-				triangle_traite = triangle_adjacent;
-				while(triangle_adjacent != NULL){
-					// On parcourt les triangles adjacents dans le sens horaire jusqu'à arriver au triangle extrême
-					for (ArcTU<T, S>* a : triangle_adjacent->arcs) {
-						if (a->debut() == germe) {
-							triangle_adjacent = trouver_triangle_adjacent(arc);
-							if (triangle_adjacent != NULL)
-								triangle_traite = triangle_adjacent;
-							break;
-						}
-					}
-				}
+				// On arrête quand on a bouclé
+				if (sommets_cellule->size() > 1 && sommets_cellule->back() == sommets_cellule->front())
+					goto next;
 
-				// On décale à l'arc qui part du germe
-				for (ArcTU<T, S>* a : triangle_traite->arcs) {
-					if (a->debut() == germe) {
-						milieu_arc = creer_sommet(Vecteur2D((a->debut()->v + a->fin()->v) / 2), sommets_crees);
-						sommets_cellule.push_back(milieu_arc);
-					}
-				}
+				triangle_traite = traiter_cellule_infinie(triangle, arc, germe, sommets_cellule, sommets_crees);
 				//aborted = true;
 				//goto next;
 			}
+			else {
+				// On ajoute le centre à la liste des sommets de la face
+				Sommet<Vecteur2D>* centre_triangle = creer_sommet(triangle_traite->cercle_circonscrit().centre, sommets_crees);
+				sommets_cellule->push_back(centre_triangle);
 
-			// Centre du cercle circonscrit de ce triangle
-			centre_triangle = creer_sommet(triangle_traite->cercle_circonscrit().centre, sommets_crees);
-			sommets_cellule.push_back(centre_triangle);
+				// On arrête quand on a bouclé
+				if (sommets_cellule->size() > 1 && sommets_cellule->back() == sommets_cellule->front())
+					goto next;
 
-			// On décale à l'arc qui pointe vers le germe
-			for (ArcTU<T, S>* a : triangle_traite->arcs) {
-				if (a->fin() == germe)
-					arc = a;
+				triangle_traite = trouver_triangle_adjacent(arc);		
 			}
 
-			// On arrête quand on a bouclé
-			if (centre_triangle == depart)
-				goto next;
+			// On décale à l'arc qui pointe vers le germe
+			for (ArcTU<T, S>* a : triangle_traite->arcs)
+				if (a->fin() == germe)
+					arc = a;
+
 		}
 	next:;
 		if (!aborted) {
 			vector<ArcTU<T, S>*> arcs_cellule;
 			Face<S, T>* face = new Face<S, T>();
-			for (int i = 0; i < sommets_cellule.size() - 1; i++) {
-				ArcTU<T, S>* nouvel_arc = creer_arc(sommets_cellule[i], sommets_cellule[i + 1], face, arcs_crees);
+			for (int i = 0; i < sommets_cellule->size() - 1; i++) {
+				ArcTU<T, S>* nouvel_arc = creer_arc(sommets_cellule->at(i), sommets_cellule->at(i + 1), face, arcs_crees);
 				arcs_cellule.push_back(nouvel_arc);
 			}
 			face->arcs = arcs_cellule;
-
 			this->cellules->push_back(face);
 		}
 		
+	}
+
+	/**
+	*	Traite un cas d'exception:
+	*	On essaye de pivoter sur un germe mais on tombe sur un arc qui n'a pas de triangle adjacent
+	*	Si il n'y a pas de triangle adjacent, on ne peut pas créer de polygone complet, c'est une cellule infinie
+	*/
+	Triangle<S, T>* traiter_cellule_infinie(Triangle<S, T>* triangle, ArcTU<T, S>* arc, Sommet<Vecteur2D>* germe, vector<Sommet<Vecteur2D>*>* sommets_cellule, vector<Sommet<Vecteur2D>*>* sommets_crees) {
+		Sommet<Vecteur2D>* milieu_arc = creer_sommet(Vecteur2D((arc->debut()->v + arc->fin()->v) / 2), sommets_crees);
+		sommets_cellule->push_back(milieu_arc);
+		sommets_cellule->push_back(germe);
+
+		Triangle<S, T>* triangle_adjacent = triangle;
+		Triangle<S, T>* triangle_traite = triangle_adjacent;
+		while (triangle_adjacent != NULL) {
+			// On parcourt les triangles adjacents dans le sens horaire jusqu'à arriver au triangle extrême
+			for (ArcTU<T, S>* a : triangle_adjacent->arcs) {
+				if (a->debut() == germe) {
+					triangle_adjacent = trouver_triangle_adjacent(arc);
+					if (triangle_adjacent != NULL)
+						triangle_traite = triangle_adjacent;
+					break;
+				}
+			}
+		}
+
+		// On décale à l'arc qui part du germe
+		for (ArcTU<T, S>* a : triangle_traite->arcs) {
+			if (a->debut() == germe) {
+				milieu_arc = creer_sommet(Vecteur2D((a->debut()->v + a->fin()->v) / 2), sommets_crees);
+				sommets_cellule->push_back(milieu_arc);
+			}
+		}
+
+		return triangle_traite;
+	}
+
+	/**
+	*	CAS D'EXCEPTION: on essaye de pivoter sur un germe mais on tombe sur un arc qui n'a pas de triangle adjacent
+	*	Si pas de triangle adjacent, on ne peut pas créer de polygone complet
+	*	On fait un tour en passant par le milieu des arcs de degré 1 et le germe,
+	*/
+	Triangle<S, T>* pivoter_sur_germe_au_bord(Triangle<S, T>* triangle, ArcTU<T, S>* arc, Sommet<Vecteur2D>* germe, vector<Sommet<Vecteur2D>*> sommets_cellule, vector<Sommet<Vecteur2D>*>* sommets_crees) {
+		Sommet<Vecteur2D>* milieu_arc = creer_sommet(Vecteur2D((arc->debut()->v + arc->fin()->v) / 2), sommets_crees);
+		sommets_cellule.push_back(milieu_arc);
+		sommets_cellule.push_back(germe);
+		// On se place sur le triangle de départ
+		Triangle<S, T>* triangle_adjacent = triangle;
+		while (triangle_adjacent != NULL) {
+			// On parcourt les triangles adjacents dans le sens horaire jusqu'à arriver au triangle extrême
+			for (ArcTU<T, S>* a : triangle_adjacent->arcs) {
+				if (a->debut() == germe) {
+					triangle_adjacent = trouver_triangle_adjacent(a);
+					if (triangle_adjacent != NULL)
+						triangle = triangle_adjacent;
+					break;
+				}
+			}
+		}
+
+		// On décale à l'arc qui part du germe
+		for (ArcTU<T, S>* a : triangle->arcs) {
+			if (a->debut() == germe) {
+				milieu_arc = creer_sommet(Vecteur2D((a->debut()->v + a->fin()->v) / 2), sommets_crees);
+				sommets_cellule.push_back(milieu_arc);
+			}
+		}
+
+		return triangle;
 	}
 
 

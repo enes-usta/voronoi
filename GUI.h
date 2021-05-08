@@ -77,7 +77,7 @@ private:
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   // Clear the color buffer with current clearing color
         //On dessine les axes
         glColor3f(1.0f, 0.0f, 0.0f); // Rouge
-        dessinerAxes();
+        //dessinerAxes();
 
         //On dessine les faces
         glColor3f(0.0f, 0.0f, 0.0f); // Noir
@@ -89,7 +89,7 @@ private:
 
         //On dessine les sommets
         glColor3f(0.0f, 0.0f, 1.0f); // Bleu
-//        dessinerSommets();
+        dessinerSommets();
 
         //On dessine les sommets des faces
         glColor3f(0.0f, 1.0f, 0.0f); // Vert

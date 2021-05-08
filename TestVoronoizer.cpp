@@ -1,4 +1,4 @@
-/*#include <iostream>
+#include <iostream>
 #include <string>
 #include "Graphe.h"
 #include "Triangle.h"
@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 
 
 	//-------- génération des sommets en veillant à ce qu'il n'y ait pas de duplications ----------
-	for (int i = 0; i < 1000; i++) {
+	for (int i = 0; i < 100; i++) {
 		Vecteur2D a = Vecteur2D(distribution(generator), distribution(generator));
 		//Si il n'existe aucun sommet, on l'ajoute
 		if (sommets->size() == 0)
@@ -47,11 +47,29 @@ int main(int argc, char** argv)
 
 	//--------- génération du diagramme de voronoi ------------
 	vector<Face<Color*, Color*>*>* voronoi = voronoizer.voronoize(sommets, graphe);
-	vector< Sommet<Vecteur2D>*>* germes = voronoizer.germes;
+	//vector< Sommet<Vecteur2D>*>* germes = voronoizer.germes;
+
+	Triangulator<Color*, Color*> triangulator;
+	vector<Triangle<Color*, Color*>*>* triangulation = triangulator.triangulate(sommets, graphe);
+
+	Color* col = new Color(255, 0, 0, 0);
+	for (Triangle<Color*, Color*>* t : (*triangulation)) {
+		for (ArcTU<Color*, Color*>* a : t->arcs) {
+			a->arete->v = col;
+		}
+		voronoi->push_back(t);
+	}
+
+	vector< Sommet<Vecteur2D>*>* centres = new vector< Sommet<Vecteur2D>*>;
+
+
+	/*for (Triangle<Color*, Color*>* t : (*triangulation)) {
+		centres->push_back(graphe->creeSommet(t->cercle_circonscrit().centre));
+	}*/
 
 	GUI gui(argc, argv);
 
-	gui.dessiner(voronoi, germes);
+	gui.dessiner(voronoi, centres);
 	return 0;
 
-}*/
+}

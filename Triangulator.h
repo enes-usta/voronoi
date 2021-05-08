@@ -56,6 +56,9 @@ private:
 	Graphe<T, Vecteur2D>* graphe; //Graphe utilisé pour créer des sommets
 	vector<Triangle<S, T>*>* triangulation;//Triangles en sortie
 	vector<Triangle<S, T>*>* DTL; //Triangles à supprimer de la triangulation
+	Sommet<Vecteur2D>* sommetsEnglobants[4] = { NULL }; //Sommets englobants les autres sommets, à supprimer à la fin
+
+
 
 	/**
 	* Initialise les membres
@@ -91,6 +94,11 @@ private:
 		s1 = graphe->creeSommet(Vecteur2D(right + marge, bottom - marge));
 		s2 = graphe->creeSommet(Vecteur2D(right + marge, top + marge));
 		s3 = graphe->creeSommet(Vecteur2D(left - marge, top + marge));
+
+		sommetsEnglobants[0] = s0;
+		sommetsEnglobants[1] = s1;
+		sommetsEnglobants[2] = s2;
+		sommetsEnglobants[3] = s3;
 
 		/*
 		s3		 a1			s2
@@ -260,23 +268,24 @@ private:
 	/**
 	* Supprime les sommets englobants élague les arêtes arrivant à ce sommet
 	*/
-	void supprimer_englobants(){
+	void supprimer_englobants() {
 		for (auto it = triangulation->begin(); it != triangulation->end(); ) {
 			bool deleted = false;
-			Triangle<S, T>* t = (Triangle<S, T>*) *it;
+			Triangle<S, T>* t = (Triangle<S, T>*) * it;
 			for (ArcTU<T, S>* arc : (t->arcs)) {
-				Sommet<Vecteur2D>* s = arc->debut();
-				if (s->v.x < left || s->v.x > right
-					|| s->v.y < bottom || s->v.y > top) {
-					delete* it;
-					it = triangulation->erase(it);
-					deleted = true;
-					goto next;
+				for (int j = 0; j < 4; j++) {
+					if (arc->debut() == sommetsEnglobants[j] || arc->fin() == sommetsEnglobants[j]) {
+						delete* it;
+						it = triangulation->erase(it);
+						deleted = true;
+						goto next;
+					}
 				}
 			}
-			next:
+		next:
 			if (!deleted)
 				++it;
 		}
 	}
+
 };

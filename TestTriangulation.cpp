@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 	vector<Sommet<Vecteur2D>*>* sommets = new vector<Sommet<Vecteur2D>*>;
 
 	//-------- génération des sommets en veillant à ce qu'il n'y ait pas de duplications ----------
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 1000; i++) {
 		Vecteur2D a = Vecteur2D(distribution(generator), distribution(generator));
 		//Si il n'existe aucun sommet, on l'ajoute
 		if(sommets->size() == 0)
