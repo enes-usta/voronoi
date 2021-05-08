@@ -96,7 +96,8 @@ private:
 				ajouter_sommet_cellule(triangle_traite, germe, sommets_cellule, sommets_crees);
 
 				// On arrête quand on a bouclé
-				if (sommets_cellule->size() > 1 && sommets_cellule->back() == sommets_cellule->front())
+				if (sommets_cellule->size() > 2
+					&& (sommets_cellule->back() == sommets_cellule->front() || sommets_cellule->at(sommets_cellule->size() - 2) == sommets_cellule->front()))
 					goto next;
 
 				triangle_traite = traiter_cellule_infinie(triangle, arc, germe, sommets_cellule, sommets_crees);
@@ -108,7 +109,8 @@ private:
 				ajouter_sommet_cellule(triangle_traite, germe, sommets_cellule, sommets_crees);
 
 				// On arrête quand on a bouclé
-				if (sommets_cellule->size() > 1 && sommets_cellule->back() == sommets_cellule->front())
+				if (sommets_cellule->size() > 2 
+					&& (sommets_cellule->back() == sommets_cellule->front() || sommets_cellule->at(sommets_cellule->size()-2) == sommets_cellule->front()))
 					goto next;
 
 				triangle_traite = trouver_triangle_adjacent(arc);		
@@ -147,36 +149,37 @@ private:
 			if (trouver_triangle_adjacent(a) == NULL && !a->estAGauche(centre_triangle)) {
 				// Cellule complète, on ajoute les deux intersections sur la l'arc de la bordure
 				if (a->debut() != germe && a->fin() != germe) {
-					/*for (ArcTU<T, S>* a2 : triangle->arcs) {
+					for (ArcTU<T, S>* a2 : triangle->arcs) {
 						if (a2->debut() == germe) {
-							Vecteur2D inter;
 							Triangle<S, T>* triangle_adjacent = trouver_triangle_adjacent(a2);
-							Geometrie::intersectionSegmentSegment(a->debut()->v, a->fin()->v, triangle_adjacent->cercle_circonscrit().centre, centre_triangle->v, inter.x, inter.y);
+							Vecteur2D inter = Geometrie::intersection(a->debut()->v, a->fin()->v, triangle_adjacent->cercle_circonscrit().centre, centre_triangle->v);
 							sommets_cellule->push_back(creer_sommet(inter, sommets_crees));
 						}
 					}
-					for (ArcTU<T, S>* a2 : triangle->arcs) {
-						if (a2->fin() == germe) {
-							Vecteur2D inter;
-							Triangle<S, T>* triangle_adjacent = trouver_triangle_adjacent(a2);
-							Geometrie::intersectionSegmentSegment(a->debut()->v, a->fin()->v, triangle_adjacent->cercle_circonscrit().centre, centre_triangle->v, inter.x, inter.y);
-							sommets_cellule->push_back(creer_sommet(inter, sommets_crees));
+					// Si on a pas encore bouclé
+					if (sommets_cellule->front() != sommets_cellule->back()) {
+						for (ArcTU<T, S>* a2 : triangle->arcs) {
+							if (a2->fin() == germe) {
+								Triangle<S, T>* triangle_adjacent = trouver_triangle_adjacent(a2);
+								Vecteur2D inter = Geometrie::intersection(a->debut()->v, a->fin()->v, triangle_adjacent->cercle_circonscrit().centre, centre_triangle->v);
+								sommets_cellule->push_back(creer_sommet(inter, sommets_crees));
+							}
 						}
-					}*/
-					sommets_cellule->push_back(creer_sommet(Vecteur2D((a->debut()->v + a->fin()->v) / 2), sommets_crees));
+					}
+					
+					//sommets_cellule->push_back(creer_sommet(Vecteur2D((a->debut()->v + a->fin()->v) / 2), sommets_crees));
 				}
 				//cellule infinie
 				else {
-					/*for (ArcTU<T, S>* a2 : triangle->arcs) {
+					for (ArcTU<T, S>* a2 : triangle->arcs) {
 						Triangle<S, T>* triangle_adjacent = trouver_triangle_adjacent(a2);
 						if ((a2->fin() == germe || a2->debut() == germe) && triangle_adjacent != NULL) {
-							Vecteur2D inter;
-							Geometrie::intersectionSegmentSegment(a->debut()->v, a->fin()->v, triangle_adjacent->cercle_circonscrit().centre, centre_triangle->v, inter.x, inter.y);
+							Vecteur2D inter = Geometrie::intersection(a->debut()->v, a->fin()->v, triangle_adjacent->cercle_circonscrit().centre, centre_triangle->v);
 							sommets_cellule->push_back(creer_sommet(inter, sommets_crees));
 						}
-					}*/
+					}
 					
-					sommets_cellule->push_back(creer_sommet(Vecteur2D((a->debut()->v + a->fin()->v) / 2), sommets_crees));
+					//sommets_cellule->push_back(creer_sommet(Vecteur2D((a->debut()->v + a->fin()->v) / 2), sommets_crees));
 				}
 				centre_dehors = true;
 			}
@@ -184,6 +187,10 @@ private:
 
 		if (!centre_dehors)
 			sommets_cellule->push_back(centre_triangle);
+	}
+
+	bool dehors() {
+		return false;
 	}
 
 	/**

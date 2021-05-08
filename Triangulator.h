@@ -46,11 +46,13 @@ public:
 				throw Erreur("Aucun triangle contenant le sommet trouvé");
 		}
 		supprimer_englobants();
+		calculer_contour();
 		return triangulation;
 	}
 
 public:
 	double left, right, bottom, top;
+	Face<S, T>* contour;
 private:
 	vector<Sommet<Vecteur2D>*>* sommets; //Sommets en entrée, les sommets ne doivent pas être dupliqués
 	Graphe<T, Vecteur2D>* graphe; //Graphe utilisé pour créer des sommets
@@ -263,6 +265,42 @@ private:
 			t = nullptr;
 		}
 		DTL->erase(remove(DTL->begin(), DTL->end(), nullptr), DTL->end());
+	}
+
+	Face<S, T>* calculer_contour() {
+		// On cherche les triangles au bord
+		vector<Triangle<S, T>*>* triangles_au_bord = new vector<Triangle<S, T>*>;
+		for (Triangle<S, T>* t : (*triangulation)) 
+			for (ArcTU<T, S>* arc : t->arcs) 
+				if (trouver_triangle_adjacent(arc) == NULL) {
+					triangles_au_bord->push_back(t);
+					break;
+				}
+
+		// Puis on ajoute dans le bon ordre les arcs au bord
+		vector<ArcTU<T, S>*> arcs;
+		for (ArcTU<T, S>* arc : triangles_au_bord->front()->arcs)
+			if (trouver_triangle_adjacent(arc) == NULL) 
+				arcs.push_back(arc);
+
+		triangles_au_bord->erase(triangles_au_bord->begin());
+		while (triangles_au_bord->size()) {
+			int i = 0;
+			for (Triangle<S, T>* t : (*triangles_au_bord)) {
+				for (ArcTU<T, S>* arc : t->arcs) {
+					if (arcs.back()->fin() == arc->debut()) {
+						arcs.push_back(arc);
+						triangles_au_bord->erase(triangles_au_bord->begin() + i);
+						goto next;
+					}
+				}
+				i++;
+			}
+		next:;
+		}
+
+		this->contour = new Face<S, T>(arcs, S());
+		return contour;
 	}
 
 	/**

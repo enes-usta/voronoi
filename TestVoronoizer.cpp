@@ -52,13 +52,16 @@ int main(int argc, char** argv)
 	Triangulator<Color*, Color*> triangulator;
 	vector<Triangle<Color*, Color*>*>* triangulation = triangulator.triangulate(sommets, graphe);
 
-	/*Color* col = new Color(255, 0, 0, 0);
+	Color* col = new Color(255, 0, 0, 0);
 	for (Triangle<Color*, Color*>* t : (*triangulation)) {
 		for (ArcTU<Color*, Color*>* a : t->arcs) {
 			a->arete->v = col;
 		}
-		voronoi->push_back(t);
-	}*/
+		//voronoi->push_back(t);
+	}
+
+	Face<Color*, Color*>* contour = triangulator.contour;
+	voronoi->push_back(contour);
 
 	vector< Sommet<Vecteur2D>*>* centres = new vector< Sommet<Vecteur2D>*>;
 

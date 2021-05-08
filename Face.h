@@ -3,6 +3,8 @@
 #include "ArcTU.h"
 #include "Geometrie.h"
 
+#define MAX 10000
+
 /**
 * T est la nature de l'information portée par une arête
 * S est la nature de l'information portée par cette face
@@ -60,6 +62,19 @@ public:
 				return false;
 				
 		return true;
+	}
+	
+	/**
+	* Retourne vrai si cette face est concave et contient le sommet s
+	*/
+	bool contientPointConcave(Sommet<Vecteur2D>* s) {
+		int nbIntersection = 0;
+		double s1, t1;
+		for (ArcTU<T,S>* a : this->arcs)
+			if (Geometrie::intersectionSegmentSegment(s->v, Vecteur2D(s->v.x, MAX), a->debut()->v, a->fin()->v, t1, s1))
+				nbIntersection++;
+
+		return (nbIntersection % 2 == 1);
 	}
 
 	friend bool operator==(const Face<S, T>& lhs, const Face<S, T>& rhs) {

@@ -95,5 +95,24 @@ public:
 		return (0 < t && t < 1 && 0 < s && s < 1);
 	}
 
+	static bool intersection(const Vecteur2D& p0, const Vecteur2D& p1, const Vecteur2D& q0, const Vecteur2D& q1, Vecteur2D& intersection) {
+
+		double s, t;
+		intersectionDroiteDroite(p0, p1, q0, q1, s, t);
+
+		Vecteur2D p0M = (p1 - p0) * t;
+		Vecteur2D q0M = (q1 - q0) * s;
+
+		intersection = p0 + p0M;
+		return (0 < t && t < 1 && 0 < s && s < 1);
+	}
+
+	static Vecteur2D intersection(const Vecteur2D& p0, const Vecteur2D& p1, const Vecteur2D& q0, const Vecteur2D& q1) {
+
+		Vecteur2D inter;
+		intersection(p0, p1, q0, q1, inter);
+		return inter;
+	}
+
 };
 
