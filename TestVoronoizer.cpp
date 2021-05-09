@@ -60,6 +60,11 @@ int main(int argc, char** argv)
 		//voronoi->push_back(t);
 	}
 
+	for (Face<Color*, Color*>* f : (*voronoi)) {
+		f->v = col;
+		//voronoi->push_back(t);
+	}
+
 	//Face<Color*, Color*>* contour = triangulator.contour;
 	//voronoi->push_back(contour);
 

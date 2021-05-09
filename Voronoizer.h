@@ -108,12 +108,10 @@ private:
 		}
 		vector<ArcTU<T, S>*> arcs_cellule;
 		Face<S, T>* face = new Face<S, T>();
+		sommets_cellule->push_back(sommets_cellule->front());
 		for (int i = 0; i < sommets_cellule->size() - 1; i++) {
-			//if (sommets_cellule->at(i) != sommets_cellule->at(i + 1)) {
-				ArcTU<T, S>* nouvel_arc = creer_arc(sommets_cellule->at(i), sommets_cellule->at(i + 1), face, arcs_crees);
-				arcs_cellule.push_back(nouvel_arc);
-			//}
-				
+			ArcTU<T, S>* nouvel_arc = creer_arc(sommets_cellule->at(i), sommets_cellule->at(i + 1), face, arcs_crees);
+			arcs_cellule.push_back(nouvel_arc);
 		}
 		face->arcs = arcs_cellule;
 		this->cellules->push_back(face);
@@ -135,7 +133,7 @@ private:
 						if ((a2->fin() == germe || a2->debut() == germe) && triangle_adjacent != NULL) {
 							Vecteur2D centre_arc = (a2->debut()->v + a2->fin()->v) / 2;
 							Vecteur2D inter = Geometrie::intersection(a->debut()->v, a->fin()->v, centre_arc, centre_triangle->v);
-							sommets_cellule->push_back(creer_sommet(inter, sommets_crees));
+							ajouter_sommet(creer_sommet(inter, sommets_crees), sommets_cellule);
 							return;
 						}
 					}
@@ -158,26 +156,7 @@ private:
 		}
 
 		if (!centre_dehors)
-			sommets_cellule->push_back(centre_triangle);
-	}
-
-	/**
-	*	Ajoute l'intersection entre le segment [milieu de l'arc, centre du triangle] et le contour à la liste des sommets de la cellule
-	*/
-	void ajouter_intersection(ArcTU<T, S>* arc, Sommet<Vecteur2D>* centre_triangle, Sommet<Vecteur2D>* germe, vector< Sommet<Vecteur2D>*>* sommets_cellule, vector< Sommet<Vecteur2D>*>* sommets_crees) {
-		double t, s;
-
-		Vecteur2D centre_arc = (arc->debut()->v + arc->fin()->v) / 2;
-		if (centre_arc == centre_triangle->v)
-			sommets_cellule->push_back(centre_triangle);
-		else
-			for (ArcTU<T, S>* a : triangulator->contour->arcs)
-				if (Geometrie::intersectionSegmentSegment(a->debut()->v, a->fin()->v, centre_arc, centre_triangle->v, t, s)) {
-					Vecteur2D inter = Geometrie::intersection(a->debut()->v, a->fin()->v, centre_arc, centre_triangle->v);
-					sommets_cellule->push_back(creer_sommet(inter, sommets_crees));
-					break;
-				}
-
+			ajouter_sommet(centre_triangle, sommets_cellule);
 	}
 
 	/**
@@ -187,17 +166,19 @@ private:
 	*/
 	Triangle<S, T>* traiter_cellule_infinie(Triangle<S, T>* triangle_depart, Triangle<S, T>* triangle_traite, ArcTU<T, S>* arc, Sommet<Vecteur2D>* germe, vector<Sommet<Vecteur2D>*>* sommets_cellule, vector<Sommet<Vecteur2D>*>* sommets_crees) {
 		double t, s;
-		// On ajoute le centre si il n'est pas en dehors ou sur le contour
+		// On ajoute le centre si il n'est pas dehors, sinon on ajoute l'intersection
 		for (ArcTU<T, S>* a : triangle_traite->arcs)
 			if (a->debut() == germe) {
 				Sommet<Vecteur2D>* centre_triangle = creer_sommet(triangle_traite->cercle_circonscrit().centre, sommets_crees);
 				Vecteur2D centre_arc = (a->debut()->v + a->fin()->v) / 2;
-				if (!Geometrie::intersectionSegmentSegment(arc->debut()->v, arc->fin()->v, centre_arc, centre_triangle->v, t, s))
-					sommets_cellule->push_back(centre_triangle);
+				if (!Geometrie::intersectionSegmentSegment(arc->debut()->v, arc->fin()->v, centre_arc, centre_triangle->v, t, s)) {
+					Sommet<Vecteur2D>* milieu_arc = creer_sommet(Vecteur2D((arc->debut()->v + arc->fin()->v) / 2), sommets_crees);
+					ajouter_sommet(milieu_arc, sommets_cellule);
+				}
 			}
 
 		// On ajoute le germe
-		sommets_cellule->push_back(germe);
+		ajouter_sommet(germe, sommets_cellule);
 
 		// On se place sur le triangle à l'autre extremité
 		Triangle<S, T>* triangle_adjacent = triangle_depart;
@@ -228,12 +209,46 @@ private:
 		Sommet<Vecteur2D>*  centre_triangle = creer_sommet(triangle_traite->cercle_circonscrit().centre, sommets_crees);
 		Vecteur2D centre_arc = (arc_entrant->debut()->v + arc_entrant->fin()->v) / 2;
 
-		if (!Geometrie::intersectionSegmentSegment(arc_sortant->debut()->v, arc_sortant->fin()->v, centre_arc, centre_triangle->v, t, s))
-			sommets_cellule->push_back(centre_triangle);
+		if (!Geometrie::intersectionSegmentSegment(arc_sortant->debut()->v, arc_sortant->fin()->v, centre_arc, centre_triangle->v, t, s)) {
+			Sommet<Vecteur2D>* milieu_arc = creer_sommet(Vecteur2D((arc_sortant->debut()->v + arc_sortant->fin()->v) / 2), sommets_crees);
+			ajouter_sommet(milieu_arc, sommets_cellule);
+		}
 
 		return triangle_traite;
 	}
 
+	/**
+	*	Ajoute s à sommets en veillant à ce que l'ordre soit respecté
+	*/
+	void ajouter_sommet(Sommet<Vecteur2D>* s, vector<Sommet<Vecteur2D>*>* sommets) {
+		if (sommets->size() > 1 &&
+			(sommets->at(sommets->size() - 2) == s || (sommets->back() == s)))
+			return;
+		if (sommets->size() > 0 && (sommets->back() == s))
+			return;
+		
+
+		sommets->push_back(s);
+	}
+
+	/**
+	*	Ajoute l'intersection entre le segment [milieu de l'arc, centre du triangle] et le contour à la liste des sommets de la cellule
+	*/
+	void ajouter_intersection(ArcTU<T, S>* arc, Sommet<Vecteur2D>* centre_triangle, Sommet<Vecteur2D>* germe, vector< Sommet<Vecteur2D>*>* sommets_cellule, vector< Sommet<Vecteur2D>*>* sommets_crees) {
+		double t, s;
+
+		Vecteur2D centre_arc = (arc->debut()->v + arc->fin()->v) / 2;
+		if (centre_arc == centre_triangle->v)
+			ajouter_sommet(centre_triangle, sommets_cellule);
+		else
+			for (ArcTU<T, S>* a : triangulator->contour->arcs)
+				if (Geometrie::intersectionSegmentSegment(a->debut()->v, a->fin()->v, centre_arc, centre_triangle->v, t, s)) {
+					Vecteur2D inter = Geometrie::intersection(a->debut()->v, a->fin()->v, centre_arc, centre_triangle->v);
+					ajouter_sommet(creer_sommet(inter, sommets_crees), sommets_cellule);
+					break;
+				}
+
+	}
 
 	/**
 	* Crée un sommet en veillant à ce qu'il ne soit pas dupliqué
