@@ -43,7 +43,6 @@ public:
 		triangulator = new Triangulator<S, T>;
 		triangulation = triangulator->triangulate(sommets, graphe);
 		construire_cellules();
-		//clipping();
 		return this->cellules;
 	}
 
@@ -91,9 +90,13 @@ private:
 			ajouter_sommet_cellule(triangle_traite, germe, sommets_cellule, sommets_crees);
 
 			// On arrête quand on a bouclé
+			if (sommets_cellule->size() > 2 && triangle_traite == triangle)
+				break;
+
 			if (sommets_cellule->size() > 2
 				&& (sommets_cellule->back() == sommets_cellule->front() || sommets_cellule->at(sommets_cellule->size() - 2) == sommets_cellule->front()))
 				break;
+
 
 			if (trouver_triangle_adjacent(arc) == NULL)
 				triangle_traite = traiter_cellule_infinie(triangle, triangle_traite, arc, germe, sommets_cellule, sommets_crees);
@@ -106,15 +109,7 @@ private:
 					arc = a;
 
 		}
-		vector<ArcTU<T, S>*> arcs_cellule;
-		Face<S, T>* face = new Face<S, T>();
-		sommets_cellule->push_back(sommets_cellule->front());
-		for (int i = 0; i < sommets_cellule->size() - 1; i++) {
-			ArcTU<T, S>* nouvel_arc = creer_arc(sommets_cellule->at(i), sommets_cellule->at(i + 1), face, arcs_crees);
-			arcs_cellule.push_back(nouvel_arc);
-		}
-		face->arcs = arcs_cellule;
-		this->cellules->push_back(face);
+		creer_face(sommets_cellule, arcs_crees);
 	}
 
 	/**
@@ -124,13 +119,13 @@ private:
 		Sommet<Vecteur2D>* centre_triangle = creer_sommet(triangle->cercle_circonscrit().centre, sommets_crees);
 		bool centre_dehors = false;
 		double t, s;
-		for (ArcTU<T, S>* a : triangle->arcs) {
-			if (!this->triangulator->contour->contientPointConcave(centre_triangle) /*&& !a->estAGauche(centre_triangle)*/) {
+		if (!this->triangulator->contour->contientPointConcave(centre_triangle)) {
+			for (ArcTU<T, S>* a : triangle->arcs) {
 				// Cellule infinie, on ajoute qu'un seul sommet
-				if ((a->debut() == germe || a->fin() == germe) && trouver_triangle_adjacent(a) == NULL) {
+				// Debut de la demie cellule
+				if ((a->debut() == germe) && trouver_triangle_adjacent(a) == NULL) {
 					for (ArcTU<T, S>* a2 : triangle->arcs) {
-						Triangle<S, T>* triangle_adjacent = trouver_triangle_adjacent(a2);
-						if ((a2->fin() == germe || a2->debut() == germe) && triangle_adjacent != NULL) {
+						if (a2->fin() == germe) {
 							Vecteur2D centre_arc = (a2->debut()->v + a2->fin()->v) / 2;
 							Vecteur2D inter = Geometrie::intersection(a->debut()->v, a->fin()->v, centre_arc, centre_triangle->v);
 							ajouter_sommet(creer_sommet(inter, sommets_crees), sommets_cellule);
@@ -138,21 +133,29 @@ private:
 						}
 					}
 				}
-				// Cellule complète, on ajoute les deux intersections sur la bordure
-				else {
-					// Premmière intersection
-					for (ArcTU<T, S>* a2 : triangle->arcs)
-						if (a2->debut() == germe)
-							ajouter_intersection(a2, centre_triangle, germe, sommets_cellule, sommets_crees);
-
-					// Si on a pas encore bouclé, on ajoute la deuxième intersection
-					if (sommets_cellule->front() != sommets_cellule->back())
-						for (ArcTU<T, S>* a2 : triangle->arcs)
-							if (a2->fin() == germe) 
-								ajouter_intersection(a2, centre_triangle, germe, sommets_cellule, sommets_crees);
+				// Fin de la  demie-cellule
+				else if ((a->fin() == germe) && trouver_triangle_adjacent(a) == NULL) {
+					for (ArcTU<T, S>* a2 : triangle->arcs) {
+						if (a2->debut() == germe) {
+							Vecteur2D centre_arc = (a2->debut()->v + a2->fin()->v) / 2;
+							Vecteur2D inter = Geometrie::intersection(a->debut()->v, a->fin()->v, centre_arc, centre_triangle->v);
+							ajouter_sommet(creer_sommet(inter, sommets_crees), sommets_cellule);
+							return;
+						}
+					}
 				}
-				centre_dehors = true;
 			}
+			// Cellule complète, on ajoute les deux intersections sur la bordure
+			// Premmière intersection
+			for (ArcTU<T, S>* a : triangle->arcs)
+				if (a->debut() == germe)
+					ajouter_intersection(a, centre_triangle, germe, sommets_cellule, sommets_crees);
+
+			// Deuxième intersection
+			for (ArcTU<T, S>* a : triangle->arcs)
+				if (a->fin() == germe) 
+					ajouter_intersection(a, centre_triangle, germe, sommets_cellule, sommets_crees);
+			centre_dehors = true;
 		}
 
 		if (!centre_dehors)
@@ -251,8 +254,8 @@ private:
 					break;
 				}
 
-		if (!fait)
-			ajouter_sommet(centre_triangle, sommets_cellule);
+		//if (!fait)
+			//ajouter_sommet(centre_triangle, sommets_cellule);
 
 		return fait;
 	}
@@ -292,6 +295,32 @@ private:
 		return res;
 	}
 
+	void creer_face(vector<Sommet<Vecteur2D>*>* sommets_cellule, vector<ArcTU<T, S>*>* arcs_crees) {
+		vector<ArcTU<T, S>*> arcs_cellule;
+		Face<S, T>* face = new Face<S, T>();
+		supprimer_sommets_doubles(sommets_cellule);
+
+		for (int i = 0; i < sommets_cellule->size() - 1; i++) {
+			ArcTU<T, S>* nouvel_arc = creer_arc(sommets_cellule->at(i), sommets_cellule->at(i + 1), face, arcs_crees);
+			arcs_cellule.push_back(nouvel_arc);
+		}
+		face->arcs = arcs_cellule;
+		this->cellules->push_back(face);
+	}
+
+	void supprimer_sommets_doubles(vector<Sommet<Vecteur2D>*>* sommets_cellule){
+	retry:;
+		for (int i = 0; i < sommets_cellule->size(); i++) {
+			for (int j = 0; j < i; j++) {
+				if (sommets_cellule->at(i) == sommets_cellule->at(j)) {
+					sommets_cellule->erase(sommets_cellule->begin() + i);
+					goto retry;
+				}
+			}
+		}
+		sommets_cellule->push_back(sommets_cellule->front());
+	}
+
 
 	/**
 	* Retourne un triangle adjacent l'arc s'il en existe un, sinon retourne null
@@ -300,39 +329,4 @@ private:
 		return (Triangle<S, T>*)arc->face_adjacente;
 	}
 
-
-	/**
-	* Supprime les faces et les sommets qui sont à l'extérieur du rectangle
-	* décrit par les sommets extrêmes parmi les sommets à construire
-	*/
-	void clipping() {
-		// On supprime les faces
-		for (auto it = cellules->begin(); it != cellules->end(); ) {
-			bool deleted = false;
-			Face<S, T>* f = (Face<S, T>*) * it;
-			for (ArcTU<T, S>* arc : (f->arcs)) {
-				if (arc->debut()->v.x < triangulator->left || arc->debut()->v.x > triangulator->right
-					|| arc->debut()->v.y < triangulator->bottom || arc->debut()->v.y > triangulator->top) {
-					delete* it;
-					it = cellules->erase(it);
-					deleted = true;
-					goto next;
-				}
-			}
-		next:
-			if (!deleted)
-				++it;
-		}
-
-		// On supprime les sommets
-		for (auto it = germes->begin(); it != germes->end(); ) {
-			Sommet<Vecteur2D>* s = (Sommet<Vecteur2D>*) * it;
-			if (s->v.x < triangulator->left || s->v.x > triangulator->right
-				|| s->v.y < triangulator->bottom || s->v.y > triangulator->top) {
-				delete* it;
-				it = germes->erase(it);
-			}else
-				++it;
-		}
-	}
 };

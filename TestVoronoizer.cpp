@@ -1,4 +1,4 @@
-#include <iostream>
+/*#include <iostream>
 #include <string>
 #include "Graphe.h"
 #include "Triangle.h"
@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 
 
 	//-------- génération des sommets en veillant à ce qu'il n'y ait pas de duplications ----------
-	for (int i = 0; i < 1000; i++) {
+	for (int i = 0; i < 500; i++) {
 		Vecteur2D a = Vecteur2D(distribution(generator), distribution(generator));
 		//Si il n'existe aucun sommet, on l'ajoute
 		if (sommets->size() == 0)
@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 	Triangulator<Color*, Color*> triangulator;
 	vector<Triangle<Color*, Color*>*>* triangulation = triangulator.triangulate(sommets, graphe);
 
-	Color* col = new Color(255, 0, 0, 0);
+	Color* col = new Color(255, 255, 255, 0);
 	for (Triangle<Color*, Color*>* t : (*triangulation)) {
 		for (ArcTU<Color*, Color*>* a : t->arcs) {
 			a->arete->v = col;
@@ -80,4 +80,4 @@ GUI gui(argc, argv);
 gui.dessiner(voronoi, centres);
 return 0;
 
-}
+}*/
